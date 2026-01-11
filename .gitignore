@@ -1,0 +1,16 @@
+# State files (created at runtime in user's spec directory)
+.ralph-state.json
+.ralph-progress.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log

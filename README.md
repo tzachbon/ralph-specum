@@ -48,10 +48,10 @@ git clone https://github.com/tzachbon/ralph-specum.git
 
 This will:
 1. Create feature directory: `./spec/add-user-authentication-with-jwt-tokens/`
-2. Run `! claude -p '...'` with `product-manager` agent to generate `requirements.md` and pause
+2. Delegate to `product-manager` subagent to generate `requirements.md` and pause
 3. You can discuss/refine the requirements, then `/ralph-specum:approve`
-4. Run `! claude -p '...'` with `architect-reviewer` agent to generate `design.md` and pause
-5. After approval, run `! claude -p '...'` with `task-planner` for POC-first `tasks.md`
+4. Delegate to `architect-reviewer` subagent to generate `design.md` and pause
+5. After approval, delegate to `task-planner` for POC-first `tasks.md`
 6. After approval, `spec-executor` runs tasks autonomously with compaction
 
 ### Autonomous Mode

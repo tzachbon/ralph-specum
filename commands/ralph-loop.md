@@ -58,7 +58,7 @@ From `$ARGUMENTS`, extract:
 **ALWAYS read `.ralph-progress.md` first on each iteration.**
 
 <mandatory>
-Run specialized sub-agents for each phase using `! claude -p '...'`. Never skip sub-agent delegation when the agent exists.
+Delegate to specialized sub-agents for each phase. Never skip sub-agent delegation when the agent exists.
 </mandatory>
 
 ### Sub-Agent Selection
@@ -73,16 +73,13 @@ Run specialized sub-agents for each phase using `! claude -p '...'`. Never skip 
 ### Phase: Requirements
 
 <mandatory>
-Run the product-manager agent using the CLI:
-```bash
-! claude -p 'You are the product-manager agent. Goal: <goal>. Constraints: <constraints>. Output: <specPath>/requirements.md'
-```
+Use the product-manager subagent to create requirements.
 </mandatory>
 
-1. Run product-manager agent:
-   ```bash
-   ! claude -p 'You are the product-manager agent. Create requirements for: <goal>. Output to: <specPath>/requirements.md'
-   ```
+1. Delegate to product-manager agent:
+   - Goal: `<goal>`
+   - Constraints: Any discussed constraints
+   - Output: `<specPath>/requirements.md`
 
 2. Agent creates requirements.md with:
    - User stories with acceptance criteria
@@ -96,16 +93,13 @@ Run the product-manager agent using the CLI:
 ### Phase: Design
 
 <mandatory>
-Run the architect-reviewer agent using the CLI:
-```bash
-! claude -p 'You are the architect-reviewer agent. Requirements: <specPath>/requirements.md. Output: <specPath>/design.md'
-```
+Use the architect-reviewer subagent to create design.
 </mandatory>
 
-1. Run architect-reviewer agent:
-   ```bash
-   ! claude -p 'You are the architect-reviewer agent. Review requirements from: <specPath>/requirements.md. Consider existing codebase patterns. Output to: <specPath>/design.md'
-   ```
+1. Delegate to architect-reviewer agent:
+   - Requirements: `<specPath>/requirements.md`
+   - Consider existing codebase patterns
+   - Output: `<specPath>/design.md`
 
 2. Agent creates design.md with:
    - Architecture overview with mermaid diagrams
@@ -121,17 +115,13 @@ Run the architect-reviewer agent using the CLI:
 ### Phase: Tasks
 
 <mandatory>
-Run the task-planner agent using the CLI:
-```bash
-! claude -p 'You are the task-planner agent. Requirements: <specPath>/requirements.md. Design: <specPath>/design.md. Output: <specPath>/tasks.md'
-```
-ALL specs MUST follow POC-first workflow.
+Use the task-planner subagent to create tasks. ALL specs MUST follow POC-first workflow.
 </mandatory>
 
-1. Run task-planner agent:
-   ```bash
-   ! claude -p 'You are the task-planner agent. Create POC-first tasks from: <specPath>/requirements.md and <specPath>/design.md. Output to: <specPath>/tasks.md'
-   ```
+1. Delegate to task-planner agent:
+   - Requirements: `<specPath>/requirements.md`
+   - Design: `<specPath>/design.md`
+   - Output: `<specPath>/tasks.md`
 
 2. Agent creates tasks.md with POC-first phases:
    - **Phase 1: Make It Work** - POC validation
@@ -154,18 +144,13 @@ ALL specs MUST follow POC-first workflow.
 ### Phase: Execution
 
 <mandatory>
-Run the spec-executor agent using the CLI:
-```bash
-! claude -p 'You are the spec-executor agent. Execute task <taskIndex> from: <specPath>/tasks.md. Progress: <specPath>/.ralph-progress.md'
-```
-Execute tasks autonomously with NO human interaction.
+Use the spec-executor subagent to execute tasks autonomously with NO human interaction.
 </mandatory>
 
 For each task:
-1. Run spec-executor agent:
-   ```bash
-   ! claude -p 'You are the spec-executor agent. Execute task <taskIndex> from: <specPath>/tasks.md. Read progress from: <specPath>/.ralph-progress.md'
-   ```
+1. Delegate to spec-executor agent:
+   - Task: `<taskIndex>` from `<specPath>/tasks.md`
+   - Progress: `<specPath>/.ralph-progress.md`
 
 2. Agent executes:
    - Reads Do section, executes exactly

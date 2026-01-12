@@ -1,0 +1,140 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Lint shell scripts
+        run: |
+          find . -name "*.sh" -type f | xargs shellcheck --severity=warning
+
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+
+      - name: Lint markdown files
+        run: |
+          markdownlint '**/*.md' --ignore node_modules --config .markdownlint.json || true
+
+  validate-json:
+    name: Validate JSON
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate JSON files
+        run: |
+          echo "Validating JSON syntax..."
+          for f in $(find . -name "*.json" -type f ! -path "./node_modules/*"); do
+            echo "Checking $f"
+            jq empty "$f" || exit 1
+          done
+
+  unit-tests:
+    name: Unit Tests (BATS)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install BATS
+        run: |
+          git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
+          cd /tmp/bats-core
+          sudo ./install.sh /usr/local
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Run unit tests
+        run: |
+          bats tests/unit/*.bats
+
+  validation-tests:
+    name: Validation Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install BATS
+        run: |
+          git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
+          cd /tmp/bats-core
+          sudo ./install.sh /usr/local
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y jq
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Run config validation tests
+        run: |
+          bats tests/validation/validate-configs.bats
+
+      - name: Run frontmatter validation tests
+        run: |
+          bats tests/validation/validate-frontmatter.bats
+
+  flow-tests:
+    name: Flow Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install BATS
+        run: |
+          git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
+          cd /tmp/bats-core
+          sudo ./install.sh /usr/local
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Run phase transition tests
+        run: |
+          bats tests/flows/test-phase-transitions.bats
+
+      - name: Run user scenario tests
+        run: |
+          bats tests/flows/test-user-scenarios.bats
+
+  contract-tests:
+    name: Contract Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install BATS
+        run: |
+          git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
+          cd /tmp/bats-core
+          sudo ./install.sh /usr/local
+
+      - name: Run contract tests
+        run: |
+          bats tests/contracts/*.bats
+
+  all-tests:
+    name: All Tests Summary
+    needs: [lint, validate-json, unit-tests, validation-tests, flow-tests, contract-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All tests passed
+        run: echo "All tests passed successfully!"

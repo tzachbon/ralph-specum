@@ -1,0 +1,21 @@
+# ShellCheck configuration for Ralph Specum
+
+# Severity level (error, warning, info, style)
+severity=warning
+
+# Disable specific checks
+# SC2034: Variable appears unused (we use some for export)
+# SC2086: Double quote to prevent globbing (sometimes intentional)
+# SC1091: Not following sourced files (test helpers)
+disable=SC2034,SC1091
+
+# Enable optional checks
+enable=avoid-nullary-conditions
+enable=check-unassigned-uppercase
+enable=require-variable-braces
+
+# Shell dialect
+shell=bash
+
+# External sources (for test files that source helpers)
+external-sources=true

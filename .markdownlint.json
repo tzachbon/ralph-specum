@@ -1,0 +1,39 @@
+{
+  "default": true,
+  "MD013": false,
+  "MD033": false,
+  "MD041": false,
+  "MD024": {
+    "siblings_only": true
+  },
+  "MD007": {
+    "indent": 2
+  },
+  "MD010": {
+    "code_blocks": false
+  },
+  "MD012": {
+    "maximum": 2
+  },
+  "MD022": {
+    "lines_above": 1,
+    "lines_below": 1
+  },
+  "MD025": false,
+  "MD026": {
+    "punctuation": ".,;:!"
+  },
+  "MD029": {
+    "style": "ordered"
+  },
+  "MD031": {
+    "list_items": true
+  },
+  "MD032": true,
+  "MD034": false,
+  "MD036": false,
+  "MD040": false,
+  "MD046": {
+    "style": "fenced"
+  }
+}

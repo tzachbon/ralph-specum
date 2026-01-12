@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "state.schema.json",
+  "title": "Ralph State Schema",
+  "description": "Schema for .ralph-state.json runtime state file",
+  "type": "object",
+  "required": ["mode", "phase", "iteration", "maxIterations", "taskIndex", "totalTasks", "phaseApprovals"],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": ["interactive", "auto"],
+      "description": "Execution mode"
+    },
+    "phase": {
+      "type": "string",
+      "enum": ["requirements", "design", "tasks", "execution"],
+      "description": "Current workflow phase"
+    },
+    "iteration": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Current iteration count"
+    },
+    "maxIterations": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Maximum allowed iterations"
+    },
+    "taskIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Current task index (0-based)"
+    },
+    "totalTasks": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of tasks"
+    },
+    "phaseApprovals": {
+      "type": "object",
+      "properties": {
+        "requirements": { "type": "boolean" },
+        "design": { "type": "boolean" },
+        "tasks": { "type": "boolean" }
+      },
+      "description": "Phase approval status"
+    },
+    "goal": {
+      "type": "string",
+      "description": "Original goal description"
+    },
+    "specDir": {
+      "type": "string",
+      "description": "Spec directory path"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Workflow start timestamp"
+    }
+  },
+  "additionalProperties": true
+}

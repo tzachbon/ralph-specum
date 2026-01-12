@@ -1,0 +1,15 @@
+{
+    "mode": "interactive",
+    "phase": "tasks",
+    "iteration": 10,
+    "maxIterations": 50,
+    "taskIndex": 0,
+    "totalTasks": 0,
+    "phaseApprovals": {
+        "requirements": true,
+        "design": true
+    },
+    "goal": "Build a todo app with React",
+    "specDir": "./spec",
+    "startedAt": "2024-01-15T10:00:00Z"
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hooks.schema.json",
+  "title": "Claude Hooks Schema",
+  "description": "Schema for Claude Code hooks.json configuration",
+  "type": "object",
+  "required": ["hooks"],
+  "properties": {
+    "hooks": {
+      "type": "object",
+      "description": "Hook event mappings",
+      "propertyNames": {
+        "enum": ["PreToolUse", "PostToolUse", "Notification", "Stop"]
+      },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/hookMatcher"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "hookMatcher": {
+      "type": "object",
+      "required": ["matcher", "hooks"],
+      "properties": {
+        "matcher": {
+          "type": "string",
+          "description": "Tool/event matcher pattern (glob or exact)"
+        },
+        "hooks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/hookAction"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "hookAction": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["command"],
+          "description": "Hook action type"
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Command to execute"
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Command timeout in milliseconds"
+        }
+      },
+      "if": {
+        "properties": {
+          "type": { "const": "command" }
+        }
+      },
+      "then": {
+        "required": ["command"]
+      }
+    }
+  }
+}

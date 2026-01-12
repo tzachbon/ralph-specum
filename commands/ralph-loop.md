@@ -58,7 +58,7 @@ From `$ARGUMENTS`, extract:
 **ALWAYS read `.ralph-progress.md` first on each iteration.**
 
 <mandatory>
-Use the Task tool with specialized sub-agents for each phase. Never skip sub-agent delegation when the agent exists.
+Run specialized sub-agents for each phase using `! claude -p '...'`. Never skip sub-agent delegation when the agent exists.
 </mandatory>
 
 ### Sub-Agent Selection
@@ -73,13 +73,16 @@ Use the Task tool with specialized sub-agents for each phase. Never skip sub-age
 ### Phase: Requirements
 
 <mandatory>
-Use Task tool with `subagent_type: general-purpose` and include the product-manager agent prompt.
+Run the product-manager agent using the CLI:
+```bash
+! claude -p 'You are the product-manager agent. Goal: <goal>. Constraints: <constraints>. Output: <specPath>/requirements.md'
+```
 </mandatory>
 
-1. Invoke product-manager agent with:
-   - User's goal description
-   - Any constraints discussed
-   - Output: `<specPath>/requirements.md`
+1. Run product-manager agent:
+   ```bash
+   ! claude -p 'You are the product-manager agent. Create requirements for: <goal>. Output to: <specPath>/requirements.md'
+   ```
 
 2. Agent creates requirements.md with:
    - User stories with acceptance criteria
@@ -93,13 +96,16 @@ Use Task tool with `subagent_type: general-purpose` and include the product-mana
 ### Phase: Design
 
 <mandatory>
-Use Task tool with `subagent_type: general-purpose` and include the architect-reviewer agent prompt.
+Run the architect-reviewer agent using the CLI:
+```bash
+! claude -p 'You are the architect-reviewer agent. Requirements: <specPath>/requirements.md. Output: <specPath>/design.md'
+```
 </mandatory>
 
-1. Invoke architect-reviewer agent with:
-   - Approved requirements from `<specPath>/requirements.md`
-   - Existing codebase patterns (if applicable)
-   - Output: `<specPath>/design.md`
+1. Run architect-reviewer agent:
+   ```bash
+   ! claude -p 'You are the architect-reviewer agent. Review requirements from: <specPath>/requirements.md. Consider existing codebase patterns. Output to: <specPath>/design.md'
+   ```
 
 2. Agent creates design.md with:
    - Architecture overview with mermaid diagrams
@@ -115,14 +121,17 @@ Use Task tool with `subagent_type: general-purpose` and include the architect-re
 ### Phase: Tasks
 
 <mandatory>
-Use Task tool with `subagent_type: general-purpose` and include the task-planner agent prompt.
+Run the task-planner agent using the CLI:
+```bash
+! claude -p 'You are the task-planner agent. Requirements: <specPath>/requirements.md. Design: <specPath>/design.md. Output: <specPath>/tasks.md'
+```
 ALL specs MUST follow POC-first workflow.
 </mandatory>
 
-1. Invoke task-planner agent with:
-   - Requirements from `<specPath>/requirements.md`
-   - Design from `<specPath>/design.md`
-   - Output: `<specPath>/tasks.md`
+1. Run task-planner agent:
+   ```bash
+   ! claude -p 'You are the task-planner agent. Create POC-first tasks from: <specPath>/requirements.md and <specPath>/design.md. Output to: <specPath>/tasks.md'
+   ```
 
 2. Agent creates tasks.md with POC-first phases:
    - **Phase 1: Make It Work** - POC validation
@@ -145,15 +154,18 @@ ALL specs MUST follow POC-first workflow.
 ### Phase: Execution
 
 <mandatory>
-Use Task tool with `subagent_type: general-purpose` and include the spec-executor agent prompt.
+Run the spec-executor agent using the CLI:
+```bash
+! claude -p 'You are the spec-executor agent. Execute task <taskIndex> from: <specPath>/tasks.md. Progress: <specPath>/.ralph-progress.md'
+```
 Execute tasks autonomously with NO human interaction.
 </mandatory>
 
 For each task:
-1. Invoke spec-executor agent with:
-   - Current task from tasks.md
-   - Progress from `.ralph-progress.md`
-   - Relevant spec context
+1. Run spec-executor agent:
+   ```bash
+   ! claude -p 'You are the spec-executor agent. Execute task <taskIndex> from: <specPath>/tasks.md. Read progress from: <specPath>/.ralph-progress.md'
+   ```
 
 2. Agent executes:
    - Reads Do section, executes exactly

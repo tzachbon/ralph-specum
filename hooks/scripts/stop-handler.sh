@@ -94,6 +94,10 @@ get_next_phase() {
     esac
 }
 
+# Check for force restart mode
+FORCE_RESTART=$(echo "$STATE" | jq -r '.forceRestart // false')
+RESTART_MARKER="$SPEC_DIR/.ralph-restart"
+
 case "$PHASE" in
     "requirements"|"design"|"tasks")
         PHASE_APPROVED=$(echo "$STATE" | jq -r ".phaseApprovals.$PHASE")
@@ -104,9 +108,34 @@ case "$PHASE" in
             exit 0
         fi
 
-        # Auto mode: advance phase and trigger compaction
+        # Auto mode: advance phase
         if [[ "$MODE" == "auto" ]]; then
             NEXT_PHASE=$(get_next_phase "$PHASE")
+
+            # If tasks phase complete AND force restart enabled, quit and signal restart
+            if [[ "$PHASE" == "tasks" && "$FORCE_RESTART" == "true" ]]; then
+                # Update state: advance to execution phase
+                echo "$STATE" | jq "
+                    .phase = \"execution\" |
+                    .phaseApprovals.$PHASE = true |
+                    .iteration = $NEW_ITERATION
+                " > "$STATE_FILE"
+
+                # Create restart marker with context
+                cat > "$RESTART_MARKER" << MARKER_EOF
+{
+  "reason": "phases_complete",
+  "resumePhase": "execution",
+  "specPath": "$SPEC_DIR",
+  "timestamp": "$(date -Iseconds)",
+  "instruction": "Continue with task execution from $SPEC_DIR/tasks.md"
+}
+MARKER_EOF
+
+                echo "{\"decision\": \"allow\", \"reason\": \"Phases complete. Force restart enabled - quitting for fresh context. Restart marker written to $RESTART_MARKER\"}"
+                exit 0
+            fi
+
             COMPACT_MSG=$(get_compact_instruction "$PHASE")
 
             # Update state: advance phase, mark approved, increment iteration
@@ -124,12 +153,37 @@ case "$PHASE" in
     "execution")
         # Check if all tasks are done
         if [[ "$TASK_INDEX" -ge "$TOTAL_TASKS" && "$TOTAL_TASKS" -gt 0 ]]; then
-            # All done, allow stop
+            # All done - cleanup restart marker if exists
+            rm -f "$RESTART_MARKER" 2>/dev/null
             exit 0
         fi
 
         # More tasks to do
         if [[ "$MODE" == "auto" ]]; then
+            # If force restart enabled, quit and signal restart for next task
+            if [[ "$FORCE_RESTART" == "true" ]]; then
+                # Update iteration
+                echo "$STATE" | jq ".iteration = $NEW_ITERATION" > "$STATE_FILE"
+
+                # Create restart marker for next task
+                NEXT_TASK=$((TASK_INDEX + 1))
+                cat > "$RESTART_MARKER" << MARKER_EOF
+{
+  "reason": "task_complete",
+  "resumePhase": "execution",
+  "taskIndex": $TASK_INDEX,
+  "nextTask": $NEXT_TASK,
+  "totalTasks": $TOTAL_TASKS,
+  "specPath": "$SPEC_DIR",
+  "timestamp": "$(date -Iseconds)",
+  "instruction": "Continue with task $NEXT_TASK of $TOTAL_TASKS from $SPEC_DIR/tasks.md"
+}
+MARKER_EOF
+
+                echo "{\"decision\": \"allow\", \"reason\": \"Task complete. Force restart enabled - quitting for fresh context. Restart marker written.\"}"
+                exit 0
+            fi
+
             COMPACT_MSG=$(get_compact_instruction "execution")
 
             # Update iteration

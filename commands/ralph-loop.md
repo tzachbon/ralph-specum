@@ -1,6 +1,6 @@
 ---
 description: Start spec-driven development loop. Creates specs from goal, executes tasks with smart compaction between phases.
-argument-hint: "goal description" [--mode interactive|auto] [--dir ./spec-dir] [--max-iterations 10]
+argument-hint: "goal description" [--mode interactive|auto] [--dir ./spec-dir] [--max-iterations 10] [--force-restart]
 ---
 
 # Ralph Specum Loop
@@ -14,6 +14,24 @@ From `$ARGUMENTS`, extract:
 - **mode**: `interactive` (default) or `auto`
 - **dir**: Spec directory path (default: `./spec`)
 - **max-iterations**: Max loop iterations (default: `10`)
+- **force-restart**: Enable force quit and restart between phases/tasks (default: `false`)
+
+### Force Restart Mode
+
+When `--force-restart` is enabled:
+- After all spec phases complete (requirements, design, tasks), Claude will **quit completely**
+- A restart marker file (`.ralph-restart`) is created with resume context
+- Use the `restart-runner.sh` script to automatically relaunch Claude with fresh context
+- This is useful for context management when working on large features
+
+**Usage with restart runner:**
+```bash
+# Terminal 1: Run the restart runner (monitors and relaunches Claude)
+./hooks/scripts/restart-runner.sh ./spec
+
+# Terminal 2: Or run Claude manually and it will quit when phases complete
+claude "/ralph-specum \"my feature\" --mode auto --force-restart"
+```
 
 ## Initialize
 
@@ -47,7 +65,8 @@ From `$ARGUMENTS`, extract:
     "tasks": false
   },
   "iteration": 1,
-  "maxIterations": <max-iterations>
+  "maxIterations": <max-iterations>,
+  "forceRestart": <force-restart>
 }
 ```
 

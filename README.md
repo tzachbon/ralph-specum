@@ -79,6 +79,35 @@ Creates `./spec/refactor-database-layer/` and runs through all phases without pa
 | `--mode` | `interactive` | `interactive` or `auto` |
 | `--dir` | `./spec` | Directory for spec files |
 | `--max-iterations` | `10` | Max loop iterations |
+| `--force-restart` | `false` | Force quit and restart between phases/tasks |
+
+### Force Restart Mode
+
+When working on large features, Claude's context window can fill up. The `--force-restart` flag enables automatic quitting and restarting with fresh context:
+
+```bash
+# Run with force restart enabled
+/ralph-specum "my large feature" --mode auto --force-restart
+```
+
+**How it works:**
+1. After all spec phases complete (requirements → design → tasks), Claude **quits completely**
+2. A `.ralph-restart` marker file is created with resume context
+3. A new Claude instance can pick up where the previous one left off
+
+**Using the restart runner:**
+```bash
+# Run the restart runner in a terminal - it monitors and relaunches Claude automatically
+./hooks/scripts/restart-runner.sh ./spec
+
+# Or run Claude manually - it will quit when phases complete
+# Then run again to continue with task execution
+```
+
+**When to use:**
+- Large features with many tasks
+- When context window is getting full
+- When you want each task to start with fresh context
 
 ## Sub-Agent Architecture
 
@@ -217,7 +246,8 @@ Spec files are organized under a feature-named subdirectory derived from your go
     ├── design.md             # Architecture, patterns, file matrix
     ├── tasks.md              # POC-first task breakdown
     ├── .ralph-state.json     # Loop state (deleted on completion)
-    └── .ralph-progress.md    # Progress and learnings (deleted on completion)
+    ├── .ralph-progress.md    # Progress and learnings (deleted on completion)
+    └── .ralph-restart        # Restart marker (only when --force-restart enabled)
 ```
 
 The feature name is automatically derived from the goal:
@@ -249,7 +279,8 @@ ralph-specum/
 ├── hooks/
 │   ├── hooks.json
 │   └── scripts/
-│       └── stop-handler.sh
+│       ├── stop-handler.sh
+│       └── restart-runner.sh
 ├── templates/
 │   ├── requirements.md
 │   ├── design.md

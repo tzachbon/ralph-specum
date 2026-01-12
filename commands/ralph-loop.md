@@ -17,17 +17,26 @@ From `$ARGUMENTS`, extract:
 
 ## Initialize
 
-1. Create the spec directory if it doesn't exist
-2. Check for existing `.ralph-state.json` in the spec directory
+1. **Derive feature name from goal**:
+   - Convert goal to kebab-case (lowercase, spaces/special chars to hyphens)
+   - Truncate to max 50 characters
+   - Remove leading/trailing hyphens
+   - Example: `"Add user authentication with JWT"` → `add-user-authentication-with-jwt`
+
+2. **Create feature directory**: `<dir>/<feature-name>/`
+   - The full path for all spec files is `<dir>/<feature-name>/`
+
+3. Check for existing `.ralph-state.json` in the feature directory
    - If exists: Resume from current state
    - If not: Initialize new state
 
-3. Initialize `.ralph-state.json`:
+4. Initialize `.ralph-state.json`:
 ```json
 {
   "mode": "<mode>",
   "goal": "<goal description>",
-  "specPath": "<dir>",
+  "featureName": "<feature-name>",
+  "specPath": "<dir>/<feature-name>",
   "phase": "research",
   "taskIndex": 0,
   "totalTasks": 0,
@@ -43,7 +52,7 @@ From `$ARGUMENTS`, extract:
 }
 ```
 
-4. Initialize `.ralph-progress.md` from template
+5. Initialize `.ralph-progress.md` from template in `<specPath>/`
 
 ## Workflow
 
@@ -73,7 +82,7 @@ This phase runs BEFORE requirements to ensure all decisions are well-informed.
 1. Invoke research-analyst agent with:
    - User's goal description
    - Context about the codebase
-   - Output: `<dir>/research.md`
+   - Output: `<specPath>/research.md`
 
 2. Agent creates research.md with:
    - Executive summary with recommendation
@@ -96,9 +105,9 @@ Use Task tool with `subagent_type: general-purpose` and include the product-mana
 
 1. Invoke product-manager agent with:
    - User's goal description
-   - Research findings from `<dir>/research.md`
+   - Research findings from `<specPath>/research.md`
    - Any constraints discussed
-   - Output: `<dir>/requirements.md`
+   - Output: `<specPath>/requirements.md`
 
 2. Agent creates requirements.md with:
    - User stories with acceptance criteria
@@ -116,9 +125,9 @@ Use Task tool with `subagent_type: general-purpose` and include the architect-re
 </mandatory>
 
 1. Invoke architect-reviewer agent with:
-   - Approved requirements from `<dir>/requirements.md`
+   - Approved requirements from `<specPath>/requirements.md`
    - Existing codebase patterns (if applicable)
-   - Output: `<dir>/design.md`
+   - Output: `<specPath>/design.md`
 
 2. Agent creates design.md with:
    - Architecture overview with mermaid diagrams
@@ -139,9 +148,9 @@ ALL specs MUST follow POC-first workflow.
 </mandatory>
 
 1. Invoke task-planner agent with:
-   - Requirements from `<dir>/requirements.md`
-   - Design from `<dir>/design.md`
-   - Output: `<dir>/tasks.md`
+   - Requirements from `<specPath>/requirements.md`
+   - Design from `<specPath>/design.md`
+   - Output: `<specPath>/tasks.md`
 
 2. Agent creates tasks.md with POC-first phases:
    - **Phase 1: Make It Work** - POC validation
@@ -190,13 +199,67 @@ For each task:
 4. Update `.ralph-state.json` with `taskIndex`
 5. Output: `TASK_COMPLETE: <task_number>`
 
+## Default PR Workflow
+
+<mandatory>
+By default, when working on a non-default branch, the final task is ALWAYS to create a Pull Request:
+1. **Detect branch**: Check if current branch is not main/master/default
+2. **If on feature branch**: PR creation is the expected final deliverable
+3. **Unless explicitly stated otherwise**: Always end with PR creation and CI verification
+</mandatory>
+
+### PR Workflow Steps
+
+When on a feature branch (non-default):
+
+1. **Local Quality Gates** (before PR):
+   - Run type check: `pnpm check-types` or project equivalent
+   - Run linter: `pnpm lint` or project equivalent
+   - Run all tests: `pnpm test` or project equivalent
+   - All must pass before proceeding
+
+2. **Create Pull Request**:
+   - Push branch: `git push -u origin <branch-name>`
+   - Create PR using gh CLI: `gh pr create --title "<title>" --body "<body>"`
+   - If gh CLI unavailable, provide manual PR creation instructions
+
+3. **Verify CI on GitHub** (using gh CLI if available):
+   - Wait for CI: `gh pr checks <pr-number> --watch`
+   - Or poll status: `gh pr checks <pr-number>`
+   - All CI checks must be green before considering complete
+   - If CI fails, fix issues locally and push again
+
+4. **Final Status**:
+   - PR is ready for review when all CI checks pass
+   - Do NOT auto-merge unless explicitly requested
+
+### Branch Detection
+
+```bash
+# Get current branch
+current_branch=$(git branch --show-current)
+
+# Get default branch
+default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+# Fallback: check for main or master
+if [ -z "$default_branch" ]; then
+  default_branch=$(git branch -r | grep -E 'origin/(main|master)$' | head -1 | sed 's@.*origin/@@')
+fi
+
+# Check if on feature branch
+if [ "$current_branch" != "$default_branch" ]; then
+  echo "On feature branch - PR workflow applies"
+fi
+```
+
 ## Completion
 
 When all tasks are done:
 1. Verify all quality gates passed
-2. Delete `.ralph-progress.md`
-3. Delete `.ralph-state.json`
-4. Output: `RALPH_COMPLETE`
+2. **If on feature branch**: Ensure PR is created and CI is green
+3. Delete `.ralph-progress.md`
+4. Delete `.ralph-state.json`
+5. Output: `RALPH_COMPLETE`
 
 ## Loop Control
 

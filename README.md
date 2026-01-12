@@ -43,23 +43,24 @@ git clone https://github.com/tzachbon/ralph-specum.git
 ### Interactive Mode (Recommended)
 
 ```
-/ralph-specum "Add user authentication with JWT tokens" --mode interactive --dir ./auth-spec
+/ralph-specum "Add user authentication with JWT tokens" --mode interactive --dir ./spec
 ```
 
 This will:
-1. Invoke `product-manager` agent to generate `requirements.md` and pause
-2. You can discuss/refine the requirements, then `/ralph-specum:approve`
-3. Invoke `architect-reviewer` agent to generate `design.md` and pause
-4. After approval, invoke `task-planner` for POC-first `tasks.md`
-5. After approval, `spec-executor` runs tasks autonomously with compaction
+1. Create feature directory: `./spec/add-user-authentication-with-jwt-tokens/`
+2. Invoke `product-manager` agent to generate `requirements.md` and pause
+3. You can discuss/refine the requirements, then `/ralph-specum:approve`
+4. Invoke `architect-reviewer` agent to generate `design.md` and pause
+5. After approval, invoke `task-planner` for POC-first `tasks.md`
+6. After approval, `spec-executor` runs tasks autonomously with compaction
 
 ### Autonomous Mode
 
 ```
-/ralph-specum "Refactor database layer" --mode auto --dir ./db-refactor --max-iterations 15
+/ralph-specum "Refactor database layer" --mode auto --dir ./spec --max-iterations 15
 ```
 
-Runs through all phases without pausing. Compacts automatically between phases and tasks.
+Creates `./spec/refactor-database-layer/` and runs through all phases without pausing. Compacts automatically between phases and tasks.
 
 ## Commands
 
@@ -207,15 +208,22 @@ Each phase transition uses targeted compaction:
 
 ## Files Generated
 
-In your spec directory:
+Spec files are organized under a feature-named subdirectory derived from your goal:
 
-| File | Purpose |
-|------|---------|
-| `requirements.md` | User stories, acceptance criteria |
-| `design.md` | Architecture, patterns, file matrix |
-| `tasks.md` | POC-first task breakdown |
-| `.ralph-state.json` | Loop state (deleted on completion) |
-| `.ralph-progress.md` | Progress and learnings (deleted on completion) |
+```
+<dir>/
+└── <feature-name>/           # e.g., "add-user-authentication-with-jwt"
+    ├── requirements.md       # User stories, acceptance criteria
+    ├── design.md             # Architecture, patterns, file matrix
+    ├── tasks.md              # POC-first task breakdown
+    ├── .ralph-state.json     # Loop state (deleted on completion)
+    └── .ralph-progress.md    # Progress and learnings (deleted on completion)
+```
+
+The feature name is automatically derived from the goal:
+- Converted to kebab-case (lowercase, hyphens)
+- Truncated to 50 characters max
+- Example: `"Add user authentication with JWT"` → `add-user-authentication-with-jwt`
 
 ## Plugin Structure
 
@@ -255,7 +263,7 @@ ralph-specum/
 ### Loop not continuing?
 
 1. Check if in interactive mode waiting for `/ralph-specum:approve`
-2. Verify `.ralph-state.json` exists in spec directory
+2. Verify `.ralph-state.json` exists in the feature directory (e.g., `./spec/<feature-name>/`)
 3. Check iteration count hasn't exceeded max
 
 ### Lost context after compaction?

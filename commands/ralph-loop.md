@@ -17,17 +17,26 @@ From `$ARGUMENTS`, extract:
 
 ## Initialize
 
-1. Create the spec directory if it doesn't exist
-2. Check for existing `.ralph-state.json` in the spec directory
+1. **Derive feature name from goal**:
+   - Convert goal to kebab-case (lowercase, spaces/special chars to hyphens)
+   - Truncate to max 50 characters
+   - Remove leading/trailing hyphens
+   - Example: `"Add user authentication with JWT"` → `add-user-authentication-with-jwt`
+
+2. **Create feature directory**: `<dir>/<feature-name>/`
+   - The full path for all spec files is `<dir>/<feature-name>/`
+
+3. Check for existing `.ralph-state.json` in the feature directory
    - If exists: Resume from current state
    - If not: Initialize new state
 
-3. Initialize `.ralph-state.json`:
+4. Initialize `.ralph-state.json`:
 ```json
 {
   "mode": "<mode>",
   "goal": "<goal description>",
-  "specPath": "<dir>",
+  "featureName": "<feature-name>",
+  "specPath": "<dir>/<feature-name>",
   "phase": "requirements",
   "taskIndex": 0,
   "totalTasks": 0,
@@ -42,7 +51,7 @@ From `$ARGUMENTS`, extract:
 }
 ```
 
-4. Initialize `.ralph-progress.md` from template
+5. Initialize `.ralph-progress.md` from template in `<specPath>/`
 
 ## Workflow
 
@@ -70,7 +79,7 @@ Use Task tool with `subagent_type: general-purpose` and include the product-mana
 1. Invoke product-manager agent with:
    - User's goal description
    - Any constraints discussed
-   - Output: `<dir>/requirements.md`
+   - Output: `<specPath>/requirements.md`
 
 2. Agent creates requirements.md with:
    - User stories with acceptance criteria
@@ -88,9 +97,9 @@ Use Task tool with `subagent_type: general-purpose` and include the architect-re
 </mandatory>
 
 1. Invoke architect-reviewer agent with:
-   - Approved requirements from `<dir>/requirements.md`
+   - Approved requirements from `<specPath>/requirements.md`
    - Existing codebase patterns (if applicable)
-   - Output: `<dir>/design.md`
+   - Output: `<specPath>/design.md`
 
 2. Agent creates design.md with:
    - Architecture overview with mermaid diagrams
@@ -111,9 +120,9 @@ ALL specs MUST follow POC-first workflow.
 </mandatory>
 
 1. Invoke task-planner agent with:
-   - Requirements from `<dir>/requirements.md`
-   - Design from `<dir>/design.md`
-   - Output: `<dir>/tasks.md`
+   - Requirements from `<specPath>/requirements.md`
+   - Design from `<specPath>/design.md`
+   - Output: `<specPath>/tasks.md`
 
 2. Agent creates tasks.md with POC-first phases:
    - **Phase 1: Make It Work** - POC validation

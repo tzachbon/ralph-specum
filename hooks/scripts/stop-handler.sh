@@ -10,9 +10,24 @@ INPUT=$(cat)
 TRANSCRIPT_PATH=$(echo "$INPUT" | jq -r '.transcript_path // empty')
 
 # Try to find state file in common locations
+# Checks both root spec directories and feature subdirectories
 find_state_file() {
-    local dirs=("./spec" "." "../spec")
-    for dir in "${dirs[@]}"; do
+    local base_dirs=("./spec" "." "../spec")
+
+    # First check for state files in feature subdirectories (new structure)
+    for base in "${base_dirs[@]}"; do
+        if [[ -d "$base" ]]; then
+            # Look for .ralph-state.json in any subdirectory (feature directories)
+            local found=$(find "$base" -maxdepth 2 -name ".ralph-state.json" -type f 2>/dev/null | head -n 1)
+            if [[ -n "$found" ]]; then
+                echo "$found"
+                return 0
+            fi
+        fi
+    done
+
+    # Fallback: check root directories (legacy structure)
+    for dir in "${base_dirs[@]}"; do
         if [[ -f "$dir/.ralph-state.json" ]]; then
             echo "$dir/.ralph-state.json"
             return 0

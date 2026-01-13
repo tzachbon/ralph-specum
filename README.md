@@ -14,7 +14,7 @@ A Claude Code plugin marketplace for spec-driven development. Task-by-task execu
 
 ```bash
 # Add the marketplace
-/plugin marketplace add tzachbon/ralph-specum
+/plugin marketplace add tzachbon/smart-ralph
 
 # Install the plugin
 /plugin install ralph-specum@smart-ralph
@@ -25,14 +25,14 @@ A Claude Code plugin marketplace for spec-driven development. Task-by-task execu
 ### From GitHub
 
 ```bash
-/plugin install https://github.com/tzachbon/ralph-specum
+/plugin install https://github.com/tzachbon/smart-ralph
 ```
 
 ### Local Development
 
 ```bash
 # Clone and test specific plugin
-git clone https://github.com/tzachbon/ralph-specum.git
+git clone https://github.com/tzachbon/smart-ralph.git
 cd ralph-specum/plugins/ralph-specum
 claude --plugin-dir $(pwd)
 

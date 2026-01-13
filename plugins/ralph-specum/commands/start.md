@@ -14,6 +14,7 @@ From `$ARGUMENTS`, extract:
 - **name**: Optional spec name (kebab-case)
 - **goal**: Everything after the name except flags (optional)
 - **--fresh**: Force new spec without prompting if one exists
+- **--quick**: Quick mode - auto-generate all specs and start execution
 
 Examples:
 - `/ralph-specum:start` -> Auto-detect: resume active or ask for new
@@ -25,7 +26,6 @@ Examples:
 - `/ralph-specum:start ./my-plan.md --quick` -> Quick mode with file input
 - `/ralph-specum:start my-feature ./plan.md --quick` -> Quick mode with name+file
 - `/ralph-specum:start my-feature --quick` -> Quick mode using existing plan.md
-- `/ralph-specum:start /absolute/path/plan.md --quick` -> Quick mode with absolute file path
 
 ## Quick Mode Flow
 
@@ -84,11 +84,6 @@ When kebab-case name provided without goal:
 2. If exists: read content, use as planContent
 3. If not exists: error with guidance message
 
-### Input Validation
-
-1. Validate goal/plan content is non-empty
-2. If empty: error "Quick mode requires a goal or plan content"
-
 ### Name Inference
 
 If no explicit name provided, infer from goal:
@@ -122,18 +117,7 @@ Example: "Build authentication with JWT tokens" -> "build-authentication-with"
      "maxGlobalIterations": 100
    }
    |
-5. Write .progress.md with original goal:
-   # Progress: $name
-
-   ## Goal
-   $goal
-
-   ## Status
-   - [x] Spec created (quick mode)
-   - [ ] Implementation
-
-   ## Current Task
-   Awaiting generation
+5. Write .progress.md with original goal
    |
 6. Update .current-spec: echo "$name" > ./specs/.current-spec
    |
@@ -147,12 +131,9 @@ Example: "Build authentication with JWT tokens" -> "build-authentication-with"
    |
 9. Display brief summary:
    Quick mode: Created spec '$name'
-   Generated: research.md, requirements.md, design.md, tasks.md
    Starting execution...
    |
-10. Invoke spec-executor for task 1:
-    Task: spec-executor
-    Input: specName="$name", taskIndex=0
+10. Invoke spec-executor for task 1
 ```
 
 ### Quick Mode Validation
@@ -164,81 +145,41 @@ Validation Sequence:
 
 1. ZERO ARGS CHECK (if no args before --quick)
    - Error: "Quick mode requires a goal or plan file"
-   - Stop execution
 
 2. FILE NOT FOUND (if file path detected)
-   - Attempt Read on filePath
    - If file not exists: "File not found: $filePath"
-   - Stop execution
 
 3. EMPTY CONTENT CHECK
-   - After reading file or receiving goal string
    - If empty or whitespace only: "Plan content is empty. Provide a goal or non-empty file."
-   - Stop execution
 
 4. PLAN TOO SHORT WARNING (< 10 words)
    - If word count < 10: "Warning: Short plan may produce vague tasks"
-   - Continue with warning displayed (do not stop)
+   - Continue with warning displayed
 
 5. NAME CONFLICT RESOLUTION
    - If ./specs/$name/ already exists:
      - Append -2, -3, etc. until unique name found
      - Display: "Created '$name-2' ($name already exists)"
-   - Continue with modified name
 ```
 
 ### Atomic Rollback
 
-On generation failure after spec directory created, perform atomic rollback:
+On generation failure after spec directory created:
 
 ```
 Rollback Procedure:
 
 1. CAPTURE FAILURE
    - plan-synthesizer agent returns error or times out
-   - Error reason stored in $errorReason
 
-2. STORE PREVIOUS STATE (before creation)
-   - Read .current-spec content into $previousSpec (if exists)
-   - Store for restoration
-
-3. DELETE SPEC DIRECTORY
+2. DELETE SPEC DIRECTORY
    - rm -rf "./specs/$name"
-   - Removes all partial artifacts
 
-4. RESTORE .current-spec
-   - If $previousSpec was set: echo "$previousSpec" > ./specs/.current-spec
-   - If $previousSpec was empty: rm -f ./specs/.current-spec
+3. RESTORE .current-spec
+   - If previous spec was set, restore it
 
-5. DISPLAY ERROR
+4. DISPLAY ERROR
    - "Generation failed: $errorReason. No spec created."
-   - User can retry with modified input
-```
-
-**Error Messages Reference:**
-
-| Scenario | Message |
-|----------|---------|
-| Zero args | "Quick mode requires a goal or plan file" |
-| File not found | "File not found: $filePath" |
-| Empty content | "Plan content is empty. Provide a goal or non-empty file." |
-| Plan too short | "Warning: Short plan may produce vague tasks" |
-| Name conflict | "Created '$name-N' ($originalName already exists)" |
-| Generation failed | "Generation failed: $reason. No spec created." |
-| Existing plan.md not found | "No plan.md found in ./specs/$name/. Provide goal: /ralph-specum:start $name 'your goal' --quick" |
-
-### Quick Mode Output
-
-**Success:**
-```
-Quick mode: Created 'build-auth-with' at ./specs/build-auth-with/
-Generated 4 artifacts from goal.
-Starting task 1/N...
-```
-
-**Failure (with rollback):**
-```
-Generation failed: Task timeout. No spec created.
 ```
 
 ## Detection Logic
@@ -345,4 +286,11 @@ Starting research phase...
 Resuming 'user-auth' at execution phase, task 4/8
 
 Continuing task: 2.2 Extract retry logic
+```
+
+**Quick mode:**
+```
+Quick mode: Created 'build-auth-with' at ./specs/build-auth-with/
+Generated 4 artifacts from goal.
+Starting task 1/N...
 ```

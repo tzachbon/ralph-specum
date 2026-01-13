@@ -179,7 +179,7 @@ Manual verification of all user stories.
 
 ## Phase 4: Quality Gates
 
-- [ ] 4.1 Review and final cleanup
+- [x] 4.1 Review and final cleanup
   - **Do**:
     1. Review start.md for consistency with other commands
     2. Review plan-synthesizer.md for consistency with other agents
@@ -191,7 +191,7 @@ Manual verification of all user stories.
   - **Commit**: `fix(quick-mode): final cleanup`
   - _Requirements: NFR-3_
 
-- [ ] 4.2 Create PR and verify
+- [x] 4.2 Create PR and verify
   - **Do**:
     1. Push branch: `git push -u origin feat/v2-spec-workflow-refactor`
     2. Create PR: `gh pr create --title "feat: add --quick flag for quick start mode" --body "Adds --quick flag to /ralph-specum:start that auto-generates all spec artifacts and immediately starts task execution."`

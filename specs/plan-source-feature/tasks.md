@@ -163,7 +163,7 @@ Manual verification of all user stories.
   - **Commit**: `test(quick-mode): verify explicit name input`
   - _Requirements: AC-2.1, AC-2.2, AC-2.3_
 
-- [ ] 3.3 Test file input (US-3)
+- [x] 3.3 Test file input (US-3)
   - **Do**:
     1. Create test file: `./test-plan.md` with plan content
     2. Test: `/ralph-specum:start ./test-plan.md --quick`

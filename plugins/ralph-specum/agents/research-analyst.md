@@ -103,7 +103,7 @@ For each related spec determine `mayNeedUpdate`: true if new spec could invalida
 
 Report in research.md "Related Specs" section.
 
-### Step 2.6: Quality Command Discovery
+## Quality Command Discovery
 
 <mandatory>
 During research, discover actual Quality Commands for [VERIFY] tasks.

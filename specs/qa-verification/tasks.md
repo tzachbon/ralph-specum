@@ -277,7 +277,7 @@ No automated tests for markdown agent files. Testing via integration validation.
   - **Done when**: PR created, CI green
   - **If CI fails**: Read `gh pr checks`, fix issues, push fixes
 
-- [ ] V4 [VERIFY] Full local validation
+- [x] V4 [VERIFY] Full local validation
   - **Do**: Run complete local verification of all 4 agent files
   - **Verify**: Run ALL these commands, each must exit 0:
     ```bash

@@ -201,7 +201,7 @@ No automated tests for markdown agent files. Testing via integration validation.
   - **Commit**: `test(qa): validate qa-engineer against design` (if corrections made)
   - _Design: Component 1_
 
-- [ ] 3.2 Validate spec-executor [VERIFY] section against design
+- [x] 3.2 Validate spec-executor [VERIFY] section against design
   - **Do**: Compare spec-executor [VERIFY] section against design.md Component 2:
     1. Check detection logic matches design
     2. Verify Task tool delegation format matches design

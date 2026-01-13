@@ -152,7 +152,7 @@ Manual verification of all user stories.
   - **Commit**: `test(quick-mode): verify goal string input`
   - _Requirements: AC-1.1, AC-1.2, AC-1.3, AC-5.2_
 
-- [ ] 3.2 Test explicit name input (US-2)
+- [x] 3.2 Test explicit name input (US-2)
   - **Do**:
     1. Test: `/ralph-specum:start my-feature "Build auth" --quick`
     2. Verify: Spec created at `./specs/my-feature/`

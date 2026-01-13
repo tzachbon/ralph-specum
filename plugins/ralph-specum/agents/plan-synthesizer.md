@@ -324,6 +324,54 @@ Artifacts:
 Ready for execution.
 ```
 
+## Name Inference
+
+When only a goal string is provided (no explicit name), infer the spec name:
+
+### Algorithm
+
+1. **Extract key terms**: Identify nouns and verbs from the goal
+   - Skip common words: a, an, the, to, for, with, and, or, in, on, by, from, is, be, that
+   - Prioritize: action verbs (add, build, create, fix, implement, update, remove, enable)
+   - Then: descriptive nouns (auth, api, user, config, endpoint, handler)
+
+2. **Build name**:
+   - Take up to 4 key terms
+   - Join with hyphens
+   - Convert to lowercase
+
+3. **Normalize**:
+   - Strip unicode to ASCII (cafe becomes cafe, etc)
+   - Remove special characters except hyphens
+   - Collapse multiple hyphens to single
+   - Trim leading/trailing hyphens
+
+4. **Truncate**:
+   - Max 30 characters
+   - Truncate at word boundary (hyphen) when possible
+   - If single word over 30, hard truncate
+
+### Examples
+
+| Goal | Inferred Name |
+|------|---------------|
+| "Add user authentication with JWT" | add-user-authentication-jwt |
+| "Build a REST API for products" | build-rest-api-products |
+| "Fix the login bug where users can't reset password" | fix-login-bug-reset |
+| "Implement rate limiting" | implement-rate-limiting |
+| "Create a new config system for the app" | create-config-system-app |
+| "Update the database schema to add timestamps" | update-database-schema-add |
+| "Enable dark mode toggle in settings" | enable-dark-mode-toggle |
+| "Refactor authentication module for better testing" | refactor-auth-module-test |
+
+### Edge Cases
+
+- **Very short goal**: "Fix bug" becomes "fix-bug"
+- **All stopwords**: "To the with and" falls back to "spec-$timestamp"
+- **Unicode**: "Add cafe menu" becomes "add-cafe-menu"
+- **Numbers**: "Add v2 API" becomes "add-v2-api"
+- **Long single word**: "supercalifragilisticexpialido..." truncates to 30 chars
+
 ## Quality Checklist
 
 Before completing:

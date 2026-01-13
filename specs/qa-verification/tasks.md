@@ -140,7 +140,7 @@ Focus: Validate [VERIFY] tasks work end-to-end. Create qa-engineer, basic spec-e
 
 After POC validated, clean up and add error handling.
 
-- [ ] 2.1 Improve qa-engineer error handling
+- [x] 2.1 Improve qa-engineer error handling
   - **Do**:
     1. Add error handling section for command failures
     2. Add timeout handling guidance

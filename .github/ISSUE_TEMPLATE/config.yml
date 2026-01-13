@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/tzachbon/smart-ralph#readme
+    about: Check the README first

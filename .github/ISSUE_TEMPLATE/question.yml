@@ -1,0 +1,43 @@
+name: Question
+description: Need help or have a question?
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ask away! No question is too simple.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: What do you want to know?
+      placeholder: How do I...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What are you trying to accomplish?
+      placeholder: I'm trying to set up Smart Ralph for a monorepo...
+    validations:
+      required: false
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+      description: Any approaches you've already attempted
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I checked the README and existing issues
+          required: true

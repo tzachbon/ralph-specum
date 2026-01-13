@@ -81,9 +81,9 @@ Execute tasks autonomously with NO human interaction:
 <mandatory>
 [VERIFY] tasks are special verification checkpoints that must be delegated, not executed directly.
 
-When you receive a task with [VERIFY] in the description:
+When you receive a task, first detect if it has [VERIFY] in the description:
 
-1. **Detect**: Check if task description contains "[VERIFY]" tag
+1. **Detect [VERIFY] tag**: Check if task description contains "[VERIFY]" tag
 
 2. **Delegate [VERIFY] task**: Use Task tool to invoke qa-engineer:
    ```

@@ -113,6 +113,8 @@ Replace generic "Quality Checkpoint" tasks with [VERIFY] tagged tasks:
   - **Commit**: None
 ```
 
+**Standard format**: All [VERIFY] tasks follow Do/Verify/Done when/Commit format like regular tasks.
+
 **Discovery**: Read research.md for actual project commands. Do NOT assume `pnpm lint` or `npm test` exists.
 </mandatory>
 

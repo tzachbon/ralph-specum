@@ -346,7 +346,7 @@ No automated tests for markdown agent files. Testing via integration validation.
   - **Done when**: All verification commands pass
   - **Commit**: `chore(qa): pass local CI` (only if fixes needed)
 
-- [ ] V5 [VERIFY] CI pipeline passes
+- [x] V5 [VERIFY] CI pipeline passes
   - **Do**: Verify CI pipeline after push
   - **Verify**: Run these commands:
     ```bash
@@ -370,7 +370,7 @@ No automated tests for markdown agent files. Testing via integration validation.
   - **Done when**: All CI checks green
   - **Commit**: None (verification only)
 
-- [ ] V6 [VERIFY] AC checklist against requirements.md
+- [x] V6 [VERIFY] AC checklist against requirements.md
   - **Do**: Read requirements.md, verify each AC-* is satisfied by checking specific patterns in implementation files
   - **Verify**: Run ALL these AC verification commands:
     ```bash

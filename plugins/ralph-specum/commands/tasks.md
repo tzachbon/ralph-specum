@@ -99,7 +99,6 @@ After tasks complete:
      "phase": "tasks",
      "totalTasks": <count>,
      "awaitingApproval": true,
-     "nextCommand": "/ralph-specum:implement",
      ...
    }
    ```

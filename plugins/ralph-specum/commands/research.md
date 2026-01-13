@@ -71,7 +71,6 @@ After research completes:
    {
      "phase": "research",
      "awaitingApproval": true,
-     "nextCommand": "/ralph-specum:requirements",
      "relatedSpecs": [
        {"name": "...", "relevance": "high", "reason": "...", "mayNeedUpdate": true}
      ]

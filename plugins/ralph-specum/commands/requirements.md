@@ -81,7 +81,6 @@ After requirements complete:
    {
      "phase": "requirements",
      "awaitingApproval": true,
-     "nextCommand": "/ralph-specum:design",
      ...
    }
    ```

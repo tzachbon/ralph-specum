@@ -187,7 +187,7 @@ After POC validated, clean up and add error handling.
 
 No automated tests for markdown agent files. Testing via integration validation.
 
-- [ ] 3.1 Validate qa-engineer structure against design
+- [x] 3.1 Validate qa-engineer structure against design
   - **Do**: Compare qa-engineer.md against design.md Component 1 spec:
     1. Check frontmatter matches design (name, description, tools)
     2. Verify VERIFICATION_PASS/FAIL output format matches design

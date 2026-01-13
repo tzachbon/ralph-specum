@@ -26,7 +26,7 @@ Focus: Validate [VERIFY] tasks work end-to-end. Create qa-engineer, basic spec-e
   - _Requirements: FR-1, FR-5, FR-6, FR-7, AC-2.3, AC-2.4_
   - _Design: Component 1 qa-engineer Agent_
 
-- [ ] 1.2 Update spec-executor with [VERIFY] detection and delegation
+- [x] 1.2 Update spec-executor with [VERIFY] detection and delegation
   - **Do**: Add new section to spec-executor.md:
     1. Add "## [VERIFY] Task Handling" section after "Phase-Specific Rules"
     2. Add mandatory block with detection logic (check for "[VERIFY]" in task description)

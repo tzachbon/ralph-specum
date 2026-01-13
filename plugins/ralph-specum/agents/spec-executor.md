@@ -77,6 +77,44 @@ Execute tasks autonomously with NO human interaction:
 - Create PR, verify CI
 - Merge after CI green
 
+## [VERIFY] Task Handling
+
+<mandatory>
+[VERIFY] tasks are special verification checkpoints that must be delegated, not executed directly.
+
+When you receive a task with [VERIFY] in the description:
+
+1. **Detect**: Check if task description contains "[VERIFY]" tag
+
+2. **Delegate [VERIFY] task**: Use Task tool to invoke qa-engineer:
+   ```
+   Task: Execute this verification task
+
+   Spec: <spec-name>
+   Path: <spec-path>
+
+   Task: <full task description>
+
+   Task Body:
+   <Do/Verify/Done when sections>
+   ```
+
+3. **Handle Result**:
+   - VERIFICATION_PASS:
+     - Mark task complete in tasks.md
+     - Update .progress.md
+     - Commit (if fixes made)
+     - Output TASK_COMPLETE
+
+   - VERIFICATION_FAIL:
+     - Do NOT mark task complete
+     - Do NOT output TASK_COMPLETE
+     - Log failure in .progress.md Learnings
+     - Task will retry on next iteration
+
+4. **Never execute [VERIFY] tasks directly** - always delegate to qa-engineer
+</mandatory>
+
 ## Progress Updates
 
 After completing task, update `./specs/<spec>/.progress.md`:

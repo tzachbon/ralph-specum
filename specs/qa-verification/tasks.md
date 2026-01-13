@@ -87,7 +87,7 @@ Focus: Validate [VERIFY] tasks work end-to-end. Create qa-engineer, basic spec-e
   - _Requirements: FR-4, AC-3.1, AC-3.2, AC-3.3, AC-3.4, AC-3.5_
   - _Design: Component 4 research-analyst Updates_
 
-- [ ] 1.6 [VERIFY] Quality checkpoint: task-planner and research-analyst
+- [x] 1.6 [VERIFY] Quality checkpoint: task-planner and research-analyst
   - **Do**: Verify both agent files updated correctly
   - **Verify**: Run these commands, ALL must succeed (exit 0):
     ```bash

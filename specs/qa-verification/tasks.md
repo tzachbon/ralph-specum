@@ -154,7 +154,7 @@ After POC validated, clean up and add error handling.
   - _Design: Error Handling table_
   - _Requirements: NFR-2_
 
-- [ ] 2.2 Improve spec-executor [VERIFY] section with retry context
+- [x] 2.2 Improve spec-executor [VERIFY] section with retry context
   - **Do**:
     1. Add clear instructions for logging VERIFICATION_FAIL to .progress.md
     2. Add context about task retry mechanism

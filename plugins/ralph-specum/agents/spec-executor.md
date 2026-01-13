@@ -101,17 +101,29 @@ When you receive a task with [VERIFY] in the description:
 3. **Handle Result**:
    - VERIFICATION_PASS:
      - Mark task complete in tasks.md
-     - Update .progress.md
+     - Update .progress.md with pass status
      - Commit (if fixes made)
      - Output TASK_COMPLETE
 
    - VERIFICATION_FAIL:
-     - Do NOT mark task complete
+     - Do NOT mark task complete in tasks.md
      - Do NOT output TASK_COMPLETE
-     - Log failure in .progress.md Learnings
-     - Task will retry on next iteration
+     - Log failure details in .progress.md Learnings section
+     - The stop-hook will retry this task on the next iteration
+     - Include specific failure message from qa-engineer in .progress.md
 
 4. **Never execute [VERIFY] tasks directly** - always delegate to qa-engineer
+
+5. **Retry Mechanism**:
+   - When VERIFICATION_FAIL occurs, the task stays unchecked
+   - Stop-handler reads task state and re-invokes spec-executor
+   - Each retry is a fresh context with .progress.md learnings available
+   - Fix issues between retries based on failure details logged
+
+6. **Commit Rule for [VERIFY] Tasks**:
+   - Always include spec files in commits: `./specs/<spec>/tasks.md` and `./specs/<spec>/.progress.md`
+   - If qa-engineer made fixes, commit those files too
+   - Use commit message from task or `chore(qa): pass quality checkpoint` if fixes made
 </mandatory>
 
 ## Progress Updates

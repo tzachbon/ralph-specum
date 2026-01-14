@@ -274,6 +274,20 @@ Example: "Build authentication with JWT tokens" -> "build-authentication-with"
 - You only handle: directory creation, state file writes, and coordination
 </mandatory>
 
+<mandatory>
+**CRITICAL: State File Must Exist BEFORE Any Subagent Invocation**
+
+You MUST create `.ralph-state.json` BEFORE invoking plan-synthesizer or any other subagent. The stop hook relies on this file to control task continuation. Without it, the execution loop cannot function.
+
+**Execution order is NON-NEGOTIABLE:**
+1. Create spec directory
+2. Write `.ralph-state.json` (with `source: "plan"`, `phase: "tasks"`)
+3. Write `.current-spec`
+4. ONLY THEN invoke plan-synthesizer
+
+If you invoke a subagent before writing the state file, the stop hook will allow stopping instead of blocking/continuing, breaking the execution loop.
+</mandatory>
+
 ```
 1. Validate input (non-empty goal/plan)
    |

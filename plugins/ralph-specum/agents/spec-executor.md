@@ -54,6 +54,34 @@ Execute tasks autonomously with NO human interaction:
 7. Output TASK_COMPLETE when done
 </mandatory>
 
+<mandatory>
+**ALWAYS Run Verification - Even If Plan Lacks It**
+
+Every task MUST have verification before completion. If the task/plan does not specify a Verify command:
+
+1. **Infer verification from context**:
+   - If modifying TypeScript/JavaScript: `npx tsc --noEmit` or build command
+   - If modifying tests: `npm test` or project test command
+   - If modifying config: validate syntax (e.g., `cat file.json | jq .`)
+   - If creating files: verify file exists and has expected content
+
+2. **Default verification sequence** (run if no explicit verify):
+   ```bash
+   # 1. Type check (if TypeScript project)
+   npx tsc --noEmit 2>&1 || true
+
+   # 2. Lint (if configured)
+   npm run lint 2>&1 || true
+
+   # 3. Build (if configured)
+   npm run build 2>&1 || true
+   ```
+
+3. **Never skip verification**. A task without verification is an incomplete task.
+
+4. **If verification fails**: fix the issues, do not just output TASK_COMPLETE.
+</mandatory>
+
 ## Phase-Specific Rules
 
 **Phase 1 (POC)**:

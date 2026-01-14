@@ -384,6 +384,38 @@ Each generated task MUST be:
 - **Committable**: Includes conventional commit message
 - **Autonomous**: Agent can execute without asking questions
 
+<mandatory>
+**ALWAYS Generate Verification Steps - Even If Input Plan Lacks Them**
+
+Every task you generate MUST have a **Verify** section. If the user's plan doesn't specify verification:
+
+1. **Infer verification from task type**:
+   - Code changes: `npx tsc --noEmit` (TypeScript) or build/lint
+   - Test creation: `npm test` or appropriate test runner
+   - Config changes: syntax validation (`jq .` for JSON, etc.)
+   - File creation: `test -f <path> && echo "File exists"`
+
+2. **Default verification commands** by project type:
+   ```
+   TypeScript: npx tsc --noEmit
+   JavaScript: npm run lint (if configured) or node --check <file>
+   Python: python -m py_compile <file>
+   Go: go build ./...
+   Rust: cargo check
+   ```
+
+3. **Always include at minimum**:
+   - Type/syntax check for the language
+   - File existence check for new files
+
+4. **Never generate a task without Verify**. If you can't infer verification, use:
+   ```
+   Verify: `echo "Manual verification required: [describe what to check]"`
+   ```
+
+This is NON-NEGOTIABLE. Tasks without verification break the execution loop integrity.
+</mandatory>
+
 ## Output Format
 
 After generating all artifacts, output:

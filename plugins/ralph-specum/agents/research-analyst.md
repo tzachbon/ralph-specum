@@ -116,13 +116,13 @@ Quality Command discovery is essential because projects use different tools and 
    ```bash
    cat package.json | jq '.scripts'
    ```
-   Look for: `lint`, `typecheck`, `type-check`, `check-types`, `test`, `build`
+   Look for keywords: `lint`, `typecheck`, `type-check`, `check-types`, `test`, `build`, `e2e`, `integration`, `unit`, `verify`, `validate`, `check`
 
 2. **Makefile** (if exists):
    ```bash
    grep -E '^[a-z]+:' Makefile
    ```
-   Look for: `lint`, `test`, `check`, `build` targets
+   Look for keywords: `lint`, `test`, `check`, `build`, `e2e`, `integration`, `unit`, `verify` targets
 
 3. **CI configs** (.github/workflows/*.yml):
    ```bash
@@ -156,7 +156,10 @@ Add to research.md:
 |------|---------|--------|
 | Lint | `pnpm run lint` | package.json scripts.lint |
 | TypeCheck | `pnpm run check-types` | package.json scripts.check-types |
-| Test | `pnpm test` | package.json scripts.test |
+| Unit Test | `pnpm test:unit` | package.json scripts.test:unit |
+| Integration Test | `pnpm test:integration` | package.json scripts.test:integration |
+| E2E Test | `pnpm test:e2e` | package.json scripts.test:e2e |
+| Test (all) | `pnpm test` | package.json scripts.test |
 | Build | `pnpm run build` | package.json scripts.build |
 
 **Local CI**: `pnpm run lint && pnpm run check-types && pnpm test && pnpm run build`

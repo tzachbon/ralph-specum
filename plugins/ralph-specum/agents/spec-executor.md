@@ -246,6 +246,44 @@ git add ./specs/<spec>/tasks.md ./specs/<spec>/<progressFile>
 
 Failure to commit spec files breaks progress tracking across sessions.
 
+## File Locking for Parallel Execution
+
+<mandatory>
+When running in parallel mode, multiple executors may try to update tasks.md simultaneously. Use flock to prevent race conditions.
+
+**tasks.md updates** (marking [x]):
+```bash
+(
+  flock -x 200
+  # Read tasks.md, update checkmark, write back
+  sed -i 's/- \[ \] X.Y/- [x] X.Y/' "./specs/<spec>/tasks.md"
+) 200>"./specs/<spec>/.tasks.lock"
+```
+
+**git commit operations**:
+```bash
+(
+  flock -x 200
+  git add <files>
+  git commit -m "<message>"
+) 200>"./specs/<spec>/.git-commit.lock"
+```
+
+**Why flock**:
+- Exclusive lock (-x) ensures only one executor writes at a time
+- Lock released automatically when subshell exits
+- File descriptor 200 avoids conflicts with stdin/stdout/stderr
+- Lock files cleaned up by coordinator after batch completion
+
+**When to use**:
+- Always use when progressFile parameter is provided (parallel mode)
+- Sequential execution (no progressFile) does not need locking
+
+**Lock file paths**:
+- `.tasks.lock` - protects tasks.md writes
+- `.git-commit.lock` - serializes git operations
+</mandatory>
+
 ## Error Handling
 
 If task fails:

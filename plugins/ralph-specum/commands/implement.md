@@ -482,6 +482,21 @@ This ensures [P] markers on isolated tasks do not incur unnecessary file I/O or 
 
 After all parallel executors complete, merge their isolated progress files into the main `.progress.md`.
 
+### Merge Timing
+
+<mandatory>
+Do NOT start merge until all Task tool calls have returned.
+
+The coordinator waits for all parallel Task responses before:
+1. Reading any temp files
+2. Merging to .progress.md
+3. Cleaning up temp files
+
+This is implicit in Claude's tool handling: all parallel calls complete before the next turn begins. The coordinator only runs merge logic after receiving all executor results.
+
+**Race condition prevention**: Executors use flock when writing to shared files (tasks.md, git commits). The merge step does not start until all executors have finished and released their locks.
+</mandatory>
+
 ### Idempotent Merge Guarantee
 
 The merge operation is **idempotent**: running it multiple times with the same inputs produces the same result.
@@ -652,16 +667,27 @@ function appendToSection(content, sectionHeader, newLines):
 
 ### Cleanup After Merge
 
-After successful merge, delete all temp files:
+After successful merge, delete all temp files and lock files:
 
 ```bash
-rm -f ./specs/$spec/.progress-task-*.md
+# Validate spec before cleanup
+if [[ -z "$spec" ]] || [[ ! -d "./specs/$spec" ]]; then
+  echo "ERROR: Invalid spec path, skipping cleanup"
+  # Continue without cleanup rather than exit
+else
+  # Cleanup temp progress files
+  rm -f "./specs/$spec/.progress-task-*.md"
+  # Cleanup lock files
+  rm -f "./specs/$spec/.tasks.lock"
+  rm -f "./specs/$spec/.git-commit.lock"
+fi
 ```
 
 This ensures:
 - No leftover files from previous batches
 - Clean state for next parallel group
 - No accumulation of temp files over time
+- Lock files removed after batch completes
 
 ## Batch Completion
 

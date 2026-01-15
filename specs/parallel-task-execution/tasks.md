@@ -22,7 +22,7 @@ Focus: Validate parallel execution works end-to-end. Skip tests, accept minimal 
   - _Requirements: FR-006, FR-007_
   - _Design: Component 3 - Parallel Executor Spawner, Implementation Notes - Executor Prompt Updates_
 
-- [ ] 1.3 [P] Add [P] marker parsing to implement.md
+- [x] 1.3 [P] Add [P] marker parsing to implement.md
   - **Do**: Add logic to implement.md to parse tasks.md and detect [P], [VERIFY], [SEQUENTIAL] markers using regex. Build parsed task list with isParallel, isVerify, isSequential flags.
   - **Files**: `plugins/ralph-specum/commands/implement.md`
   - **Done when**: Coordinator can identify which tasks have [P] marker

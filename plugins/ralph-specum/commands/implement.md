@@ -141,6 +141,52 @@ Committed spec files for '$spec'
 
 If nothing to commit (specs already committed), continue silently.
 
+## Parallel Task Parsing
+
+When reading tasks.md, parse each task line to detect execution markers:
+
+### Marker Patterns
+
+```
+[P]          - Parallel execution marker. Task can run concurrently with adjacent [P] tasks.
+[VERIFY]     - Verification checkpoint. Always sequential, never parallel.
+[SEQUENTIAL] - Force sequential execution. Overrides [P] if both present.
+```
+
+### Regex Detection
+
+For each task line matching `- \[ \]` or `- \[x\]`:
+- `/\[P\]/` - Detect parallel marker
+- `/\[VERIFY\]/` - Detect verify marker
+- `/\[SEQUENTIAL\]/` - Detect sequential override marker
+
+### Parsed Task Structure
+
+Build a list of parsed tasks with flags:
+
+```
+ParsedTask {
+  index: number           // 0-based task index
+  description: string     // Task title/description line
+  isParallel: boolean     // Has [P] marker AND no override markers
+  isVerify: boolean       // Has [VERIFY] marker
+  isSequential: boolean   // Has [SEQUENTIAL] marker OR no [P] marker
+}
+```
+
+### Parsing Logic
+
+1. Read all task lines from tasks.md
+2. For each line matching `- [ ]` or `- [x]`:
+   - Extract task description (text after checkbox)
+   - Check for [P] marker: `line.includes('[P]')`
+   - Check for [VERIFY] marker: `line.includes('[VERIFY]')`
+   - Check for [SEQUENTIAL] marker: `line.includes('[SEQUENTIAL]')`
+   - Set isParallel = has [P] AND NOT has [VERIFY] AND NOT has [SEQUENTIAL]
+   - Set isVerify = has [VERIFY]
+   - Set isSequential = has [SEQUENTIAL] OR NOT isParallel
+3. Store parsed tasks for group detection
+
 ## Read Context
 
 Before executing:

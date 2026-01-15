@@ -186,8 +186,8 @@ Manual verification only per user decision. No automated test scripts for plugin
 
 ## Phase 4: Quality Gates
 
-- [ ] 4.1 Bump plugin version
-  - **Do**: Update version in plugin.json from 1.1.2 to 1.2.0 (minor version for new feature)
+- [x] 4.1 Bump plugin version
+  - **Do**: Update version in plugin.json from 1.3.0 to 1.4.0 (minor version for new feature)
   - **Files**: `plugins/ralph-specum/.claude-plugin/plugin.json`
   - **Done when**: Version is 1.2.0
   - **Verify**: `cat plugins/ralph-specum/.claude-plugin/plugin.json | grep version`

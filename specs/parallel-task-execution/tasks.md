@@ -55,7 +55,7 @@ Focus: Validate parallel execution works end-to-end. Skip tests, accept minimal 
   - _Requirements: FR-005, FR-006_
   - _Design: Component 3 - Parallel Executor Spawner_
 
-- [ ] 1.7 Add progress file merge logic to implement.md
+- [x] 1.7 Add progress file merge logic to implement.md
   - **Do**: Add logic to merge .progress-task-N.md temp files into .progress.md after all parallel tasks complete. Extract Learnings and Completed Tasks sections, append in task index order. Delete temp files after merge.
   - **Files**: `plugins/ralph-specum/commands/implement.md`
   - **Done when**: Coordinator can merge temp progress files and clean up

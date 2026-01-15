@@ -418,6 +418,154 @@ If `parallelGroup.isParallel == false`:
 - Write directly to `.progress.md` (no temp file)
 - Follow existing "Execute Current Task" flow below
 
+## Progress File Merger
+
+After all parallel executors complete, merge their isolated progress files into the main `.progress.md`.
+
+### Merge Process Overview
+
+1. **Collect temp files**: Gather all `.progress-task-{N}.md` files for the completed batch
+2. **Sort by task index**: Process files in ascending task index order
+3. **Extract sections**: Pull Learnings and Completed Tasks from each temp file
+4. **Append to main**: Add extracted content to corresponding sections in `.progress.md`
+5. **Cleanup**: Delete temp files after successful merge
+
+### Temp File Paths
+
+For a parallel group with taskIndices [5, 6, 7], temp files are:
+```
+./specs/$spec/.progress-task-5.md
+./specs/$spec/.progress-task-6.md
+./specs/$spec/.progress-task-7.md
+```
+
+### Extraction Logic
+
+For each temp file in task index order:
+
+1. **Read file content**
+2. **Extract Learnings section**:
+   - Find lines between `## Learnings` and next `##` header (or EOF)
+   - Capture bullet points (lines starting with `-`)
+   - Skip empty lines and section header itself
+3. **Extract Completed Tasks section**:
+   - Find lines between `## Completed Tasks` and next `##` header (or EOF)
+   - Capture task entries (lines matching `- [x]`)
+
+### Merge Strategy Pseudocode
+
+```
+function mergeProgressFiles(parallelGroup, specPath):
+  mainProgress = read(specPath + "/.progress.md")
+  allLearnings = []
+  allCompletedTasks = []
+
+  // Process in task index order
+  for taskIndex in sorted(parallelGroup.taskIndices):
+    tempFile = specPath + "/.progress-task-" + taskIndex + ".md"
+
+    if not exists(tempFile):
+      log("Warning: temp file missing for task " + taskIndex)
+      continue
+
+    content = read(tempFile)
+
+    // Extract Learnings
+    learnings = extractSection(content, "## Learnings")
+    for line in learnings:
+      if line.startsWith("-"):
+        allLearnings.push(line)
+
+    // Extract Completed Tasks
+    completed = extractSection(content, "## Completed Tasks")
+    for line in completed:
+      if line.matches(/- \[x\]/):
+        allCompletedTasks.push(line)
+
+  // Append to main progress file
+  mainProgress = appendToSection(mainProgress, "## Learnings", allLearnings)
+  mainProgress = appendToSection(mainProgress, "## Completed Tasks", allCompletedTasks)
+
+  write(specPath + "/.progress.md", mainProgress)
+
+  // Cleanup temp files
+  for taskIndex in parallelGroup.taskIndices:
+    tempFile = specPath + "/.progress-task-" + taskIndex + ".md"
+    if exists(tempFile):
+      delete(tempFile)
+```
+
+### Section Extraction Helper
+
+```
+function extractSection(content, sectionHeader):
+  lines = content.split("\n")
+  inSection = false
+  result = []
+
+  for line in lines:
+    if line.startsWith(sectionHeader):
+      inSection = true
+      continue
+    if inSection and line.startsWith("## "):
+      break  // Next section reached
+    if inSection:
+      result.push(line)
+
+  return result
+```
+
+### Append to Section Helper
+
+```
+function appendToSection(content, sectionHeader, newLines):
+  if newLines.length == 0:
+    return content
+
+  lines = content.split("\n")
+  result = []
+  sectionFound = false
+  insertIndex = -1
+
+  for (i, line) in enumerate(lines):
+    result.push(line)
+    if line.startsWith(sectionHeader):
+      sectionFound = true
+    // Find end of section (next ## or EOF)
+    if sectionFound and (line.startsWith("## ") and not line.startsWith(sectionHeader)):
+      insertIndex = result.length - 1
+      sectionFound = false
+
+  // If section header found but no next section, append at end
+  if insertIndex == -1 and sectionFound:
+    insertIndex = result.length
+
+  // Insert new lines
+  result.splice(insertIndex, 0, ...newLines)
+
+  return result.join("\n")
+```
+
+### Error Handling in Merge
+
+- **Missing temp file**: Log warning, continue with available files
+- **Empty section**: Skip, do not add blank lines
+- **Malformed temp file**: Log warning, skip extraction for that file
+- **Write failure**: Retry once, then fail batch with error message
+
+### Cleanup After Merge
+
+After successful merge, delete all temp files:
+
+```bash
+rm -f ./specs/$spec/.progress-task-*.md
+```
+
+This ensures:
+- No leftover files from previous batches
+- Clean state for next parallel group
+- No accumulation of temp files over time
+
 ## Read Context
 
 Before executing:

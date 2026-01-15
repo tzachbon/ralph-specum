@@ -163,7 +163,7 @@ After POC validated, clean up code and add robustness.
   - _Requirements: AC-4.1, AC-4.2, AC-4.3, AC-4.4_
   - _Design: Test Strategy - Integration Tests - Partial failure_
 
-- [ ] 3.4 [VERIFY] Quality checkpoint: all test specs complete
+- [x] 3.4 [VERIFY] Quality checkpoint: all test specs complete
   - **Do**: Verify all test specs exist and are properly structured
   - **Verify**: `ls specs/test-parallel*/tasks.md 2>/dev/null | wc -l` shows at least 3
   - **Done when**: At least 3 test spec directories exist with tasks.md
@@ -171,19 +171,19 @@ After POC validated, clean up code and add robustness.
 
 ## Phase 4: Quality Gates
 
-- [ ] 4.1 [VERIFY] Full local verification
+- [x] 4.1 [VERIFY] Full local verification
   - **Do**: Run all verification commands. Validate JSON schema, check all patterns in files.
   - **Verify**: `cat plugins/ralph-specum/schemas/spec.schema.json | python3 -c "import sys,json; json.load(sys.stdin)" && grep -q "parallelGroup" plugins/ralph-specum/commands/implement.md && grep -q "progressFile" plugins/ralph-specum/agents/spec-executor.md`
   - **Done when**: All verification commands pass
   - **Commit**: `chore(parallel): pass local verification` (if fixes needed)
 
-- [ ] 4.2 [VERIFY] Manual integration test
+- [x] 4.2 [VERIFY] Manual integration test
   - **Do**: Execute test-parallel spec with /ralph-specum:implement. Verify parallel execution in transcript.
   - **Verify**: Confirm Task tool calls appear in same message for [P] batch
   - **Done when**: Parallel execution demonstrated working
   - **Commit**: None
 
-- [ ] 4.3 Clean up test specs
+- [x] 4.3 Clean up test specs
   - **Do**: Remove test-parallel*, test-parallel-mixed, test-parallel-failure directories. They were for validation only.
   - **Files**: `specs/test-parallel/`, `specs/test-parallel-mixed/`, `specs/test-parallel-failure/`
   - **Done when**: Test directories removed

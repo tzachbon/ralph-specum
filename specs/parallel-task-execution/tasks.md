@@ -73,13 +73,13 @@ Focus: Validate parallel execution works end-to-end. Skip tests, accept minimal 
   - _Requirements: FR-011, FR-015, FR-016_
   - _Design: Technical Decisions - Completion signal, Implementation Notes - BATCH_COMPLETE Signal_
 
-- [ ] 1.9 [VERIFY] Quality checkpoint: verify implement.md changes
+- [x] 1.9 [VERIFY] Quality checkpoint: verify implement.md changes
   - **Do**: Verify implement.md has all parallel execution components
   - **Verify**: `grep -q "\[P\]" plugins/ralph-specum/commands/implement.md && grep -q "parallelGroup" plugins/ralph-specum/commands/implement.md && grep -q "BATCH_COMPLETE" plugins/ralph-specum/commands/implement.md`
   - **Done when**: All three patterns found in implement.md
   - **Commit**: `chore(parallel): pass quality checkpoint` (only if fixes needed)
 
-- [ ] 1.10 POC end-to-end test with test spec
+- [x] 1.10 POC end-to-end test with test spec
   - **Do**: Create test spec at ./specs/test-parallel/ with 3 simple [P] tasks (create 3 independent .txt files). Run /ralph-specum:implement and verify all 3 tasks execute in parallel (check transcript for multiple Task tool calls in one message).
   - **Files**: `specs/test-parallel/tasks.md`, `specs/test-parallel/.progress.md`, `specs/test-parallel/.ralph-state.json`
   - **Done when**: 3 [P] tasks are spawned together and all complete successfully

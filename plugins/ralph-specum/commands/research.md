@@ -49,6 +49,7 @@ Break down the goal into independent research areas that can be explored in para
 | Goal involves external APIs + codebase | Separate external research from internal analysis |
 | Goal touches multiple components | Research each component area in parallel |
 | Research needs web + codebase analysis | Can split if topics are distinct enough |
+| External best practices needed | Always include a dedicated external research task for web search |
 
 **Benefits of splitting:**
 - Parallel execution = faster results

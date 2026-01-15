@@ -31,7 +31,7 @@ Focus: Validate parallel execution works end-to-end. Skip tests, accept minimal 
   - _Requirements: FR-001, FR-003, FR-004_
   - _Design: Component 1 - Task Parser Extension_
 
-- [ ] 1.4 Add parallel group detection to implement.md
+- [x] 1.4 Add parallel group detection to implement.md
   - **Do**: Add algorithm to detect consecutive [P] tasks and group them. Non-[P], [VERIFY], or [SEQUENTIAL] tasks break the group. Return group boundaries (startIndex, endIndex, taskIndices array).
   - **Files**: `plugins/ralph-specum/commands/implement.md`
   - **Done when**: Coordinator can identify parallel group boundaries from current taskIndex

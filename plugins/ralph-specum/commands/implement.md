@@ -187,6 +187,104 @@ ParsedTask {
    - Set isSequential = has [SEQUENTIAL] OR NOT isParallel
 3. Store parsed tasks for group detection
 
+## Parallel Group Detection
+
+After parsing all tasks, detect parallel groups starting from the current taskIndex.
+
+### parallelGroup Structure
+
+```
+ParallelGroup {
+  startIndex: number       // First task in group (inclusive)
+  endIndex: number         // Last task in group (inclusive)
+  taskIndices: number[]    // All task indices in group
+  isParallel: boolean      // True if group has 2+ tasks
+}
+```
+
+### Detection Algorithm
+
+Starting from current taskIndex, determine group boundaries:
+
+1. **Initialize**: Start with task at taskIndex
+2. **Check current task**:
+   - If task is NOT parallel (no [P] marker, or has [VERIFY]/[SEQUENTIAL]):
+     - Return single-task group: `{ startIndex: taskIndex, endIndex: taskIndex, taskIndices: [taskIndex], isParallel: false }`
+3. **Expand group** (current task has [P]):
+   - Set startIndex = taskIndex
+   - Set taskIndices = [taskIndex]
+   - Look at next task (taskIndex + 1)
+   - While next task exists AND next task is parallel (has [P], no [VERIFY]/[SEQUENTIAL]):
+     - Add next task index to taskIndices
+     - Advance to following task
+   - Set endIndex = last added index
+4. **Return group**:
+   - isParallel = true if taskIndices.length >= 2
+   - If only 1 task in group, set isParallel = false
+
+### Group Breaking Conditions
+
+These conditions break a parallel group:
+- Task without [P] marker
+- Task with [VERIFY] marker (always sequential)
+- Task with [SEQUENTIAL] marker (explicit override)
+- End of task list
+
+### Pseudocode
+
+```
+function detectParallelGroup(taskIndex, parsedTasks):
+  current = parsedTasks[taskIndex]
+
+  // Non-parallel task = single-task group
+  if not current.isParallel:
+    return {
+      startIndex: taskIndex,
+      endIndex: taskIndex,
+      taskIndices: [taskIndex],
+      isParallel: false
+    }
+
+  // Start building parallel group
+  indices = [taskIndex]
+  nextIdx = taskIndex + 1
+
+  // Expand while consecutive [P] tasks
+  while nextIdx < parsedTasks.length:
+    nextTask = parsedTasks[nextIdx]
+    if not nextTask.isParallel:
+      break
+    indices.push(nextIdx)
+    nextIdx++
+
+  return {
+    startIndex: taskIndex,
+    endIndex: indices[indices.length - 1],
+    taskIndices: indices,
+    isParallel: indices.length >= 2
+  }
+```
+
+### Write parallelGroup to State
+
+Before spawning executors, write detected parallelGroup to `.ralph-state.json`:
+
+```json
+{
+  "phase": "execution",
+  "taskIndex": 5,
+  "parallelGroup": {
+    "startIndex": 5,
+    "endIndex": 7,
+    "taskIndices": [5, 6, 7],
+    "isParallel": true
+  },
+  ...
+}
+```
+
+This enables stop-handler and future iterations to understand the current batch context.
+
 ## Read Context
 
 Before executing:

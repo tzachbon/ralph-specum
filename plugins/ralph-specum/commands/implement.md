@@ -418,6 +418,45 @@ If `parallelGroup.isParallel == false`:
 - Write directly to `.progress.md` (no temp file)
 - Follow existing "Execute Current Task" flow below
 
+### Single [P] Task Optimization
+
+When a parallel group contains only 1 task (group size == 1), treat as sequential to avoid overhead:
+
+**Check Group Size**:
+```
+if parallelGroup.taskIndices.length == 1:
+  parallelGroup.isParallel = false
+```
+
+**Optimization Benefits**:
+- No temp progress file creation (.progress-task-N.md)
+- No merge step after execution
+- Direct write to main .progress.md
+- No BATCH_COMPLETE signal (just TASK_COMPLETE)
+- Identical behavior to non-[P] sequential tasks
+
+**When This Occurs**:
+- Single [P] task followed by [VERIFY] or [SEQUENTIAL] task
+- Single [P] task at end of task list
+- [P] task surrounded by non-[P] tasks
+
+**Implementation**:
+```
+function handleTaskGroup(parallelGroup, specPath):
+  // Single task groups skip parallel overhead
+  if parallelGroup.taskIndices.length == 1:
+    // Force sequential execution
+    parallelGroup.isParallel = false
+    // Use standard sequential task invocation
+    // No temp file, no merge, no BATCH_COMPLETE
+    return executeSequentialTask(parallelGroup.taskIndices[0])
+
+  // Multi-task parallel group
+  return executeParallelBatch(parallelGroup)
+```
+
+This ensures [P] markers on isolated tasks do not incur unnecessary file I/O or merge operations.
+
 ## Progress File Merger
 
 After all parallel executors complete, merge their isolated progress files into the main `.progress.md`.

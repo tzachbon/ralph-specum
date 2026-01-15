@@ -101,7 +101,7 @@ After POC validated, clean up code and add robustness.
   - _Requirements: FR-013, FR-014, AC-4.1, AC-4.2, AC-4.3, AC-4.4_
   - _Design: Error Handling_
 
-- [ ] 2.2 Handle single [P] task edge case
+- [x] 2.2 Handle single [P] task edge case
   - **Do**: Add check for parallel group size. If group size is 1, treat as sequential (no parallel overhead). Skip temp file, write directly to .progress.md.
   - **Files**: `plugins/ralph-specum/commands/implement.md`
   - **Done when**: Single [P] task runs as sequential without overhead

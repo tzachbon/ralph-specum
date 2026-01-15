@@ -171,22 +171,53 @@ After successful completion, output exactly:
 TASK_COMPLETE
 
 If verification fails, describe the issue and retry.
+If task requires manual action, describe what's needed and DO NOT output TASK_COMPLETE.
 ```
+
+## Task Completion Verification
+
+**TASK_COMPLETE** - The ONLY valid completion signal
+- Use when: Task steps executed, verification passed, changes committed
+- Stop hook verifies: checkmarks updated, spec files committed, no contradictions
+
+**NEVER use TASK_COMPLETE if:**
+- Task requires manual action (block and describe what user needs to do)
+- Verification failed
+- Implementation is partial
+- Changes not committed
+
+## Stop Hook Verification Layers
+
+The stop hook enforces completion integrity with 4 verification layers:
+
+1. **Contradiction Detection**: Rejects TASK_COMPLETE if output contains phrases like "requires manual", "cannot be automated", "could not complete", etc. Agent cannot claim completion while admitting it didn't complete.
+2. **Uncommitted Files Check**: Rejects completion if tasks.md or .progress.md have uncommitted changes. All spec files must be committed.
+3. **Checkmark Verification**: Validates that task was marked [x] in tasks.md. Counts completed checkmarks and verifies against task index.
+4. **Signal Verification**: Requires TASK_COMPLETE to advance to next task.
+
+If any verification fails, the task retries with a specific error message explaining the violation.
 
 ## After Task Completes
 
 The spec-executor will:
 1. Execute the task
 2. Run verification
-3. Commit changes
+3. Commit changes (including spec files)
 4. Update progress
-5. Say "TASK_COMPLETE"
+5. Output "TASK_COMPLETE"
 
 The stop hook will then:
-1. Increment taskIndex
-2. Reset taskIteration
+1. Run verification layers (see above)
+2. If all pass: Increment taskIndex, reset taskIteration
 3. Return block with continue prompt (fresh context)
 4. OR allow stop if all tasks done
+
+If task seems to require manual action:
+1. NEVER mark complete, lie, or expect user input
+2. Use available tools: Bash, WebFetch, MCP browser tools, CLI commands, Task subagents
+3. Exhaust ALL automated options before concluding impossible
+4. Document each tool attempted and why it didn't work
+5. Only if truly impossible after trying all tools: do NOT output TASK_COMPLETE, let retry loop exhaust
 
 ## Completion
 

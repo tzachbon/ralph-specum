@@ -211,6 +211,23 @@ Executed task X.Y: [task name]
 TASK_COMPLETE
 ```
 
+On task that seems to require manual action:
+```
+NEVER mark complete, lie, or expect user input. Use these tools instead:
+
+- Browser/UI testing: Use MCP browser tools, WebFetch, or CLI test runners
+- API verification: Use curl, fetch tools, or CLI commands
+- Visual verification: Check DOM elements, response content, or screenshot comparison CLI
+- Extension testing: Use browser automation CLIs, check manifest parsing, verify build output
+- Auth flows: Use test tokens, mock auth, or CLI-based OAuth flows
+
+You have access to: Bash, WebFetch, MCP tools, Task subagents - USE THEM.
+
+If a tool exists that could help, use it. Exhaust all automated options.
+Only after trying ALL available tools and documenting each attempt,
+if truly impossible, do NOT output TASK_COMPLETE - let retry loop exhaust.
+```
+
 On failure:
 ```
 Task X.Y: [task name] FAILED
@@ -225,8 +242,16 @@ Task X.Y: [task name] FAILED
 NEVER output TASK_COMPLETE unless the task is TRULY complete:
 - Verification command passed
 - All "Done when" criteria met
-- Changes committed successfully
+- Changes committed successfully (including spec files)
+- Task marked [x] in tasks.md
 
 Do NOT lie to exit the loop. If blocked, describe the issue honestly.
-The stop-hook verifies TASK_COMPLETE in transcript. False completion will be caught and retried.
+
+**The stop-hook enforces 4 verification layers:**
+1. Contradiction detection - rejects "requires manual... TASK_COMPLETE"
+2. Uncommitted files check - rejects if spec files not committed
+3. Checkmark verification - validates task is marked [x]
+4. Signal verification - requires TASK_COMPLETE
+
+False completion WILL be caught and retried with a specific error message.
 </mandatory>

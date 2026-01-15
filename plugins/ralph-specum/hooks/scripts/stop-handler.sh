@@ -99,7 +99,99 @@ if [[ $TASK_INDEX -ge $TOTAL_TASKS ]]; then
     exit 0  # Allow stop - execution complete
 fi
 
-# Verify TASK_COMPLETE signal before advancing to next task
+# === VERIFICATION LAYER 1: Contradiction detection ===
+# Detect if agent says it can't complete but still outputs TASK_COMPLETE
+if echo "$LAST_OUTPUT" | grep -q "TASK_COMPLETE"; then
+    # Check for contradictory phrases that indicate the task wasn't actually done
+    CONTRADICTION_PATTERNS="manual testing required|requires manual|cannot be automated|manual verification needed|needs user interaction|manual action required|could not complete|unable to complete|skipping verification|skip.*verification"
+
+    if echo "$LAST_OUTPUT" | grep -qiE "$CONTRADICTION_PATTERNS"; then
+        # Agent is lying - saying it can't do something but claiming TASK_COMPLETE
+        NEW_TASK_ITER=$((TASK_ITER + 1))
+
+        TEMP_STATE=$(mktemp)
+        if echo "$STATE" | jq "
+            .taskIteration = $NEW_TASK_ITER |
+            .globalIteration = $((GLOBAL_ITER + 1))
+        " > "$TEMP_STATE" 2>/dev/null && [[ -s "$TEMP_STATE" ]]; then
+            mv "$TEMP_STATE" "$STATE_FILE"
+        else
+            rm -f "$TEMP_STATE"
+            exit 0
+        fi
+
+        REASON="Task $TASK_INDEX: CONTRADICTION DETECTED. Agent claimed TASK_COMPLETE but indicated task requires manual action. If task cannot be completed, do NOT output TASK_COMPLETE - describe what's needed and let the loop block for user intervention. Retry attempt $NEW_TASK_ITER."
+        jq -n \
+            --arg reason "$REASON" \
+            --arg msg "INTEGRITY VIOLATION: Task $TASK_INDEX claimed complete but requires manual action. Do NOT output TASK_COMPLETE for incomplete tasks." \
+            '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
+        exit 0
+    fi
+fi
+
+# === VERIFICATION LAYER 2: Check for uncommitted spec files ===
+# Spec files MUST be committed with every task completion
+SPEC_FILES_STATUS=$(git status --porcelain "$SPEC_PATH/tasks.md" "$SPEC_PATH/.progress.md" 2>/dev/null || echo "")
+if [[ -n "$SPEC_FILES_STATUS" ]] && echo "$LAST_OUTPUT" | grep -q "TASK_COMPLETE"; then
+    # Spec files have uncommitted changes - agent didn't commit properly
+    NEW_TASK_ITER=$((TASK_ITER + 1))
+
+    TEMP_STATE=$(mktemp)
+    if echo "$STATE" | jq "
+        .taskIteration = $NEW_TASK_ITER |
+        .globalIteration = $((GLOBAL_ITER + 1))
+    " > "$TEMP_STATE" 2>/dev/null && [[ -s "$TEMP_STATE" ]]; then
+        mv "$TEMP_STATE" "$STATE_FILE"
+    else
+        rm -f "$TEMP_STATE"
+        exit 0
+    fi
+
+    REASON="Task $TASK_INDEX: UNCOMMITTED SPEC FILES. Agent claimed TASK_COMPLETE but $SPEC_PATH/tasks.md or .progress.md have uncommitted changes. Commit ALL changes before signaling completion. Retry attempt $NEW_TASK_ITER."
+    jq -n \
+        --arg reason "$REASON" \
+        --arg msg "COMMIT VIOLATION: Task $TASK_INDEX has uncommitted spec files. Commit before TASK_COMPLETE." \
+        '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
+    exit 0
+fi
+
+# === VERIFICATION LAYER 3: Verify task checkmark was updated ===
+# Check that the current task is marked [x] in tasks.md
+if echo "$LAST_OUTPUT" | grep -q "TASK_COMPLETE"; then
+    TASKS_FILE="$SPEC_PATH/tasks.md"
+    if [[ -f "$TASKS_FILE" ]]; then
+        # Count completed tasks (lines with [x])
+        COMPLETED_COUNT=$(grep -c '^\s*-\s*\[x\]' "$TASKS_FILE" 2>/dev/null || echo "0")
+
+        # Task index is 0-based, so completed count should be at least taskIndex + 1
+        EXPECTED_MIN=$((TASK_INDEX + 1))
+
+        if [[ $COMPLETED_COUNT -lt $EXPECTED_MIN ]]; then
+            # Task checkmark wasn't updated
+            NEW_TASK_ITER=$((TASK_ITER + 1))
+
+            TEMP_STATE=$(mktemp)
+            if echo "$STATE" | jq "
+                .taskIteration = $NEW_TASK_ITER |
+                .globalIteration = $((GLOBAL_ITER + 1))
+            " > "$TEMP_STATE" 2>/dev/null && [[ -s "$TEMP_STATE" ]]; then
+                mv "$TEMP_STATE" "$STATE_FILE"
+            else
+                rm -f "$TEMP_STATE"
+                exit 0
+            fi
+
+            REASON="Task $TASK_INDEX: CHECKMARK NOT UPDATED. Agent claimed TASK_COMPLETE but tasks.md shows only $COMPLETED_COUNT completed tasks (expected at least $EXPECTED_MIN). Mark task as [x] in tasks.md before signaling completion. Retry attempt $NEW_TASK_ITER."
+            jq -n \
+                --arg reason "$REASON" \
+                --arg msg "CHECKMARK VIOLATION: Task $TASK_INDEX not marked [x] in tasks.md. Update checkmark before TASK_COMPLETE." \
+                '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
+            exit 0
+        fi
+    fi
+fi
+
+# === VERIFICATION LAYER 4: Verify TASK_COMPLETE signal ===
 if ! echo "$LAST_OUTPUT" | grep -q "TASK_COMPLETE"; then
     # Task did not complete successfully - retry same task
     NEW_TASK_ITER=$((TASK_ITER + 1))

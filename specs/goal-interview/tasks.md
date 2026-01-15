@@ -20,7 +20,7 @@ Focus: Add interview logic to start.md (goal clarification) and 4 phase commands
   - _Requirements: FR-14, AC-6.1_
   - _Design: Agent File Cleanup_
 
-- [ ] 1.2 Remove tools field from remaining 4 agents
+- [x] 1.2 Remove tools field from remaining 4 agents
   - **Do**: Delete tools line from frontmatter in each file:
     - product-manager.md line 5: `tools: [Read, Write, Edit, Glob, Grep, WebSearch, Task]`
     - architect-reviewer.md line 5: `tools: [Read, Write, Edit, Bash, Glob, Grep, Task]`

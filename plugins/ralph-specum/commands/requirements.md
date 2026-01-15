@@ -128,8 +128,6 @@ Focus on:
 - Clear priority levels
 - Explicit success criteria
 - Risk identification
-
-Store user interview responses in the "User Decisions" section of requirements.md.
 ```
 
 ## Update State

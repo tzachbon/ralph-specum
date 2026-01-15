@@ -136,8 +136,6 @@ Include:
 - TypeScript interfaces
 - Error handling table
 - Test strategy
-
-Store user interview responses in the "Design Inputs" section of design.md.
 ```
 
 ## Update State

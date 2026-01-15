@@ -144,8 +144,6 @@ Critical rules:
 - Each task = one commit
 - Verify command must be runnable
 - POC phase allows shortcuts, later phases clean up
-
-Store user interview responses in the "Execution Context" section of tasks.md.
 ```
 
 ## Update State

@@ -158,7 +158,6 @@ Use the research.md template structure:
 - Sources
 
 Remember: Never guess, always verify. Cite all sources.
-Store user interview responses in the "User Context" section of research.md.
 ```
 
 ### Multiple Topic Invocation (Preferred for Complex Goals)

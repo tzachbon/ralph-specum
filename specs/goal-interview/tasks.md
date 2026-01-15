@@ -189,9 +189,9 @@ Manual verification only per user decision. No automated test scripts for plugin
 - [x] 4.1 Bump plugin version
   - **Do**: Update version in plugin.json from 1.3.0 to 1.4.0 (minor version for new feature)
   - **Files**: `plugins/ralph-specum/.claude-plugin/plugin.json`
-  - **Done when**: Version is 1.2.0
+  - **Done when**: Version is 1.4.0
   - **Verify**: `cat plugins/ralph-specum/.claude-plugin/plugin.json | grep version`
-  - **Commit**: `chore(plugin): bump version to 1.2.0 for goal interview feature`
+  - **Commit**: `chore(plugin): bump version to 1.4.0 for goal interview feature`
 
 - [x] 4.2 Create PR and verify CI
   - **Do**:

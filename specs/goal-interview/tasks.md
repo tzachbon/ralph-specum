@@ -168,7 +168,7 @@ Not needed per user decision. POC changes are simple markdown modifications with
 
 Manual verification only per user decision. No automated test scripts for plugin commands.
 
-- [ ] 3.1 Manual verification of interview flow
+- [x] 3.1 Manual verification of interview flow
   - **Do**: Test complete interview workflow:
     1. Create fresh spec without --quick flag
     2. Verify goal interview appears in start (pre-research)

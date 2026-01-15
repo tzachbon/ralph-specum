@@ -200,7 +200,7 @@ After POC validated, clean up code and add robustness.
   - **Done when**: PR created, CI passes
   - **Commit**: None
 
-- [ ] 4.5 [VERIFY] AC checklist
+- [x] 4.5 [VERIFY] AC checklist
   - **Do**: Review requirements.md, verify each AC-* satisfied
   - **Verify**: Manual review against implementation
   - **Done when**: All acceptance criteria confirmed met

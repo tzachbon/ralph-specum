@@ -13,7 +13,7 @@ Focus: Validate parallel execution works end-to-end. Skip tests, accept minimal 
   - _Requirements: FR-012, FR-013_
   - _Design: Component 5 - State Schema Extension_
 
-- [ ] 1.2 [P] Add progressFile parameter to spec-executor
+- [x] 1.2 [P] Add progressFile parameter to spec-executor
   - **Do**: Add optional progressFile parameter handling to spec-executor.md. When provided, write learnings and completed task entries to this file instead of .progress.md. Add documentation explaining isolated write behavior for parallel execution.
   - **Files**: `plugins/ralph-specum/agents/spec-executor.md`
   - **Done when**: spec-executor accepts progressFile param and writes to it when provided

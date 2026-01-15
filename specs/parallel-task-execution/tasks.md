@@ -136,7 +136,7 @@ After POC validated, clean up code and add robustness.
 
 ## Phase 3: Testing
 
-- [ ] 3.1 Create test spec with mixed parallel/sequential tasks
+- [x] 3.1 Create test spec with mixed parallel/sequential tasks
   - **Do**: Create comprehensive test spec with: [P] batch, then [VERIFY], then another [P] batch, then sequential task. Validate correct grouping and execution order.
   - **Files**: `specs/test-parallel-mixed/tasks.md`, `specs/test-parallel-mixed/.progress.md`, `specs/test-parallel-mixed/.ralph-state.json`
   - **Done when**: Mixed spec groups tasks correctly and executes in right order

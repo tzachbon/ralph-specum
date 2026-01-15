@@ -40,13 +40,13 @@ Focus: Validate parallel execution works end-to-end. Skip tests, accept minimal 
   - _Requirements: FR-002, FR-003_
   - _Design: Component 2 - Parallel Group Detector_
 
-- [ ] 1.5 [VERIFY] Quality checkpoint: verify schema and executor changes
+- [x] 1.5 [VERIFY] Quality checkpoint: verify schema and executor changes
   - **Do**: Validate schema is valid JSON and executor has progressFile handling
   - **Verify**: `cat plugins/ralph-specum/schemas/spec.schema.json | python3 -c "import sys,json; json.load(sys.stdin)" && grep -q "progressFile" plugins/ralph-specum/agents/spec-executor.md`
   - **Done when**: Schema parses as valid JSON, progressFile in executor
   - **Commit**: `chore(parallel): pass quality checkpoint` (only if fixes needed)
 
-- [ ] 1.6 Add parallel executor spawning to implement.md
+- [x] 1.6 Add parallel executor spawning to implement.md
   - **Do**: Add logic to spawn multiple spec-executors via Task tool in single message when parallel group detected. Pass .progress-task-N.md path to each executor. Write parallelGroup to state before spawning.
   - **Files**: `plugins/ralph-specum/commands/implement.md`
   - **Done when**: Coordinator spawns N Task tool calls in one message for parallel groups

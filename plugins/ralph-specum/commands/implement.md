@@ -285,6 +285,139 @@ Before spawning executors, write detected parallelGroup to `.ralph-state.json`:
 
 This enables stop-handler and future iterations to understand the current batch context.
 
+## Parallel Executor Spawning
+
+When a parallel group is detected with 2+ tasks, spawn multiple spec-executors simultaneously.
+
+<mandatory>
+**All Task tool calls MUST be in a single message for true parallelism.**
+
+If Task tool calls are spread across multiple messages, they execute sequentially, defeating parallelism.
+</mandatory>
+
+### Spawning Process
+
+1. **Detect parallel group** using algorithm from previous section
+2. **Check group size**:
+   - If `parallelGroup.isParallel == false` (single task): use normal sequential execution
+   - If `parallelGroup.isParallel == true` (2+ tasks): proceed with parallel spawning
+3. **Write state before spawning**:
+   - Update `.ralph-state.json` with parallelGroup before any Task tool calls
+   - This ensures state reflects intended batch even if spawning partially fails
+4. **Generate progress file paths**:
+   - Each executor gets isolated progress file: `.progress-task-{taskIndex}.md`
+   - Example: Tasks 5, 6, 7 get `.progress-task-5.md`, `.progress-task-6.md`, `.progress-task-7.md`
+5. **Spawn all executors in ONE message**:
+   - Make N Task tool calls in the same response
+   - Each call invokes spec-executor with unique taskIndex and progressFile
+
+### Progress File Path Generation
+
+For each task in `parallelGroup.taskIndices`, generate:
+
+```
+progressFile = `./specs/$spec/.progress-task-${taskIndex}.md`
+```
+
+These temp files:
+- Isolate writes during parallel execution (no race conditions)
+- Are merged into main `.progress.md` after batch completes
+- Are deleted after successful merge
+
+### Executor Invocation Structure
+
+For each task in the parallel group, invoke spec-executor with:
+
+```
+Task tool invocation for task $taskIndex:
+
+You are executing task for spec: $spec
+Spec path: ./specs/$spec/
+Task index: $taskIndex (0-based)
+Progress file: ./specs/$spec/.progress-task-$taskIndex.md
+
+Context from .progress.md:
+[include main progress file content - read-only reference]
+
+Current task from tasks.md:
+[include the specific task block for this taskIndex]
+
+IMPORTANT: Write your learnings and completion status to the progress file path above.
+Do NOT write to the main .progress.md file. The coordinator will merge your progress file after all parallel tasks complete.
+
+Your task:
+1. Read the task's Do section and execute exactly
+2. Only modify files listed in Files section
+3. Verify completion with the Verify command
+4. Commit with the task's Commit message
+5. Write to ./specs/$spec/.progress-task-$taskIndex.md:
+   - Add task to Completed Tasks with commit hash
+   - Add any learnings discovered
+6. Mark task as [x] in tasks.md
+
+After successful completion, output exactly:
+TASK_COMPLETE
+```
+
+### Multi-Task Invocation Pattern
+
+When spawning parallel group [5, 6, 7], make 3 Task tool calls in ONE message:
+
+```
+<Task tool call 1>
+  subagent_type: spec-executor
+  prompt: [invocation for task 5 with progressFile: .progress-task-5.md]
+</Task tool call 1>
+
+<Task tool call 2>
+  subagent_type: spec-executor
+  prompt: [invocation for task 6 with progressFile: .progress-task-6.md]
+</Task tool call 2>
+
+<Task tool call 3>
+  subagent_type: spec-executor
+  prompt: [invocation for task 7 with progressFile: .progress-task-7.md]
+</Task tool call 3>
+```
+
+All three calls appear in the same response, enabling parallel execution.
+
+### State Before Spawning
+
+Update `.ralph-state.json` BEFORE making Task tool calls:
+
+```json
+{
+  "phase": "execution",
+  "taskIndex": 5,
+  "parallelGroup": {
+    "startIndex": 5,
+    "endIndex": 7,
+    "taskIndices": [5, 6, 7],
+    "isParallel": true
+  },
+  "taskResults": {
+    "5": { "status": "pending" },
+    "6": { "status": "pending" },
+    "7": { "status": "pending" }
+  },
+  ...
+}
+```
+
+This state update ensures:
+- Stop-handler knows a parallel batch is in progress
+- Recovery can identify which tasks were attempted
+- Progress tracking survives partial failures
+
+### Sequential Fallback
+
+If `parallelGroup.isParallel == false`:
+- Skip parallel spawning logic
+- Use normal single Task tool invocation
+- Write directly to `.progress.md` (no temp file)
+- Follow existing "Execute Current Task" flow below
+
 ## Read Context
 
 Before executing:

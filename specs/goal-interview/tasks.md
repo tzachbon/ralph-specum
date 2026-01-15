@@ -137,7 +137,7 @@ Focus: Add interview logic to start.md (goal clarification) and 4 phase commands
   - _Requirements: FR-1, FR-5, FR-9, FR-10, FR-11, FR-12, AC-1.4, AC-1.5, AC-2.1, AC-2.2, AC-2.4, AC-3.1_
   - _Design: Interview Logic Template, Question Format Examples (Tasks)_
 
-- [ ] 1.10 Quality Checkpoint
+- [x] 1.10 Quality Checkpoint
   - **Do**: Verify all 4 command files have valid interview structure
   - **Verify**: All commands must pass:
     - AskUserQuestion in all: `grep -l "AskUserQuestion" plugins/ralph-specum/commands/research.md plugins/ralph-specum/commands/requirements.md plugins/ralph-specum/commands/design.md plugins/ralph-specum/commands/tasks.md | wc -l` equals 4
@@ -145,7 +145,7 @@ Focus: Add interview logic to start.md (goal clarification) and 4 phase commands
   - **Done when**: All 4 commands have interview logic with quick mode bypass
   - **Commit**: `chore(commands): pass quality checkpoint` (only if fixes needed)
 
-- [ ] 1.11 POC Checkpoint
+- [x] 1.11 POC Checkpoint
   - **Do**: Verify full interview flow works end-to-end
   - **Done when**:
     - All 5 agents have no tools field

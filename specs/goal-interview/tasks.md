@@ -61,7 +61,7 @@ Focus: Add interview logic to start.md (goal clarification) and 4 phase commands
   - _Requirements: Goal clarification before research_
   - _Design: Pre-research interview_
 
-- [ ] 1.5 Add interview to research.md
+- [x] 1.5 Add interview to research.md
   - **Do**:
     1. Add `AskUserQuestion` to allowed-tools in frontmatter line 4
     2. Add interview section between "## Validate" and "## Execute Research" with:

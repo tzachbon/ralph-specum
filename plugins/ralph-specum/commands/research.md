@@ -1,7 +1,7 @@
 ---
 description: Run or re-run research phase for current spec
 argument-hint: [spec-name]
-allowed-tools: [Read, Write, Task, Bash]
+allowed-tools: [Read, Write, Task, Bash, AskUserQuestion]
 ---
 
 # Research Phase
@@ -26,6 +26,59 @@ Do NOT perform web searches, codebase analysis, or write research.md yourself.
 1. Check `./specs/$spec/` directory exists
 2. Read `.ralph-state.json` if it exists
 
+## Interview
+
+<mandatory>
+**Skip interview if --quick flag detected in $ARGUMENTS.**
+
+If NOT quick mode, conduct interview using AskUserQuestion before delegating to subagent.
+</mandatory>
+
+### Quick Mode Check
+
+Check if `--quick` appears anywhere in `$ARGUMENTS`. If present, skip directly to "Execute Research".
+
+### Research Interview
+
+Use AskUserQuestion to gather technical context:
+
+```
+AskUserQuestion:
+  questions:
+    - question: "What technical approach do you prefer for this feature?"
+      options:
+        - "Follow existing patterns in codebase (Recommended)"
+        - "Introduce new patterns/frameworks"
+        - "Hybrid - keep existing where possible"
+        - "Other"
+    - question: "Are there any known constraints or limitations?"
+      options:
+        - "No known constraints"
+        - "Must work with existing API"
+        - "Performance critical"
+        - "Other"
+```
+
+### Adaptive Depth
+
+If user selects "Other" for any question:
+1. Ask a follow-up question to clarify using AskUserQuestion
+2. Continue until clarity reached or 5 follow-up rounds complete
+3. Each follow-up should probe deeper into the "Other" response
+
+### Interview Context Format
+
+After interview, format responses as:
+
+```
+Interview Context:
+- Technical approach: [Answer]
+- Known constraints: [Answer]
+- Follow-up details: [Any additional clarifications]
+```
+
+Store this context to include in the Task delegation prompt.
+
 ## Execute Research
 
 <mandatory>
@@ -40,6 +93,10 @@ Spec path: ./specs/$spec/
 
 Goal from user conversation or existing progress file.
 
+[If interview was conducted, include:]
+Interview Context:
+$interview_context
+
 Your task:
 1. Search web for best practices, prior art, and patterns
 2. Explore the codebase for existing related implementations
@@ -47,9 +104,11 @@ Your task:
 4. Document related specs in the "Related Specs" section
 5. Assess technical feasibility
 6. Create ./specs/$spec/research.md with your findings
+7. Include interview responses in a "User Context" section of research.md
 
 Use the research.md template structure:
 - Executive Summary
+- User Context (interview responses and user-provided constraints)
 - External Research (best practices, prior art, pitfalls)
 - Codebase Analysis (patterns, dependencies, constraints)
 - Related Specs (table with relevance, relationship, mayNeedUpdate)
@@ -59,6 +118,7 @@ Use the research.md template structure:
 - Sources
 
 Remember: Never guess, always verify. Cite all sources.
+Store user interview responses in the "User Context" section of research.md.
 ```
 
 ## Update State

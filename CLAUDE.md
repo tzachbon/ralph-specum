@@ -29,6 +29,7 @@ plugins/ralph-specum/
 ├── .claude-plugin/plugin.json   # Plugin manifest
 ├── agents/                      # Sub-agent definitions (markdown)
 ├── commands/                    # Slash command definitions (markdown)
+├── hooks/                       # Stop watcher (logging only, Ralph Wiggum handles loop)
 ├── templates/                   # Spec file templates
 └── schemas/                     # JSON schema for spec validation
 ```
@@ -77,6 +78,7 @@ Requires Ralph Wiggum plugin: `/plugin install ralph-wiggum@claude-plugins-offic
 
 - `commands/implement.md` - Thin wrapper + coordinator prompt for Ralph Wiggum loop
 - `commands/cancel.md` - Dual cleanup (cancel-ralph + state file deletion)
+- `hooks/scripts/stop-watcher.sh` - Logging/validation watcher (does NOT control loop)
 - `agents/spec-executor.md` - Task execution rules, commit discipline
 - `agents/task-planner.md` - Task format, quality checkpoint rules, POC workflow
 - `templates/*.md` - Spec file templates with structure requirements

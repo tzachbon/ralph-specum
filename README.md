@@ -10,11 +10,11 @@
 [![Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-blueviolet)](https://claude.ai/code)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-**Spec-driven development for Claude Code. Task-by-task execution with fresh context per task.**
+**Spec-driven development for Claude Code. Dependency-aware task execution via [Beads](https://github.com/steveyegge/beads).**
 
-Ralph Wiggum + Spec-Driven Development = <3
+Ralph Wiggum + Spec-Driven Development + Beads = <3
 
-[Quick Start](#-quick-start) | [Commands](#-commands) | [How It Works](#-how-it-works) | [Troubleshooting](#-troubleshooting)
+[Quick Start](#-quick-start) | [Commands](#-commands) | [How It Works](#-how-it-works) | [Beads Integration](#-beads-integration) | [Troubleshooting](#-troubleshooting)
 
 </div>
 
@@ -39,13 +39,27 @@ Named after the [Ralph agentic loop pattern](https://ghuntley.com/ralph/) and ev
 
 ## Requirements
 
-**v2.0.0+** requires the Ralph Wiggum plugin for task execution:
+**v3.0.0** requires two dependencies:
+
+### 1. Beads (Required)
+
+[Beads](https://github.com/steveyegge/beads) is a git-based issue tracker designed for AI agents. Smart Ralph uses it for dependency-aware task execution.
+
+```bash
+# macOS
+brew install steveyegge/tap/beads
+
+# Verify installation
+bd --version
+```
+
+### 2. Ralph Wiggum Plugin (Required)
 
 ```bash
 /plugin install ralph-loop@claude-plugins-official
 ```
 
-Ralph Wiggum provides the execution loop. Smart Ralph provides the spec-driven workflow on top.
+Ralph Wiggum provides the execution loop. Smart Ralph provides the spec-driven workflow. Beads provides dependency tracking.
 
 ---
 
@@ -54,33 +68,44 @@ Ralph Wiggum provides the execution loop. Smart Ralph provides the spec-driven w
 ### From Marketplace
 
 ```bash
-# Install Ralph Wiggum dependency first
+# 1. Install Beads CLI
+brew install steveyegge/tap/beads
+
+# 2. Install Ralph Wiggum plugin
 /plugin install ralph-loop@claude-plugins-official
 
-# Add the marketplace
+# 3. Add the marketplace
 /plugin marketplace add tzachbon/smart-ralph
 
-# Install the plugin
+# 4. Install the plugin
 /plugin install ralph-specum@smart-ralph
 
-# Restart Claude Code
+# 5. Restart Claude Code
 ```
 
 ### From GitHub
 
 ```bash
-# Install Ralph Wiggum dependency first
+# 1. Install Beads CLI
+brew install steveyegge/tap/beads
+
+# 2. Install Ralph Wiggum plugin
 /plugin install ralph-loop@claude-plugins-official
 
+# 3. Install Smart Ralph
 /plugin install https://github.com/tzachbon/smart-ralph
 ```
 
 ### Local Development
 
 ```bash
-# Install Ralph Wiggum dependency first
+# 1. Install Beads CLI
+brew install steveyegge/tap/beads
+
+# 2. Install Ralph Wiggum plugin
 /plugin install ralph-loop@claude-plugins-official
 
+# 3. Clone and run
 git clone https://github.com/tzachbon/smart-ralph.git
 cd smart-ralph/plugins/ralph-specum
 claude --plugin-dir $(pwd)
@@ -183,6 +208,82 @@ Tasks follow a 4-phase structure:
 
 ---
 
+## Beads Integration
+
+Smart Ralph v3.0 uses [Beads](https://github.com/steveyegge/beads) for dependency-aware task management. This is a fundamental change from v2.x's linear task execution.
+
+### What Beads Provides
+
+| Feature | Benefit |
+|---------|---------|
+| **Dependency DAG** | Tasks define what they `block`, enabling true parallel execution |
+| **`bd list --ready`** | Find all unblocked tasks in ~10ms |
+| **Hash-based IDs** | No collisions during parallel task creation |
+| **Git-native sync** | State exports to JSONL, syncs via git |
+| **`bd doctor`** | Detects orphaned work (committed but not closed) |
+
+### How It Works
+
+```
+┌─────────────────┐
+│  1.1 Setup      │
+│  OAuth2 config  │
+└────────┬────────┘
+         │ blocks
+┌────────▼────────┐
+│ 1.2 Create auth │
+│    endpoints    │
+└────────┬────────┘
+         │ blocks
+    ┌────┴────┐
+    │         │
+┌───▼───┐ ┌───▼───┐
+│ 1.3   │ │ 1.4   │  ← Both unblocked when 1.2 completes
+│ Login │ │Logout │  ← Execute in parallel automatically
+└───┬───┘ └───┬───┘
+    │         │
+    └────┬────┘
+         │ blocks
+┌────────▼────────┐
+│ V1 [VERIFY]     │
+│ Quality check   │
+└─────────────────┘
+```
+
+### Beads Commands Used
+
+| Command | When Used |
+|---------|-----------|
+| `bd create --parent $SPEC` | Task-planner creates child issues for each task |
+| `bd create --blocks $ID` | Task-planner sets up dependency relationships |
+| `bd list --ready --json` | Coordinator finds executable tasks |
+| `bd close $ID` | Spec-executor marks tasks complete |
+| `bd sync` | Completion protocol exports state to git |
+| `bd doctor` | Completion protocol verifies no orphaned work |
+
+### Commit Messages
+
+All commits include Beads issue IDs for audit trail:
+
+```bash
+feat(auth): implement OAuth2 login (bd-abc123)
+refactor(auth): extract token validation (bd-def456)
+test(auth): add OAuth2 integration tests (bd-ghi789)
+```
+
+### Land the Plane Protocol
+
+Every execution ends with:
+
+```bash
+bd doctor          # Check for orphaned work
+git pull --rebase  # Sync with remote
+bd sync            # Export issues to JSONL
+git push           # Push everything
+```
+
+---
+
 ## Project Structure
 
 ```
@@ -221,6 +322,12 @@ Specs live in `./specs/` in your project:
 
 ## Troubleshooting
 
+**"Beads not installed" or "bd: command not found"?**
+Install Beads: `brew install steveyegge/tap/beads`
+
+**"Beads issue ID missing"?**
+Run `/ralph-specum:research` again to create the parent Beads issue, or manually: `bd create --title "my-spec" --type epic`
+
 **"Ralph Wiggum plugin not found"?**
 Install the dependency: `/plugin install ralph-loop@claude-plugins-official`
 
@@ -244,6 +351,34 @@ Another Ralph loop may be running. Use `/cancel-ralph` to reset Ralph Wiggum sta
 ---
 
 ## Breaking Changes
+
+### v3.0.0
+
+**Beads dependency required**
+
+Starting with v3.0.0, Smart Ralph requires [Beads](https://github.com/steveyegge/beads) for dependency-aware task execution.
+
+**Migration from v2.x:**
+
+1. Install Beads: `brew install steveyegge/tap/beads`
+2. Run `bd init` in your project (if not already initialized)
+3. Restart Claude Code
+4. Existing specs will need to be re-generated to include Beads issue mappings
+
+**What changed:**
+- Beads is now a hard requirement (no fallback mode)
+- Task-planner creates Beads issues with `--blocks` dependencies
+- Spec-executor closes Beads issues and includes IDs in commits
+- Coordinator uses `bd list --ready` instead of linear `taskIndex`
+- Completion protocol includes `bd sync` and `bd doctor`
+- State schema includes `beadsSpecId`, `beadsEnabled`, `taskBeadsMap`
+
+**Why:**
+- True dependency DAG replaces linear task list with `[P]` markers
+- Automatic parallel execution discovery
+- Git-native state sync via JSONL export
+- Audit trail with Beads IDs in commit messages
+- `bd doctor` detects orphaned work automatically
 
 ### v2.0.0
 
@@ -286,6 +421,7 @@ PRs welcome! This project is friendly to first-time contributors.
 ## Credits
 
 - [Ralph agentic loop pattern](https://ghuntley.com/ralph/) by Geoffrey Huntley
+- [Beads](https://github.com/steveyegge/beads) by Steve Yegge - git-based issue tracker for AI agents
 - Built for [Claude Code](https://claude.ai/code)
 - Inspired by every developer who wished their AI could just figure out the whole feature
 

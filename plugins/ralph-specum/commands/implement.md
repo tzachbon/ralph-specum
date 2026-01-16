@@ -54,12 +54,38 @@ Write `.ralph-state.json`:
 
 Calculate max iterations: `totalTasks * maxTaskIterations * 2`
 
-Use the Skill tool to invoke ralph-wiggum:ralph-loop with:
-- Prompt: the coordinator prompt below
-- Completion promise: ALL_TASKS_COMPLETE
-- Max iterations: calculated value
+### Step 1: Create Ralph Loop State File
+
+CRITICAL: Create the state file BEFORE invoking the skill. This avoids shell argument parsing issues with the multi-line prompt.
+
+Write the file `.claude/ralph-loop.local.md` with this structure:
+
+```yaml
+---
+active: true
+iteration: 1
+max_iterations: <calculated from above>
+completion_promise: "ALL_TASKS_COMPLETE"
+started_at: "<current ISO 8601 timestamp>"
+---
+```
+
+Immediately after the YAML frontmatter closing `---`, append the ENTIRE coordinator prompt from section below (without the markdown code fences).
+
+### Step 2: Invoke Ralph Loop Skill
+
+Use the Skill tool to invoke `ralph-loop:ralph-loop` with args:
+```
+--resume
+```
+
+This tells ralph-loop to continue from the existing state file rather than creating a new one.
+
+If `--resume` is not supported, invoke with empty args - the state file already contains all configuration.
 
 ## Coordinator Prompt
+
+The following prompt should be written to the state file (NOT passed as CLI args):
 
 ```
 You are the execution COORDINATOR for spec: $spec

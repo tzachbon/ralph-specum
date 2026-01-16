@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout PR branch
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Check for .current-spec file
         run: |

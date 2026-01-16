@@ -90,7 +90,7 @@ approach: wrapper
 
 ### State Management
 
-- [ ] 2.4 Create state schema for .speckit-state.json
+- [x] 2.4 Create state schema for .speckit-state.json
   - **Do**: Create JSON schema at `plugins/ralph-speckit/schemas/speckit-state.schema.json`. Include fields: featureId, name, basePath, phase (specify|plan|tasks|execution), taskIndex, totalTasks, taskIteration, maxTaskIterations, globalIteration, maxGlobalIterations, awaitingApproval.
   - **Files**: `plugins/ralph-speckit/schemas/speckit-state.schema.json`
   - **Verify**: `jq . plugins/ralph-speckit/schemas/speckit-state.schema.json`

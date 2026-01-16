@@ -7,6 +7,14 @@ specs/.current-spec
 **/.tasks.lock
 **/.git-commit.lock
 
+# Active spec pointer (user-specific)
+specs/.current-spec
+
+# Speckit state files
+.specify/.current-feature
+**/.speckit-state.json
+**/.progress-task-*.md
+
 # OS files
 .DS_Store
 Thumbs.db

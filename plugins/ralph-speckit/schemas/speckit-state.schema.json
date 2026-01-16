@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ralph-speckit/speckit-state.schema.json",
+  "title": "SpecKit State",
+  "description": "State file for tracking feature execution progress in ralph-speckit plugin",
+  "type": "object",
+  "properties": {
+    "featureId": {
+      "type": "string",
+      "description": "Numeric feature ID with zero-padded prefix (e.g., 001, 002)",
+      "pattern": "^[0-9]{3}$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Feature name (kebab-case)",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "basePath": {
+      "type": "string",
+      "description": "Path to feature directory relative to repo root (e.g., .specify/specs/001-feature-name)"
+    },
+    "phase": {
+      "type": "string",
+      "enum": ["specify", "plan", "tasks", "execution"],
+      "description": "Current workflow phase"
+    },
+    "taskIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Zero-based index of current task being executed"
+    },
+    "totalTasks": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of tasks in tasks.md"
+    },
+    "taskIteration": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Current retry count for the current task"
+    },
+    "maxTaskIterations": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 5,
+      "description": "Maximum retry attempts per task before blocking"
+    },
+    "globalIteration": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total loop iterations across all tasks"
+    },
+    "maxGlobalIterations": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 100,
+      "description": "Maximum total iterations before forced stop"
+    },
+    "awaitingApproval": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if execution is paused waiting for user approval"
+    }
+  },
+  "required": [
+    "featureId",
+    "name",
+    "basePath",
+    "phase",
+    "taskIndex",
+    "totalTasks",
+    "taskIteration",
+    "maxTaskIterations",
+    "globalIteration",
+    "maxGlobalIterations",
+    "awaitingApproval"
+  ],
+  "additionalProperties": false
+}

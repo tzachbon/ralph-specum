@@ -118,13 +118,13 @@ Focus: Validate /ralph-loop invocation works end-to-end with minimal coordinator
   - _Requirements: FR-6, AC-6.1, AC-6.2, AC-6.3, AC-6.4_
   - _Design: Component 5_
 
-- [ ] 1.11 [VERIFY] Quality checkpoint: cancel.md
+- [x] 1.11 [VERIFY] Quality checkpoint: cancel.md
   - **Do**: Verify cancel.md has required patterns
   - **Verify**: `grep -q "cancel-ralph" plugins/ralph-specum/commands/cancel.md && grep -q ".ralph-state.json" plugins/ralph-specum/commands/cancel.md && echo "PASS"`
   - **Done when**: Both patterns present
   - **Commit**: (none unless fixes needed)
 
-- [ ] 1.12 POC Checkpoint: End-to-end validation
+- [x] 1.12 POC Checkpoint: End-to-end validation
   - **Do**: Verify the implementation works by:
     1. Check implement.md invokes /ralph-loop correctly
     2. Check coordinator prompt has all key sections

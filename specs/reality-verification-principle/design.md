@@ -105,10 +105,10 @@ graph TB
 
 | Pattern | Type | Regex Example |
 |---------|------|---------------|
-| fix, repair, resolve, debug, patch | Fix | `\b(fix|repair|resolve|debug|patch)\b` |
-| broken, failing, error, bug, issue | Fix | `\b(broken|failing|error|bug|issue)\b` |
-| "not working", "doesn't work" | Fix | `not\s+working|doesn't\s+work` |
-| add, create, build, implement, new | Add | `\b(add|create|build|implement|new)\b` |
+| fix, repair, resolve, debug, patch | Fix | `\b(fix&#124;repair&#124;resolve&#124;debug&#124;patch)\b` |
+| broken, failing, error, bug, issue | Fix | `\b(broken&#124;failing&#124;error&#124;bug&#124;issue)\b` |
+| "not working", "doesn't work" | Fix | `not\s+working&#124;doesn't\s+work` |
+| add, create, build, implement, new | Add | `\b(add&#124;create&#124;build&#124;implement&#124;new)\b` |
 
 ## Command Mapping
 

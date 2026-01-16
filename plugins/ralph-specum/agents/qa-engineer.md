@@ -89,7 +89,7 @@ For VF tasks:
 ## VF Output Format
 
 On success (issue resolved):
-```
+```text
 Verified VF: Verify original issue resolved
 
 BEFORE state:
@@ -109,7 +109,7 @@ VERIFICATION_PASS
 ```
 
 On failure (issue not resolved):
-```
+```text
 Verified VF: Verify original issue resolved
 
 BEFORE state:

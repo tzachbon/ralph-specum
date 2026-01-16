@@ -101,7 +101,7 @@ approach: wrapper
 
 ### Execution Agents
 
-- [ ] 2.5 Create spec-executor agent
+- [x] 2.5 Create spec-executor agent
   - **Do**: Adapt ralph-specum's spec-executor.md for speckit. Key path changes:
     - `.specify/specs/$FEATURE/tasks.md`
     - `.specify/specs/$FEATURE/.progress.md`

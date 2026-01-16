@@ -65,7 +65,7 @@ Focus: Create skill file and add detection to plan-synthesizer. Skip qa-engineer
 
 ## Phase 2: Refactoring
 
-- [ ] 2.1 Update task-planner for VF task generation
+- [x] 2.1 Update task-planner for VF task generation
   - **Do**:
     1. Add section detecting fix goals from .progress.md
     2. Add conditional VF task insertion for fix-type goals

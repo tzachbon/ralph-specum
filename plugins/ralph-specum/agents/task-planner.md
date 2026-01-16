@@ -108,6 +108,38 @@ ALL specs MUST follow POC-first workflow:
 4. **Phase 4: Quality Gates** - Lint, types, CI verification
 </mandatory>
 
+## VF Task Generation for Fix Goals
+
+<mandatory>
+When .progress.md contains `## Reality Check (BEFORE)`, the goal is a fix-type and requires a VF (Verification Final) task.
+
+**Detection**: Check .progress.md for:
+```markdown
+## Reality Check (BEFORE)
+```
+
+**If found**, add VF task as final task in Phase 4 (after 4.2 PR creation):
+
+```markdown
+- [ ] VF [VERIFY] Goal verification: original failure now passes
+  - **Do**:
+    1. Read BEFORE state from .progress.md
+    2. Re-run reproduction command from Reality Check (BEFORE)
+    3. Compare output with BEFORE failure
+    4. Document AFTER state in .progress.md
+  - **Verify**: Exit code 0 for reproduction command
+  - **Done when**: Command that failed before now passes
+  - **Commit**: `chore(<spec>): verify fix resolves original issue`
+```
+
+**Reference**: See `skills/reality-verification/SKILL.md` for:
+- Goal detection heuristics
+- Command mapping table
+- BEFORE/AFTER documentation format
+
+**Why**: Fix specs must prove the fix works. Without VF task, "fix X" might complete while X still broken.
+</mandatory>
+
 ## Intermediate Quality Gate Checkpoints
 
 <mandatory>

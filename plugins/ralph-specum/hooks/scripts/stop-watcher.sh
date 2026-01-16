@@ -4,13 +4,14 @@
 # Ralph Wiggum plugin handles loop continuation via exit code 2
 # This hook always exits 0 to let Ralph Wiggum do its job
 
-set -e
-
 # Read hook input from stdin
 INPUT=$(cat)
 
-# Get working directory
-CWD=$(echo "$INPUT" | jq -r '.cwd // empty')
+# Bail out cleanly if jq is unavailable
+command -v jq >/dev/null 2>&1 || exit 0
+
+# Get working directory (guard against parse failures)
+CWD=$(echo "$INPUT" | jq -r '.cwd // empty' 2>/dev/null || true)
 if [ -z "$CWD" ]; then
     exit 0
 fi
@@ -37,11 +38,11 @@ if ! jq empty "$STATE_FILE" 2>/dev/null; then
     exit 0
 fi
 
-# Read state for logging
-PHASE=$(jq -r '.phase // "unknown"' "$STATE_FILE")
-TASK_INDEX=$(jq -r '.taskIndex // 0' "$STATE_FILE")
-TOTAL_TASKS=$(jq -r '.totalTasks // 0' "$STATE_FILE")
-TASK_ITERATION=$(jq -r '.taskIteration // 1' "$STATE_FILE")
+# Read state for logging (guard all jq calls)
+PHASE=$(jq -r '.phase // "unknown"' "$STATE_FILE" 2>/dev/null || echo "unknown")
+TASK_INDEX=$(jq -r '.taskIndex // 0' "$STATE_FILE" 2>/dev/null || echo "0")
+TOTAL_TASKS=$(jq -r '.totalTasks // 0' "$STATE_FILE" 2>/dev/null || echo "0")
+TASK_ITERATION=$(jq -r '.taskIteration // 1' "$STATE_FILE" 2>/dev/null || echo "1")
 
 # Only log if in execution phase
 if [ "$PHASE" = "execution" ]; then

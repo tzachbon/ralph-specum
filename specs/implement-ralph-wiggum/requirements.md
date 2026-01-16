@@ -102,7 +102,7 @@ Replace the custom stop-handler loop mechanism in `/implement` with the official
 **So that** I know this is a breaking change requiring Ralph Wiggum dependency
 
 **Acceptance Criteria:**
-- [ ] AC-11.1: plugin.json version updated from 1.6.1 to 2.0.0
+- [ ] AC-8.1: plugin.json version updated from 1.6.1 to 2.0.0
 
 ## Functional Requirements
 
@@ -118,7 +118,7 @@ Replace the custom stop-handler loop mechanism in `/implement` with the official
 | FR-8 | [VERIFY] task delegation to qa-engineer | High | AC-2.5 |
 | FR-9 | Move verification layers into coordinator prompt | High | AC-7.1 through AC-7.5 |
 | FR-10 | Document breaking change in README | Medium | AC-4.3, AC-4.4 |
-| FR-11 | Bump plugin version to 2.0.0 | High | AC-11.1 |
+| FR-11 | Bump plugin version to 2.0.0 | High | AC-8.1 |
 
 ## Non-Functional Requirements
 

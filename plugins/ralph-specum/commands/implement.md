@@ -43,7 +43,7 @@ Write `.ralph-state.json`:
   "taskIndex": <first incomplete>,
   "totalTasks": <count>,
   "taskIteration": 1,
-  "maxTaskIterations": 5
+  "maxTaskIterations": <parsed from --max-task-iterations or default 5>
 }
 ```
 

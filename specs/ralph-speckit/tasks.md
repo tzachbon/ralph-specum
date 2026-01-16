@@ -60,7 +60,7 @@ approach: wrapper
 
 ### Stop Handler for Task Loop
 
-- [ ] 2.1 Create hooks directory and configuration
+- [x] 2.1 Create hooks directory and configuration
   - **Do**: Create `plugins/ralph-speckit/hooks/hooks.json` pointing to stop-watcher.sh. Use same structure as ralph-specum but with adapted paths for .specify/.
   - **Files**: `plugins/ralph-speckit/hooks/hooks.json`
   - **Verify**: `cat plugins/ralph-speckit/hooks/hooks.json | jq .`

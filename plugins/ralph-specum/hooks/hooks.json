@@ -1,0 +1,13 @@
+{
+  "hooks": [
+    {
+      "matcher": "Stop",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "$PLUGIN_DIR/hooks/scripts/stop-watcher.sh"
+        }
+      ]
+    }
+  ]
+}

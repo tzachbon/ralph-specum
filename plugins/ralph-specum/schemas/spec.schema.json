@@ -119,6 +119,24 @@
             },
             "required": ["status"]
           }
+        },
+        "beadsEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether Beads dependency-aware execution is enabled"
+        },
+        "beadsSpecId": {
+          "type": "string",
+          "pattern": "^bd-[a-f0-9]+$",
+          "description": "Beads issue ID for the parent spec"
+        },
+        "taskBeadsMap": {
+          "type": "object",
+          "description": "Mapping of task IDs to Beads issue IDs",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^bd-[a-f0-9]+$"
+          }
         }
       }
     },

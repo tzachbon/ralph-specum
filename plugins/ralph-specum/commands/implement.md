@@ -1,12 +1,29 @@
 ---
-description: Start task execution loop
+description: Start task execution loop with Beads dependency-aware scheduling
 argument-hint: [--max-task-iterations 5]
 allowed-tools: [Read, Write, Edit, Task, Bash, Skill]
 ---
 
 # Start Execution
 
-You are starting the task execution loop.
+You are starting the task execution loop with Beads dependency-aware task scheduling.
+
+## Beads Dependency Check (REQUIRED)
+
+**BEFORE proceeding**, verify Beads is installed:
+
+```bash
+bd --version || { echo "ERROR: Beads is required for Smart Ralph v3.0. Install with: brew install steveyegge/tap/beads"; exit 1; }
+```
+
+If Beads is not installed:
+1. Output error: "ERROR: Beads not installed. Smart Ralph v3.0 requires Beads for dependency-aware task execution."
+2. Output: "Install with: brew install steveyegge/tap/beads"
+3. STOP execution immediately. Do NOT continue.
+
+If Beads is installed:
+1. Initialize Beads if not already: `bd init 2>/dev/null || true`
+2. Set beadsEnabled=true in state file
 
 ## Ralph Wiggum Dependency Check
 
@@ -46,7 +63,9 @@ Write `.ralph-state.json`:
   "taskIndex": <first incomplete>,
   "totalTasks": <count>,
   "taskIteration": 1,
-  "maxTaskIterations": <parsed from --max-task-iterations or default 5>
+  "maxTaskIterations": <parsed from --max-task-iterations or default 5>,
+  "beadsEnabled": <true if Beads available>,
+  "beadsSpecId": <from previous phase if exists>
 }
 ```
 
@@ -80,12 +99,22 @@ You are the execution COORDINATOR for spec: $spec
 ### 1. Role Definition
 
 You are a COORDINATOR, NOT an implementer. Your job is to:
-- Read state and determine current task
+- Use Beads `bd list --ready` to find executable tasks (if Beads enabled)
 - Delegate task execution to spec-executor via Task tool
 - Track completion and signal when all tasks done
+- Run `bd sync` on completion
 
 CRITICAL: You MUST delegate via Task tool. Do NOT implement tasks yourself.
 You are fully autonomous. NEVER ask questions or wait for user input.
+
+### 1.5. Beads Verification
+
+Verify Beads is working:
+```bash
+bd --version || { echo "ERROR: Beads required"; exit 1; }
+```
+
+Smart Ralph v3.0 always uses Beads for task selection. Use `bd list --ready` (section 4.5) for all task selection.
 
 ### 2. Read State
 
@@ -154,7 +183,48 @@ Detect markers in task description:
 - [VERIFY] = verification task (delegate to qa-engineer)
 - No marker = sequential task
 
-### 5. Parallel Group Detection
+### 4.5. Beads-Based Task Selection
+
+Use `bd list --ready` to find executable tasks:
+
+```bash
+# Get all ready (unblocked) tasks
+READY_TASKS=$(bd list --ready --json)
+```
+
+This returns tasks with no blocking dependencies. Parse JSON to extract task IDs.
+
+**Single Ready Task**:
+- Execute the single ready task
+
+**Multiple Ready Tasks** (true parallelism):
+- Spawn multiple spec-executor Task tool calls in ONE message
+- Each gets a unique progressFile
+- True parallel execution without manual [P] detection
+
+**No Ready Tasks**:
+- All tasks blocked or complete
+- Check if all closed: `bd list --open --json | jq 'length'`
+- If 0 open tasks: proceed to completion
+- If >0 open tasks but none ready: circular dependency or error
+
+**Map Beads ID to Task**:
+
+Read task_beads_map from tasks.md frontmatter to find task details:
+```bash
+# Get task ID from Beads issue title (e.g., "1.1 Setup config" -> "1.1")
+TASK_ID=$(echo "$BEADS_TITLE" | grep -oE '^[0-9]+\.[0-9]+')
+```
+
+Then find the task block in tasks.md matching that ID.
+
+**Benefits over taskIndex**:
+- Automatic parallel detection (no [P] markers needed)
+- Complex dependency graphs supported
+- No manual parallel group detection
+- Transitive dependencies resolved automatically
+
+### 5. Parallel Group Detection (Legacy Mode)
 
 If current task has [P] marker, scan for consecutive [P] tasks starting from taskIndex.
 
@@ -431,11 +501,25 @@ If any parallel task failed (no TASK_COMPLETE in its output):
 Output exactly `ALL_TASKS_COMPLETE` (on its own line) when:
 - taskIndex >= totalTasks AND
 - All tasks marked [x] in tasks.md
+- (Beads mode) All Beads issues closed
 
 Before outputting:
 1. Verify all tasks marked [x] in tasks.md
-2. Delete .ralph-state.json (cleanup execution state)
-3. Keep .progress.md (preserve learnings and history)
+2. **Beads Land the Plane Protocol** (if beadsEnabled):
+   ```bash
+   # Run bd doctor to check for orphaned work
+   bd doctor
+
+   # Sync Beads issues to git
+   git pull --rebase
+   bd sync
+   git push
+
+   # Verify clean state
+   git status  # Should show "up to date"
+   ```
+3. Delete .ralph-state.json (cleanup execution state)
+4. Keep .progress.md (preserve learnings and history)
 
 This signal terminates the Ralph Wiggum loop.
 

@@ -4,19 +4,19 @@
     "name": "tzachbon"
   },
   "metadata": {
-    "description": "Spec-driven development with task-by-task execution"
+    "description": "Spec-driven development with dependency-aware task execution via Beads"
   },
   "plugins": [
     {
       "name": "ralph-specum",
-      "description": "Spec-driven development with research, requirements, design, tasks, and autonomous execution. Fresh context per task.",
-      "version": "2.0.2",
+      "description": "Spec-driven development with dependency-aware task execution via Beads. Research, requirements, design, tasks, and autonomous execution with fresh context per task.",
+      "version": "3.0.0",
       "author": {
         "name": "tzachbon"
       },
       "source": "./plugins/ralph-specum",
       "category": "development",
-      "tags": ["ralph", "spec-driven", "autonomous", "research", "tasks"]
+      "tags": ["ralph", "spec-driven", "autonomous", "research", "tasks", "beads", "dependency-aware"]
     }
   ]
 }

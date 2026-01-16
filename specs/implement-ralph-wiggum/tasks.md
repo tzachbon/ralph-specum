@@ -197,13 +197,13 @@ After POC validated, clean up code and documentation.
   - _Requirements: FR-10, AC-4.3, AC-4.4_
   - _Design: Migration Notes_
 
-- [ ] 2.6 [VERIFY] Quality checkpoint: documentation
+- [x] 2.6 [VERIFY] Quality checkpoint: documentation
   - **Do**: Verify documentation is complete
   - **Verify**: `grep -q "ralph-wiggum" README.md && grep -q "2.0.0" README.md && echo "PASS"`
   - **Done when**: All documentation patterns present
   - **Commit**: (none unless fixes needed)
 
-- [ ] 2.7 Clean up hooks directory
+- [x] 2.7 Clean up hooks directory
   - **Do**: Remove empty hooks/scripts directory if present. Keep hooks directory with README if needed for future use.
   - **Files**: `plugins/ralph-specum/hooks/`
   - **Done when**: No stale files in hooks directory

@@ -35,9 +35,46 @@ Map goal keywords to reproduction commands.
 | type, types, typescript | `pnpm check-types` or `tsc --noEmit` |
 | lint, linting | `pnpm lint` or `eslint .` |
 | build, compile | `pnpm build` or `npm run build` |
-| deploy, deployment | `gh api` or WebFetch to check status |
+| deploy, deployment | `gh api` or MCP fetch to check status |
+| E2E, UI, browser, visual | MCP playwright to screenshot or run E2E suite |
+| endpoint, API, response | MCP fetch with expected status/response validation |
+| site, page, live | MCP fetch/playwright to verify live behavior |
 
 **Fallback**: If no keyword match, ask user or skip diagnosis.
+
+## E2E Verification with MCP Tools
+
+For deployment and UI verification, use MCP tools:
+
+### Playwright (UI/E2E)
+```
+When goal involves: UI broken, E2E failing, visual regression, page not loading
+
+BEFORE: Use MCP playwright to:
+- Capture screenshot of broken state
+- Run failing E2E test
+- Document visible error
+
+AFTER: Same action should:
+- Show fixed UI
+- E2E test passes
+- No visible error
+```
+
+### Fetch (API/Deployment)
+```
+When goal involves: API down, endpoint failing, deployment broken, 500 errors
+
+BEFORE: Use MCP fetch to:
+- Hit endpoint, capture status code
+- Document error response body
+- Note timestamp
+
+AFTER: Same endpoint should:
+- Return expected status (200, 201, etc)
+- Response matches expected schema
+- No error in body
+```
 
 ## BEFORE/AFTER Documentation
 

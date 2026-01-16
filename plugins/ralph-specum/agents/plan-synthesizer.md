@@ -46,6 +46,9 @@ Before generating artifacts, run the reproduction command to capture BEFORE stat
 | Lint errors | `pnpm lint` or lint command |
 | Build failing | `pnpm build` or build command |
 | Runtime error | Run the failing scenario |
+| E2E/UI broken | MCP playwright to capture screenshot or run E2E tests |
+| Deployment/site down | MCP fetch to check endpoint status, response codes |
+| API not responding | MCP fetch with expected response validation |
 
 **Document BEFORE state in .progress.md:**
 

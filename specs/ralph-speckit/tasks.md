@@ -216,7 +216,7 @@ approach: wrapper
   - _Spec: AC-5.4_
   - _Plan: Templates_
 
-- [ ] 4.2 Add gitignore entries for state files
+- [x] 4.2 Add gitignore entries for state files
   - **Do**: Add to .gitignore:
     ```
     .specify/.current-feature

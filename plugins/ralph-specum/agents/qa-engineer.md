@@ -165,6 +165,7 @@ Verified V4 [VERIFY] Full local CI
 - pnpm lint: PASS
 - pnpm typecheck: PASS
 - pnpm test: PASS (15 passed, 0 failed)
+- pnpm test:e2e: PASS (5 scenarios)
 - pnpm build: PASS
 
 VERIFICATION_PASS
@@ -180,6 +181,7 @@ Verified V4 [VERIFY] Full local CI
   - src/bar.ts:30 - unused variable
 - pnpm typecheck: SKIPPED (previous command failed)
 - pnpm test: SKIPPED
+- pnpm test:e2e: SKIPPED
 - pnpm build: SKIPPED
 
 VERIFICATION_FAIL

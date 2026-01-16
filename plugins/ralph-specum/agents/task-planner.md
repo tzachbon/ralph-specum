@@ -155,7 +155,8 @@ Insert quality gate checkpoints throughout the task list to catch issues early:
 1. Type checking passes: `pnpm check-types` or equivalent
 2. Lint passes: `pnpm lint` or equivalent
 3. Existing tests pass: `pnpm test` or equivalent (if tests exist)
-4. Code compiles/builds successfully
+4. E2E tests pass: `pnpm test:e2e` or equivalent (if E2E exists)
+5. Code compiles/builds successfully
 
 **Checkpoint Task Format:**
 ```markdown
@@ -189,10 +190,10 @@ Replace generic "Quality Checkpoint" tasks with [VERIFY] tagged tasks:
 
 **Final verification sequence** (last 3 tasks of spec):
 ```markdown
-- [ ] V4 [VERIFY] Full local CI: <lint> && <typecheck> && <test> && <build>
-  - **Do**: Run complete local CI suite
+- [ ] V4 [VERIFY] Full local CI: <lint> && <typecheck> && <test> && <e2e> && <build>
+  - **Do**: Run complete local CI suite including E2E
   - **Verify**: All commands pass
-  - **Done when**: Build succeeds, all tests pass
+  - **Done when**: Build succeeds, all tests pass, E2E green
   - **Commit**: `chore(scope): pass local CI` (if fixes needed)
 
 - [ ] V5 [VERIFY] CI pipeline passes

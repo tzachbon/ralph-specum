@@ -25,7 +25,7 @@ Focus: Create skill file and add detection to plan-synthesizer. Skip qa-engineer
   - _Requirements: FR-1_
   - _Design: Reality Verification SKILL.md_
 
-- [ ] 1.2 Add goal detection to plan-synthesizer
+- [x] 1.2 Add goal detection to plan-synthesizer
   - **Do**:
     1. Add "Goal Type Detection" section after "When Invoked"
     2. Add Step 1: Classify Goal with regex patterns

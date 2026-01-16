@@ -8,12 +8,15 @@ allowed-tools: [Read, Write, Edit, Task, Bash, Skill]
 
 You are starting the task execution loop.
 
-## Ralph Wiggum Dependency
+## Ralph Wiggum Dependency Check
 
-This command requires the Ralph Wiggum plugin. If not installed, run:
-```
-/plugin install ralph-wiggum@claude-plugins-official
-```
+**BEFORE proceeding**, verify Ralph Wiggum plugin is installed by attempting to invoke the skill.
+
+If the Skill tool fails with "skill not found" or similar error for `ralph-wiggum:ralph-loop`:
+1. Output error: "ERROR: Ralph Wiggum plugin not found. Install with: /plugin install ralph-wiggum@claude-plugins-official"
+2. STOP execution immediately. Do NOT continue.
+
+This is a hard dependency. The command cannot function without Ralph Wiggum.
 
 ## Determine Active Spec
 

@@ -187,7 +187,7 @@ approach: wrapper
   - _Spec: AC-7.4_
   - _Plan: Switch Command_
 
-- [ ] 3.5 Create cancel command
+- [x] 3.5 Create cancel command
   - **Do**: Create `plugins/ralph-speckit/commands/cancel.md`. Terminates execution by:
     1. Deleting `.speckit-state.json`
     2. Optionally clearing `.specify/.current-feature`

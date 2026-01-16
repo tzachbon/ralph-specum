@@ -145,7 +145,7 @@ approach: wrapper
   - _Spec: FR-7, FR-8, AC-5.1_
   - _Plan: Implement Command_
 
-- [ ] 3.2 Create start command (smart entry point)
+- [x] 3.2 Create start command (smart entry point)
   - **Do**: Create `plugins/ralph-speckit/commands/start.md`. This command:
     1. Checks for `.specify/memory/constitution.md`, guides to `/speckit:constitution` if missing
     2. Auto-generates feature ID by scanning `.specify/specs/` for highest ID + 1 (format: 001, 002)

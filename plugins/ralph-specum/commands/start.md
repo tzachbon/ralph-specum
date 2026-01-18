@@ -150,32 +150,15 @@ In `--quick` mode, still perform branch check but skip the user prompt for non-d
 - If on default branch: auto-create feature branch in current directory (no worktree prompt in quick mode)
 - If on non-default branch: stay on current branch (no prompt, quick mode is non-interactive)
 
-## Quick Mode Auto-Resume
+## Quick Mode Uses Ralph Loop
 
-<mandatory>
-**In quick mode only**, check for incomplete execution and auto-resume.
-</mandatory>
+In quick mode (`--quick`), execution uses `/ralph-loop` for autonomous task completion.
 
-If `--quick` in $ARGUMENTS:
-
-1. Check if `.claude/ralph-loop.local.md` exists
-   - If exists: skip (ralph-loop already running)
-
-2. Read `./specs/.current-spec` to get active spec name
-   - If no current spec: skip to "CRITICAL: Delegation Requirement"
-
-3. Read `./specs/$spec/.ralph-state.json`
-   - If no state file or phase != "execution": skip to "CRITICAL: Delegation Requirement"
-
-4. If phase IS "execution" but no ralph-loop running:
-   - Display: `Resuming incomplete execution for '$spec' (task $taskIndex/$totalTasks)...`
-   - Use existing `./specs/$spec/.coordinator-prompt.md` or regenerate from implement.md template
-   - Invoke ralph-loop:
-     ```
-     Skill: ralph-wiggum:ralph-loop
-     Args: Read ./specs/$spec/.coordinator-prompt.md and follow those instructions exactly. Output ALL_TASKS_COMPLETE when done. --max-iterations <calculated> --completion-promise ALL_TASKS_COMPLETE
-     ```
-   - **STOP** - The loop handles execution.
+After generating spec artifacts in quick mode, invoke ralph-loop:
+```
+Skill: ralph-wiggum:ralph-loop
+Args: Read ./specs/$spec/.coordinator-prompt.md and follow those instructions exactly. Output ALL_TASKS_COMPLETE when done. --max-iterations <calculated> --completion-promise ALL_TASKS_COMPLETE
+```
 
 <mandatory>
 ## CRITICAL: Delegation Requirement

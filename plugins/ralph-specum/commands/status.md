@@ -8,6 +8,26 @@ allowed-tools: [Read, Bash, Glob, Task]
 
 You are showing the status of all specifications.
 
+## Ralph Loop Status Check
+
+<mandatory>
+**Check if ralph-loop is currently running and display status.**
+</mandatory>
+
+### Check Ralph Loop State
+
+Check if the ralph-loop state file exists:
+```bash
+test -f .claude/ralph-loop.local.md && echo "RUNNING" || echo "NOT_RUNNING"
+```
+
+Store this value to display in the status output.
+
+If `RUNNING`, read the state file to get current iteration:
+```bash
+grep -E "^iteration:" .claude/ralph-loop.local.md | cut -d: -f2 | tr -d ' '
+```
+
 ## Gather Information
 
 1. Check if `./specs/` directory exists
@@ -41,6 +61,9 @@ For each spec directory found:
 
 ```
 # Ralph Specum Status
+
+Ralph Loop: <RUNNING (iteration N)> or <NOT RUNNING>
+[If NOT RUNNING but spec is in execution phase: "⚠️ ORPHANED - run any command to auto-resume"]
 
 Active spec: <name from .current-spec> (or "none")
 

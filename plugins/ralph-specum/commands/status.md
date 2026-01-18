@@ -63,7 +63,6 @@ For each spec directory found:
 # Ralph Specum Status
 
 Ralph Loop: <RUNNING (iteration N)> or <NOT RUNNING>
-[If NOT RUNNING but spec is in execution phase: "⚠️ ORPHANED - run any command to auto-resume"]
 
 Active spec: <name from .current-spec> (or "none")
 

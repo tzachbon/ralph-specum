@@ -21,47 +21,6 @@ Do NOT write user stories, acceptance criteria, or requirements.md yourself.
 2. Otherwise, read `./specs/.current-spec` to get active spec
 3. If no active spec, error: "No active spec. Run /ralph-specum:new <name> first."
 
-## Orphaned Execution Check
-
-<mandatory>
-**BEFORE proceeding with requirements, check if there's an orphaned execution loop.**
-
-This check ensures interrupted executions are detected and the user is warned.
-</mandatory>
-
-### Step 1: Check if Ralph Loop Already Running
-
-Check if the ralph-loop state file exists:
-```bash
-test -f .claude/ralph-loop.local.md && echo "RUNNING" || echo "NOT_RUNNING"
-```
-
-- If `RUNNING`: Ralph loop is active, skip to "Validate" section
-- If `NOT_RUNNING`: Continue to Step 2
-
-### Step 2: Check for Orphaned Execution
-
-1. Read `./specs/$spec/.ralph-state.json` (if exists)
-2. Check if `phase == "execution"`
-
-If phase is NOT "execution", skip to "Validate" section (no orphaned loop).
-
-### Step 3: Warn and Stop
-
-If phase IS "execution" but no ralph-loop running:
-
-1. Display warning:
-   ```
-   ⚠️ ORPHANED EXECUTION DETECTED
-
-   Spec '$spec' is in execution phase (task $taskIndex/$totalTasks) but ralph-loop is not running.
-
-   To resume execution: /ralph-specum:implement
-   To cancel and start fresh: /ralph-specum:cancel
-   ```
-
-2. **STOP** - Do NOT continue with requirements phase. Wait for user to handle the orphaned execution.
-
 ## Validate
 
 1. Check `./specs/$spec/` directory exists

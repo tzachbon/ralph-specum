@@ -150,68 +150,32 @@ In `--quick` mode, still perform branch check but skip the user prompt for non-d
 - If on default branch: auto-create feature branch in current directory (no worktree prompt in quick mode)
 - If on non-default branch: stay on current branch (no prompt, quick mode is non-interactive)
 
-## Orphaned Execution Check
+## Quick Mode Auto-Resume
 
 <mandatory>
-**BEFORE creating a new spec or resuming, check if there's an orphaned execution loop.**
-
-This check ensures interrupted executions are detected and the user is warned.
+**In quick mode only**, check for incomplete execution and auto-resume.
 </mandatory>
 
-### Step 1: Check if Ralph Loop Already Running
+If `--quick` in $ARGUMENTS:
 
-Check if the ralph-loop state file exists:
-```bash
-test -f .claude/ralph-loop.local.md && echo "RUNNING" || echo "NOT_RUNNING"
-```
+1. Check if `.claude/ralph-loop.local.md` exists
+   - If exists: skip (ralph-loop already running)
 
-- If `RUNNING`: Ralph loop is active, skip to "CRITICAL: Delegation Requirement" section
-- If `NOT_RUNNING`: Continue to Step 2
+2. Read `./specs/.current-spec` to get active spec name
+   - If no current spec: skip to "CRITICAL: Delegation Requirement"
 
-### Step 2: Check for Orphaned Execution
+3. Read `./specs/$spec/.ralph-state.json`
+   - If no state file or phase != "execution": skip to "CRITICAL: Delegation Requirement"
 
-1. Read `./specs/.current-spec` to get active spec name (if exists)
-2. If no current spec, skip to "CRITICAL: Delegation Requirement" section
-3. Read `./specs/$spec/.ralph-state.json` (if exists)
-4. Check if `phase == "execution"`
-
-If no state file or phase is NOT "execution", skip to "CRITICAL: Delegation Requirement" section.
-
-### Step 3: Handle Orphaned Execution
-
-If phase IS "execution" but no ralph-loop running:
-
-**In Quick Mode (`--quick` in $ARGUMENTS):**
-1. Display message:
-   ```
-   Detected incomplete execution for '$spec' (task $taskIndex/$totalTasks).
-   Auto-resuming ralph loop...
-   ```
-
-2. Check if `./specs/$spec/.coordinator-prompt.md` exists
-   - If exists: use it
-   - If not exists: regenerate it using the implement.md coordinator prompt template
-
-3. Invoke ralph-loop using the Skill tool:
-   ```
-   Skill: ralph-wiggum:ralph-loop
-   Args: Read ./specs/$spec/.coordinator-prompt.md and follow those instructions exactly. Output ALL_TASKS_COMPLETE when done. --max-iterations <calculated> --completion-promise ALL_TASKS_COMPLETE
-   ```
-
-4. **STOP** - Do NOT continue with start command. The loop will handle execution.
-
-**In Normal Mode (no `--quick`):**
-1. Display warning:
-   ```
-   ⚠️ ORPHANED EXECUTION DETECTED
-
-   Spec '$spec' is in execution phase (task $taskIndex/$totalTasks) but ralph-loop is not running.
-
-   To resume execution: /ralph-specum:implement
-   To cancel and start fresh: /ralph-specum:cancel
-   ```
-
-2. **STOP** - Do NOT continue with start command. Wait for user to handle the orphaned execution.
+4. If phase IS "execution" but no ralph-loop running:
+   - Display: `Resuming incomplete execution for '$spec' (task $taskIndex/$totalTasks)...`
+   - Use existing `./specs/$spec/.coordinator-prompt.md` or regenerate from implement.md template
+   - Invoke ralph-loop:
+     ```
+     Skill: ralph-wiggum:ralph-loop
+     Args: Read ./specs/$spec/.coordinator-prompt.md and follow those instructions exactly. Output ALL_TASKS_COMPLETE when done. --max-iterations <calculated> --completion-promise ALL_TASKS_COMPLETE
+     ```
+   - **STOP** - The loop handles execution.
 
 <mandatory>
 ## CRITICAL: Delegation Requirement

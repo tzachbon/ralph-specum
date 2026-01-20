@@ -409,7 +409,7 @@ sequenceDiagram
 | Constitution location | Per-feature, project root, .speckit/memory/ | `.speckit/memory/` | Follows spec-kit convention, clearly persistent |
 | State file name | `.ralph-state.json`, `.state.json`, `.speckit-state.json` | `.speckit-state.json` | Namespaced to avoid confusion with ralph-specum |
 | Research timing | Separate phase, embedded in plan | Embedded in plan | Follows spec-kit methodology |
-| Hook type | Stop hook (watcher only) | Watcher | Ralph Wiggum handles loop via exit code 2 |
+| Hook type | Stop hook (watcher only) | Watcher | Ralph Loop handles loop via exit code 2 |
 | Task organization | By phase, by user story | By user story | Follows spec-kit methodology, enables traceability |
 
 ## File Structure Changes

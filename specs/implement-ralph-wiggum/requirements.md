@@ -1,8 +1,8 @@
-# Requirements: Ralph Wiggum Loop Integration
+# Requirements: Ralph Loop Loop Integration
 
 ## Goal
 
-Replace the custom stop-handler loop mechanism in `/implement` with the official Ralph Wiggum plugin's `/ralph-loop` command, while preserving Task tool delegation to spec-executor subagents for task execution.
+Replace the custom stop-handler loop mechanism in `/implement` with the official Ralph Loop plugin's `/ralph-loop` command, while preserving Task tool delegation to spec-executor subagents for task execution.
 
 ## User Stories
 
@@ -10,7 +10,7 @@ Replace the custom stop-handler loop mechanism in `/implement` with the official
 
 **As a** plugin developer
 **I want to** have `/implement` call `/ralph-loop` instead of managing its own stop hook
-**So that** the loop mechanism is standardized and maintained by the official Ralph Wiggum plugin
+**So that** the loop mechanism is standardized and maintained by the official Ralph Loop plugin
 
 **Acceptance Criteria:**
 - [ ] AC-1.1: `/implement` command reads spec from `.current-spec` and validates prerequisites
@@ -38,36 +38,36 @@ Replace the custom stop-handler loop mechanism in `/implement` with the official
 
 **As a** plugin maintainer
 **I want to** remove the custom stop-handler.sh and convert hooks.json to a read-only watcher
-**So that** the plugin relies on Ralph Wiggum's maintained stop-hook for loop control
+**So that** the plugin relies on Ralph Loop's maintained stop-hook for loop control
 
 **Acceptance Criteria:**
 - [ ] AC-3.1: `hooks/scripts/stop-handler.sh` (274 lines) deleted
 - [ ] AC-3.2: `hooks/hooks.json` updated to register stop-watcher.sh (logging only, no loop control)
 - [ ] AC-3.3: Stop hook is read-only watcher (always exits 0, does not block or restart)
-- [ ] AC-3.4: Ralph Wiggum's stop-hook handles loop continuation
+- [ ] AC-3.4: Ralph Loop's stop-hook handles loop continuation
 
 ### US-4: Dependency Management
 
 **As a** plugin user
-**I want to** receive clear instructions when Ralph Wiggum plugin is not installed
+**I want to** receive clear instructions when Ralph Loop plugin is not installed
 **So that** I can install the required dependency before using `/implement`
 
 **Acceptance Criteria:**
-- [ ] AC-4.1: `/implement` checks if Ralph Wiggum plugin is available
+- [ ] AC-4.1: `/implement` checks if Ralph Loop plugin is available
 - [ ] AC-4.2: If missing, error message includes: `/plugin install ralph-loop@claude-plugins-official`
-- [ ] AC-4.3: README documents Ralph Wiggum as required dependency
+- [ ] AC-4.3: README documents Ralph Loop as required dependency
 - [ ] AC-4.4: Migration guide documents this breaking change
 
 ### US-5: State Management Compatibility
 
 **As a** plugin developer
 **I want to** maintain `.ralph-state.json` for task progress tracking
-**So that** existing state management patterns continue working alongside Ralph Wiggum's state
+**So that** existing state management patterns continue working alongside Ralph Loop's state
 
 **Acceptance Criteria:**
 - [ ] AC-5.1: `.ralph-state.json` continues tracking taskIndex, phase, totalTasks
 - [ ] AC-5.2: taskIndex advancement happens in coordinator prompt logic (not stop-hook)
-- [ ] AC-5.3: Ralph Wiggum's `.claude/ralph-loop.local.md` tracks iteration count
+- [ ] AC-5.3: Ralph Loop's `.claude/ralph-loop.local.md` tracks iteration count
 - [ ] AC-5.4: Both state files cleaned up on completion
 
 ### US-6: Cancel Command Update
@@ -77,9 +77,9 @@ Replace the custom stop-handler loop mechanism in `/implement` with the official
 **So that** I can safely restart from a clean state
 
 **Acceptance Criteria:**
-- [ ] AC-6.1: `/cancel` calls `/cancel-ralph` to stop the Ralph Wiggum loop
+- [ ] AC-6.1: `/cancel` calls `/cancel-ralph` to stop the Ralph Loop loop
 - [ ] AC-6.2: `/cancel` deletes `.ralph-state.json`
-- [ ] AC-6.3: Both Ralph Wiggum state and plugin state cleaned up
+- [ ] AC-6.3: Both Ralph Loop state and plugin state cleaned up
 - [ ] AC-6.4: `.progress.md` preserved for context
 
 ### US-7: Verification Logic Migration
@@ -99,7 +99,7 @@ Replace the custom stop-handler loop mechanism in `/implement` with the official
 
 **As a** plugin user
 **I want to** see the version bumped to 2.0.0
-**So that** I know this is a breaking change requiring Ralph Wiggum dependency
+**So that** I know this is a breaking change requiring Ralph Loop dependency
 
 **Acceptance Criteria:**
 - [ ] AC-8.1: plugin.json version updated from 1.6.1 to 2.0.0
@@ -111,7 +111,7 @@ Replace the custom stop-handler loop mechanism in `/implement` with the official
 | FR-1 | `/implement` becomes thin wrapper calling `/ralph-loop` | High | AC-1.1, AC-1.2, AC-1.5 |
 | FR-2 | Coordinator prompt includes full task orchestration logic | High | AC-2.1 through AC-2.7 |
 | FR-3 | Delete stop-handler.sh, update hooks.json for watcher | High | AC-3.1, AC-3.2, AC-3.3 |
-| FR-4 | Check Ralph Wiggum dependency on `/implement` invocation | High | AC-4.1, AC-4.2 |
+| FR-4 | Check Ralph Loop dependency on `/implement` invocation | High | AC-4.1, AC-4.2 |
 | FR-5 | Maintain .ralph-state.json for task tracking | High | AC-5.1, AC-5.2 |
 | FR-6 | Update /cancel to call /cancel-ralph | Medium | AC-6.1, AC-6.2, AC-6.3 |
 | FR-7 | Parallel [P] task execution via multi-Task tool calls | High | AC-2.4 |
@@ -131,10 +131,10 @@ Replace the custom stop-handler loop mechanism in `/implement` with the official
 
 ## Glossary
 
-- **Ralph Wiggum**: Official Anthropic plugin providing autonomous loop mechanism via stop-hook
+- **Ralph Loop**: Official Anthropic plugin providing autonomous loop mechanism via stop-hook
 - **Coordinator**: The `/implement` command's role in orchestrating task execution
 - **Spec-executor**: Subagent that executes individual tasks autonomously
-- **Completion promise**: String that Ralph Wiggum watches for to end the loop ("ALL_TASKS_COMPLETE")
+- **Completion promise**: String that Ralph Loop watches for to end the loop ("ALL_TASKS_COMPLETE")
 - **Task tool**: Claude's mechanism for spawning subagents with isolated context
 - **Stop hook**: Claude Code hook that intercepts session exits (exit code 2 continues loop)
 - **[P] marker**: Parallel execution marker in tasks.md enabling concurrent task execution
@@ -145,22 +145,22 @@ Replace the custom stop-handler loop mechanism in `/implement` with the official
 - Modifying spec-executor.md agent logic (stays as-is)
 - Modifying qa-engineer.md agent logic (stays as-is)
 - Modifying other spec phases (research, requirements, design, tasks)
-- Bundling or forking Ralph Wiggum into this plugin
+- Bundling or forking Ralph Loop into this plugin
 - Changing the TASK_COMPLETE signal (spec-executor continues using it)
 - Removing .ralph-state.json entirely (still needed for task tracking)
 
 ## Dependencies
 
-- **Ralph Wiggum plugin**: Must be installed via `/plugin install ralph-loop@claude-plugins-official`
-- **Claude Code hooks**: Ralph Wiggum relies on Stop hook mechanism
+- **Ralph Loop plugin**: Must be installed via `/plugin install ralph-loop@claude-plugins-official`
+- **Claude Code hooks**: Ralph Loop relies on Stop hook mechanism
 - **Task tool**: Subagent delegation requires Task tool support
 
 ## Breaking Changes
 
 | Change | Impact | Migration |
 |--------|--------|-----------|
-| Ralph Wiggum required | Users must install dependency | Add to README, error message with install command |
-| Custom stop-handler removed | No longer self-contained | Ralph Wiggum provides loop mechanism |
+| Ralph Loop required | Users must install dependency | Add to README, error message with install command |
+| Custom stop-handler removed | No longer self-contained | Ralph Loop provides loop mechanism |
 | Completion signal change | ALL_TASKS_COMPLETE vs TASK_COMPLETE | Coordinator handles translation |
 | Major version bump | 1.6.1 -> 2.0.0 | Signals breaking change to users |
 
@@ -170,5 +170,5 @@ Replace the custom stop-handler loop mechanism in `/implement` with the official
 - Parallel [P] task execution continues working via multi-Task tool calls
 - [VERIFY] delegation to qa-engineer continues working
 - Custom stop-handler.sh deleted, hooks.json updated for read-only watcher
-- Error message guides users to install Ralph Wiggum when missing
+- Error message guides users to install Ralph Loop when missing
 - All existing specs can complete using the new loop mechanism

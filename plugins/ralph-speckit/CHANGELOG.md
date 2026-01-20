@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `/speckit:analyze` - Analyze implementation approach
   - `/speckit:tasks` - Generate task list from spec and plan
   - `/speckit:taskstoissues` - Convert tasks to GitHub issues
-  - `/speckit:implement` - Execute tasks autonomously via Ralph Wiggum
+  - `/speckit:implement` - Execute tasks autonomously via Ralph Loop
   - `/speckit:status` - Show current feature status
   - `/speckit:switch` - Switch active feature
   - `/speckit:cancel` - Cancel execution loop
@@ -52,6 +52,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 
-- Requires Ralph Wiggum plugin for autonomous execution
+- Requires Ralph Loop plugin for autonomous execution
 
 [0.1.0]: https://github.com/tzachbon/smart-ralph/releases/tag/ralph-speckit-v0.1.0

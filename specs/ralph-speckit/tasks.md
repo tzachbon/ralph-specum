@@ -137,7 +137,7 @@ approach: wrapper
     2. Commits spec files before starting (if not committed)
     3. Initializes state with phase=execution
     4. Delegates to spec-executor for current task
-    5. Ralph Wiggum handles loop continuation via exit code 2
+    5. Ralph Loop handles loop continuation via exit code 2
   - **Files**: `plugins/ralph-speckit/commands/implement.md`
   - **Verify**: `grep -q "spec-executor" plugins/ralph-speckit/commands/implement.md`
   - **Done when**: Implement command triggers task execution loop
@@ -329,7 +329,7 @@ approach: wrapper
 
 **Dependencies:**
 - spec-kit CLI must be installed (task 1.1)
-- Ralph Wiggum handles loop continuation (stop-watcher is logging only)
+- Ralph Loop handles loop continuation (stop-watcher is logging only)
 
 **File Count (ralph-speckit unique):**
 - Hooks: 2 (hooks.json, stop-watcher.sh)

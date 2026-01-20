@@ -12,7 +12,7 @@
 
 **Spec-driven development for Claude Code. Task-by-task execution with fresh context per task.**
 
-Ralph Wiggum + Spec-Driven Development = <3
+Ralph Loop + Spec-Driven Development = <3
 
 [Quick Start](#-quick-start) | [Commands](#-commands) | [How It Works](#-how-it-works) | [Troubleshooting](#-troubleshooting)
 
@@ -39,13 +39,13 @@ Named after the [Ralph agentic loop pattern](https://ghuntley.com/ralph/) and ev
 
 ## Requirements
 
-**v2.0.0+** requires the Ralph Wiggum plugin for task execution:
+**v2.0.0+** requires the Ralph Loop plugin for task execution:
 
 ```bash
 /plugin install ralph-loop@claude-plugins-official
 ```
 
-Ralph Wiggum provides the execution loop. Smart Ralph provides the spec-driven workflow on top.
+Ralph Loop provides the execution loop. Smart Ralph provides the spec-driven workflow on top.
 
 ---
 
@@ -54,7 +54,7 @@ Ralph Wiggum provides the execution loop. Smart Ralph provides the spec-driven w
 ### From Marketplace
 
 ```bash
-# Install Ralph Wiggum dependency first
+# Install Ralph Loop dependency first
 /plugin install ralph-loop@claude-plugins-official
 
 # Add the marketplace
@@ -69,7 +69,7 @@ Ralph Wiggum provides the execution loop. Smart Ralph provides the spec-driven w
 ### From GitHub
 
 ```bash
-# Install Ralph Wiggum dependency first
+# Install Ralph Loop dependency first
 /plugin install ralph-loop@claude-plugins-official
 
 /plugin install https://github.com/tzachbon/smart-ralph
@@ -78,7 +78,7 @@ Ralph Wiggum provides the execution loop. Smart Ralph provides the spec-driven w
 ### Local Development
 
 ```bash
-# Install Ralph Wiggum dependency first
+# Install Ralph Loop dependency first
 /plugin install ralph-loop@claude-plugins-official
 
 git clone https://github.com/tzachbon/smart-ralph.git
@@ -242,7 +242,7 @@ Specs live in `./specs/` in your project:
 ### Installation
 
 ```bash
-# Install Ralph Wiggum dependency first
+# Install Ralph Loop dependency first
 /plugin install ralph-loop@claude-plugins-official
 
 # Install ralph-speckit
@@ -307,7 +307,7 @@ Specs live in `./specs/` in your project:
 
 ## Troubleshooting
 
-**"Ralph Wiggum plugin not found"?**
+**"Ralph Loop plugin not found"?**
 Install the dependency: `/plugin install ralph-loop@claude-plugins-official`
 
 **"stop-handler.sh: No such file or directory"?**
@@ -317,13 +317,13 @@ Old v1.x installation conflict. Reinstall the plugin or see [TROUBLESHOOTING.md]
 After max iterations, the loop stops. Check `.progress.md` for errors. Fix manually, then `/ralph-specum:implement` to resume.
 
 **Want to start over?**
-`/ralph-specum:cancel` cleans up state (both Ralph Wiggum and Smart Ralph state files). Then start fresh.
+`/ralph-specum:cancel` cleans up state (both Ralph Loop and Smart Ralph state files). Then start fresh.
 
 **Resume existing spec?**
 Just `/ralph-specum:start` - it auto-detects and continues where you left off.
 
 **"Loop state conflict"?**
-Another Ralph loop may be running. Use `/cancel-ralph` to reset Ralph Wiggum state, then retry.
+Another Ralph loop may be running. Use `/cancel-ralph` to reset Ralph Loop state, then retry.
 
 **More issues?** See the full [Troubleshooting Guide](TROUBLESHOOTING.md).
 
@@ -333,19 +333,19 @@ Another Ralph loop may be running. Use `/cancel-ralph` to reset Ralph Wiggum sta
 
 ### v2.0.0
 
-**Ralph Wiggum dependency required**
+**Ralph Loop dependency required**
 
-Starting with v2.0.0, Smart Ralph delegates task execution to the official Ralph Wiggum plugin.
+Starting with v2.0.0, Smart Ralph delegates task execution to the official Ralph Loop plugin.
 
 **Migration from v1.x:** See [MIGRATION.md](MIGRATION.md) for detailed guide.
 
 Quick version:
-1. Install Ralph Wiggum: `/plugin install ralph-loop@claude-plugins-official`
+1. Install Ralph Loop: `/plugin install ralph-loop@claude-plugins-official`
 2. Restart Claude Code
 3. Existing specs continue working. No spec file changes needed.
 
 **What changed:**
-- Custom stop-handler removed. Ralph Wiggum provides the execution loop.
+- Custom stop-handler removed. Ralph Loop provides the execution loop.
 - `/implement` now invokes `/ralph-loop` internally
 - `/cancel` now calls `/cancel-ralph` for cleanup
 - Same task format, same verification, same workflow. Just different internals.

@@ -8,7 +8,7 @@ Thank you for your interest in contributing to Ralph Speckit. This document outl
 
 - Claude Code installed and configured
 - Git
-- Ralph Wiggum plugin for testing execution features
+- Ralph Loop plugin for testing execution features
 
 ### Local Development
 

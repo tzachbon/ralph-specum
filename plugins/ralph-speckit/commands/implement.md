@@ -13,7 +13,7 @@ You are starting the task execution loop.
 **BEFORE proceeding**, verify Ralph Wiggum plugin is installed by attempting to invoke the skill.
 
 If the Skill tool fails with "skill not found" or similar error for `ralph-wiggum:ralph-loop`:
-1. Output error: "ERROR: Ralph Wiggum plugin not found. Install with: /plugin install ralph-wiggum@claude-plugins-official"
+1. Output error: "ERROR: Ralph Wiggum plugin not found. Install with: /plugin install ralph-loop@claude-plugins-official"
 2. STOP execution immediately. Do NOT continue.
 
 This is a hard dependency. The command cannot function without Ralph Wiggum.
@@ -85,7 +85,7 @@ This file contains the full instructions for task execution. Writing it to a fil
 
 ### Step 2: Invoke Ralph Loop Skill
 
-Use the Skill tool to invoke `ralph-wiggum:ralph-loop` with args:
+Use the Skill tool to invoke `ralph-loop:ralph-loop` with args:
 
 ```
 Read .specify/specs/$feature/.coordinator-prompt.md and follow those instructions exactly. Output ALL_TASKS_COMPLETE when done. --max-iterations <calculated> --completion-promise ALL_TASKS_COMPLETE

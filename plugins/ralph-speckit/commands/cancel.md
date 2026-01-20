@@ -28,10 +28,10 @@ If state file exists, read and display:
 
 ## Cleanup
 
-1. Stop Ralph Wiggum loop (if running):
+1. Stop Ralph Loop loop (if running):
    ```
    Use the Skill tool to invoke ralph-wiggum:cancel-ralph
-   This stops any active Ralph Wiggum loop iteration
+   This stops any active Ralph Loop loop iteration
    ```
 
 2. Delete state file:
@@ -54,7 +54,7 @@ State before cancellation:
 - Iterations: <globalIteration>
 
 Cleanup:
-- [x] Stopped Ralph Wiggum loop (/cancel-ralph)
+- [x] Stopped Ralph Loop loop (/cancel-ralph)
 - [x] Removed .speckit-state.json
 - [ ] Kept .progress.md (contains history)
 

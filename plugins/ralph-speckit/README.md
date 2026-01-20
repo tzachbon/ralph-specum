@@ -5,7 +5,7 @@ Spec-driven development plugin for Claude Code using the [GitHub spec-kit](https
 ## Features
 
 - **Constitution-First Approach**: Establish project principles before any feature work
-- **Autonomous Execution**: Ralph Wiggum integration for continuous task execution
+- **Autonomous Execution**: Ralph Loop integration for continuous task execution
 - **Parallel Task Execution**: Tasks marked `[P]` run simultaneously
 - **4-Layer Verification**: Contradiction detection, uncommitted files check, checkmark verification, and completion signals
 - **QA Engineer Agent**: Specialized agent for `[VERIFY]` quality checkpoint tasks
@@ -16,7 +16,7 @@ Spec-driven development plugin for Claude Code using the [GitHub spec-kit](https
 ## Prerequisites
 
 - [Claude Code](https://claude.com/claude-code) installed and configured
-- **Ralph Wiggum Plugin** (required for autonomous execution):
+- **Ralph Loop Plugin** (required for autonomous execution):
   ```bash
   /plugin install ralph-wiggum@claude-plugins-official
   ```
@@ -97,7 +97,7 @@ claude --plugin-dir /path/to/ralph-speckit
                     └────────┬────────┘
                              │
                     ┌────────▼────────┐
-                    │   implement     │  Execute via Ralph Wiggum
+                    │   implement     │  Execute via Ralph Loop
                     └────────┬────────┘
                              │
                     ┌────────▼────────┐
@@ -187,7 +187,7 @@ The execution coordinator validates each task completion:
 
 ## Troubleshooting
 
-### "Ralph Wiggum plugin not found"
+### "Ralph Loop plugin not found"
 
 Install the required dependency:
 ```bash
@@ -231,13 +231,13 @@ rm .specify/specs/<feature>/.speckit-state.json
 
 ## Dependencies
 
-This plugin requires the **Ralph Wiggum** plugin for autonomous execution loops.
+This plugin requires the **Ralph Loop** plugin for autonomous execution loops.
 
-Ralph Wiggum provides:
+Ralph Loop provides:
 - `/ralph-loop:ralph-loop` - Continuous execution loop
 - `/ralph-loop:cancel-ralph` - Cancel running loop
 
-Without Ralph Wiggum, `/speckit:implement` will fail with an error.
+Without Ralph Loop, `/speckit:implement` will fail with an error.
 
 ## License
 

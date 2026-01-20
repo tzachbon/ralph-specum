@@ -11,7 +11,7 @@
 
 **Overall Score: 5.5/10**
 
-Ralph-speckit is an ambitious and feature-rich Claude Code plugin implementing the GitHub spec-kit methodology with significant enhancements (constitution-first approach, autonomous execution with Ralph Wiggum integration, parallel task execution, and verification layers). The **technical implementation is sophisticated and well-thought-out**, but **critical open-source hygiene issues** make it unsuitable for production release in its current state.
+Ralph-speckit is an ambitious and feature-rich Claude Code plugin implementing the GitHub spec-kit methodology with significant enhancements (constitution-first approach, autonomous execution with Ralph Loop integration, parallel task execution, and verification layers). The **technical implementation is sophisticated and well-thought-out**, but **critical open-source hygiene issues** make it unsuitable for production release in its current state.
 
 | Category | Score | Status |
 |----------|-------|--------|
@@ -54,7 +54,7 @@ allowed-tools: [Read, Write, Edit, Task, Bash]
 - All required fields documented with proper patterns
 
 **Hooks Implementation**
-- Stop hook is simple and defensive (exits 0, lets Ralph Wiggum control loop)
+- Stop hook is simple and defensive (exits 0, lets Ralph Loop control loop)
 - Uses `jq` with proper fallbacks
 - Cleans up orphaned temp files
 
@@ -83,11 +83,11 @@ Commands exist in two locations:
 
 This creates confusion about which takes precedence and increases maintenance burden.
 
-**P2: Hardcoded Ralph Wiggum Dependency**
-`implement.md` requires Ralph Wiggum plugin but verification is manual:
+**P2: Hardcoded Ralph Loop Dependency**
+`implement.md` requires Ralph Loop plugin but verification is manual:
 ```markdown
 If the Skill tool fails with "skill not found" or similar error for `ralph-loop:ralph-loop`:
-1. Output error: "ERROR: Ralph Wiggum plugin not found..."
+1. Output error: "ERROR: Ralph Loop plugin not found..."
 ```
 Should use a schema/config-based dependency declaration.
 
@@ -117,7 +117,7 @@ Should use a schema/config-based dependency declaration.
 A production-ready README should include:
 1. **What it does** - Brief description of spec-driven development
 2. **Features** - Constitution-first, autonomous execution, verification layers
-3. **Prerequisites** - Claude Code, Ralph Wiggum plugin
+3. **Prerequisites** - Claude Code, Ralph Loop plugin
 4. **Installation** - Step-by-step guide
 5. **Quick Start** - 5-minute example workflow
 6. **Command Reference** - Table of all /speckit.* commands
@@ -215,7 +215,7 @@ Users need to see complete examples, not just patterns.
 **P0: Complex Setup Requirements**
 To use this plugin, a user must:
 1. Install Claude Code (documented by Anthropic)
-2. Install Ralph Wiggum plugin (WHERE? HOW?)
+2. Install Ralph Loop plugin (WHERE? HOW?)
 3. Configure the plugin (WHERE? HOW?)
 4. Understand 9+ slash commands
 5. Understand the spec-kit workflow
@@ -225,7 +225,7 @@ No guidance is provided for steps 2-5.
 **P1: Error Messages Not Helpful Enough**
 Example from `implement.md`:
 ```
-"ERROR: Ralph Wiggum plugin not found. Install with: /plugin install ralph-wiggum@claude-plugins-official"
+"ERROR: Ralph Loop plugin not found. Install with: /plugin install ralph-wiggum@claude-plugins-official"
 ```
 But is `ralph-wiggum@claude-plugins-official` a real registry path? Is there a `/plugin install` command? This needs verification.
 
@@ -263,7 +263,7 @@ All spec-kit phases are implemented:
 
 **Significant Enhancements Over Base Spec-Kit**
 1. **Constitution-First**: Project principles established before any feature work
-2. **Autonomous Execution**: Ralph Wiggum loop for continuous implementation
+2. **Autonomous Execution**: Ralph Loop loop for continuous implementation
 3. **Verification Layers**: 4-layer verification (contradiction, uncommitted files, checkmark, signal)
 4. **Parallel Execution**: Tasks marked `[P]` can run simultaneously
 5. **QA Engineer Agent**: Specialized agent for `[VERIFY]` tasks
@@ -318,7 +318,7 @@ The `tasks-template.md` is 9KB with extensive examples. This is helpful for Clau
 | 1 | **Create README.md** with installation, quick start, command reference | 4h | `/README.md` |
 | 2 | **Add LICENSE file** (MIT as per plugin.json) | 5m | `/LICENSE` |
 | 3 | **Move plugin.json** to `.claude-plugin/plugin.json` | 10m | Directory restructure |
-| 4 | **Document Ralph Wiggum dependency** with actual installation steps | 1h | `README.md` |
+| 4 | **Document Ralph Loop dependency** with actual installation steps | 1h | `README.md` |
 | 5 | **Add installation instructions** for the plugin itself | 1h | `README.md` |
 
 ### P1 - High Priority (Should Fix Soon)
@@ -362,7 +362,7 @@ The `tasks-template.md` is 9KB with extensive examples. This is helpful for Clau
 | Phases | 7-phase feature workflow | 5-phase spec-driven workflow |
 | Agents | 3 specialized agents | 2 agents + qa-engineer |
 | README | ✅ Comprehensive | ❌ Missing |
-| Automation | Manual phase transitions | Autonomous via Ralph Wiggum |
+| Automation | Manual phase transitions | Autonomous via Ralph Loop |
 | Verification | Basic | 4-layer verification system |
 
 ### vs. GitHub spec-kit
@@ -388,7 +388,7 @@ The `tasks-template.md` is 9KB with extensive examples. This is helpful for Clau
 
 4. **Create workflow documentation** - Users need to understand the process
 5. **Add example project** - Show, don't just tell
-6. **Document all dependencies** - Ralph Wiggum installation
+6. **Document all dependencies** - Ralph Loop installation
 
 ### Long-Term Considerations
 

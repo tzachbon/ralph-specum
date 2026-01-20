@@ -30,6 +30,11 @@
   - **Verify**: `npm run lint`
   - **Commit**: "chore: add linting configuration"
 
+- [ ] T003A [VERIFY] Setup checkpoint
+  - **Do**: Verify project setup is complete and builds
+  - **Verify**: `npm run build && npm run lint`
+  - **Done when**: Build and lint pass
+
 ### Database and Core Utils
 
 - [ ] T004 Setup database schema with Prisma
@@ -51,6 +56,11 @@
   - **Verify**: Manual verification
   - **Commit**: "feat: add JWT utilities"
 
+- [ ] T006A [VERIFY] Core infrastructure checkpoint
+  - **Do**: Verify database and utilities are working
+  - **Verify**: `npx prisma validate` and manual JWT test
+  - **Done when**: Schema valid, JWT functions work
+
 ### User Story 1: Registration (US1)
 
 - [ ] T007 [US1] Implement password hashing utility
@@ -65,6 +75,11 @@
   - **Done when**: Endpoint accepts requests and creates users
   - **Verify**: `curl -X POST localhost:3000/api/auth/register -d '{"email":"test@example.com","password":"Test123!"}' -H 'Content-Type: application/json'`
   - **Commit**: "feat: implement user registration"
+
+- [ ] T008A [VERIFY] Registration checkpoint
+  - **Do**: Verify registration flow works end-to-end
+  - **Verify**: Register new user, verify user exists in database
+  - **Done when**: User can register and is stored correctly
 
 ### User Story 2: Login (US2)
 
@@ -147,6 +162,12 @@
   - **Done when**: Tests pass
   - **Verify**: `npm test -- password`
   - **Commit**: "test: add password utility tests"
+
+- [ ] T018A [VERIFY] Unit tests checkpoint
+  - **Do**: Verify utility tests pass before integration tests
+  - **Verify**: `npm test -- --testPathPattern="utils"`
+  - **Done when**: All utility tests pass
+
 - [ ] T019 [US1] Write registration API tests
   - **Do**: Test valid registration, duplicate email, weak password cases
   - **Files**: tests/integration/register.test.ts

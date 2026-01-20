@@ -75,7 +75,9 @@ jobs:
             PLUGIN_JSON="plugins/${plugin_name}/.claude-plugin/plugin.json"
 
             if [ ! -f "$PLUGIN_JSON" ]; then
-              echo "⚠️  No plugin.json found for $plugin_name, skipping"
+              echo "❌ ERROR: No plugin.json found for $plugin_name!"
+              echo "Plugin changes detected but plugin.json is missing at: $PLUGIN_JSON"
+              ALL_PASSED=false
               continue
             fi
 

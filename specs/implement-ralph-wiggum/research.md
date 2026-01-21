@@ -2,14 +2,14 @@
 
 ## Executive Summary
 
-The goal is to use the official Ralph Wiggum plugin as the **loop mechanism** for `/implement`, while preserving the current Task tool delegation to spec-executor subagents. Ralph Wiggum's stop-hook (exit code 2) keeps the root agent running in a loop. On each iteration, the root agent reads state, determines next task(s), and invokes spec-executor via Task tool. This preserves parallel execution ([P] markers) and [VERIFY] delegation since those use Task tool subagents, not the loop mechanism itself.
+The goal is to use the official Ralph Loop plugin as the **loop mechanism** for `/implement`, while preserving the current Task tool delegation to spec-executor subagents. Ralph Loop's stop-hook (exit code 2) keeps the root agent running in a loop. On each iteration, the root agent reads state, determines next task(s), and invokes spec-executor via Task tool. This preserves parallel execution ([P] markers) and [VERIFY] delegation since those use Task tool subagents, not the loop mechanism itself.
 
-**Key insight**: Ralph Wiggum provides the loop. spec-executor provides the execution. They are complementary, not competing.
+**Key insight**: Ralph Loop provides the loop. spec-executor provides the execution. They are complementary, not competing.
 
 ## User Context
 
 Interview responses:
-- **Technical approach**: Use Ralph Wiggum as the main orchestrator loop. Root agent stays in Ralph Wiggum loop and invokes spec-executor subagents via Task tool. Parallel execution preserved.
+- **Technical approach**: Use Ralph Loop as the main orchestrator loop. Root agent stays in Ralph Loop loop and invokes spec-executor subagents via Task tool. Parallel execution preserved.
 - **Known constraints**: No known constraints
 
 ## Target Architecture
@@ -24,7 +24,7 @@ Interview responses:
               └─> Task tool -> spec-executor (parallel via multi-Task for [P])
               └─> Task tool -> qa-engineer (for [VERIFY])
               └─> Output ALL_TASKS_COMPLETE when taskIndex >= totalTasks
-        └─> Ralph Wiggum stop-hook re-injects prompt each iteration
+        └─> Ralph Loop stop-hook re-injects prompt each iteration
 ```
 
 **What changes**:
@@ -36,10 +36,10 @@ Interview responses:
 
 ## External Research
 
-### Official Ralph Wiggum Plugin
+### Official Ralph Loop Plugin
 
 **Repository**: `anthropics/claude-code` at `plugins/ralph-wiggum/`
-**Installation**: `/plugin install ralph-loop@claude-plugins-official`
+**Installation**: `/plugin install ralph-wiggum@claude-plugins-official`
 
 ### Core Mechanism
 
@@ -126,7 +126,7 @@ The task prompt goes here...
 
 ### Architectural Comparison
 
-| Aspect | Current (spec-executor) | Ralph Wiggum |
+| Aspect | Current (spec-executor) | Ralph Loop |
 |--------|-------------------------|--------------|
 | Execution model | Task tool subagents | Single context, same prompt |
 | State management | .ralph-state.json | .claude/ralph-loop.local.md |
@@ -139,25 +139,25 @@ The task prompt goes here...
 
 | Name | Relevance | Relationship | mayNeedUpdate |
 |------|-----------|--------------|---------------|
-| parallel-task-execution | Medium | [P] marker parallelism via Task tool. **Compatible** - root agent in Ralph Wiggum loop still uses Task tool. | false |
+| parallel-task-execution | Medium | [P] marker parallelism via Task tool. **Compatible** - root agent in Ralph Loop loop still uses Task tool. | false |
 | qa-verification | Medium | [VERIFY] delegation to qa-engineer via Task tool. **Compatible** - delegation pattern unchanged. | false |
 | goal-interview | Low | Interviews in commands, not implement. Independent of execution. | false |
 | plan-source-feature | Low | Generates tasks, does not execute. Upstream and independent. | false |
 | add-skills-doc | Low | Documentation only. | false |
 
-**Note**: Since Ralph Wiggum only provides the loop mechanism and the root agent still uses Task tool for subagent delegation, existing parallel and verification features remain intact.
+**Note**: Since Ralph Loop only provides the loop mechanism and the root agent still uses Task tool for subagent delegation, existing parallel and verification features remain intact.
 
 ## Feasibility Assessment
 
 | Aspect | Feasibility | Notes |
 |--------|-------------|-------|
-| Ralph Wiggum as loop mechanism | **High** | Direct use of official plugin stop-hook |
+| Ralph Loop as loop mechanism | **High** | Direct use of official plugin stop-hook |
 | Pre-prompt mechanism | **High** | Prompt includes implement.md logic + spec context |
 | Sequential task execution | **High** | Root agent invokes spec-executor via Task tool |
 | [VERIFY] task handling | **High** | Root agent invokes qa-engineer via Task tool (unchanged) |
 | Parallel [P] tasks | **High** | Root agent spawns multiple Task tools (unchanged) |
-| State management | **Medium** | Keep .ralph-state.json, integrate with Ralph Wiggum state |
-| Custom stop-handler removal | **High** | Replace with Ralph Wiggum's stop-hook |
+| State management | **Medium** | Keep .ralph-state.json, integrate with Ralph Loop state |
+| Custom stop-handler removal | **High** | Replace with Ralph Loop's stop-hook |
 
 ## Quality Commands
 
@@ -177,35 +177,35 @@ None. This is a markdown-only plugin repository. CI only checks plugin version b
    - Handle [VERIFY] via qa-engineer delegation
    - Output ALL_TASKS_COMPLETE when done
 
-3. **State management**: Keep .ralph-state.json. Ralph Wiggum handles iteration count in its own state file.
+3. **State management**: Keep .ralph-state.json. Ralph Loop handles iteration count in its own state file.
 
-4. **Remove custom loop**: Delete hooks/scripts/stop-handler.sh and hooks/hooks.json. Ralph Wiggum provides the loop via its stop-hook.
+4. **Remove custom loop**: Delete hooks/scripts/stop-handler.sh and hooks/hooks.json. Ralph Loop provides the loop via its stop-hook.
 
-5. **Dependency**: Require Ralph Wiggum plugin installed. Either:
+5. **Dependency**: Require Ralph Loop plugin installed. Either:
    - Document as prerequisite
-   - Or bundle/fork Ralph Wiggum into this plugin
+   - Or bundle/fork Ralph Loop into this plugin
 
 ## Open Questions
 
 1. Should the prompt be inline in implement.md or read from a separate template file?
 2. How to calculate --max-iterations? (totalTasks * maxTaskIterations)?
 3. How to handle the prompt size? Current implement.md is ~1000 lines.
-4. What minimal stop-hook logic to keep (if any) to complement Ralph Wiggum?
+4. What minimal stop-hook logic to keep (if any) to complement Ralph Loop?
 5. How does /cancel-ralph interact with .ralph-state.json cleanup? Need wrapper?
 
 ## Dependency Strategy
 
-**Decision**: Require users to install Ralph Wiggum plugin separately.
+**Decision**: Require users to install Ralph Loop plugin separately.
 
-- Install: `/plugin install ralph-loop@claude-plugins-official`
+- Install: `/plugin install ralph-wiggum@claude-plugins-official`
 - This is a **breaking change** for existing users
 - Document in README and migration guide
-- `/implement` should check if Ralph Wiggum is available and error with install instructions if not
+- `/implement` should check if Ralph Loop is available and error with install instructions if not
 
 **Why not bundle?**
-- Ralph Wiggum is official Anthropic plugin, likely maintained separately
+- Ralph Loop is official Anthropic plugin, likely maintained separately
 - Avoids version drift and duplication
-- Simpler to update when Ralph Wiggum improves
+- Simpler to update when Ralph Loop improves
 
 ## Stop Handler Simplification
 
@@ -217,23 +217,23 @@ None. This is a markdown-only plugin repository. CI only checks plugin version b
 
 **After migration**:
 - Remove most/all of stop-handler.sh
-- Ralph Wiggum's stop-hook handles the loop
+- Ralph Loop's stop-hook handles the loop
 - Verification logic moves INTO the prompt (Claude checks before outputting completion)
 - Maybe keep minimal hook for .ralph-state.json cleanup on /cancel-ralph
 
 ## Breaking Changes
 
-1. **Requires Ralph Wiggum plugin**: Users must install it
-2. **Stop handler removed/simplified**: Custom hooks.json replaced by Ralph Wiggum's
-3. **State file changes**: May simplify .ralph-state.json since Ralph Wiggum tracks iterations
+1. **Requires Ralph Loop plugin**: Users must install it
+2. **Stop handler removed/simplified**: Custom hooks.json replaced by Ralph Loop's
+3. **State file changes**: May simplify .ralph-state.json since Ralph Loop tracks iterations
 
 ## Sources
 
-- [Official Ralph Wiggum Plugin](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum)
+- [Official Ralph Loop Plugin](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum)
 - [Claude Code Hooks Reference](https://code.claude.com/docs/en/hooks)
 - [Claude Code Plugins Reference](https://code.claude.com/docs/en/plugins-reference)
-- [Awesome Claude: Ralph Wiggum](https://awesomeclaude.ai/ralph-wiggum)
-- [Ralph Wiggum Autonomous Loops](https://paddo.dev/blog/ralph-wiggum-autonomous-loops/)
+- [Awesome Claude: Ralph Loop](https://awesomeclaude.ai/ralph-wiggum)
+- [Ralph Loop Autonomous Loops](https://paddo.dev/blog/ralph-wiggum-autonomous-loops/)
 - [Looking4OffSwitch Blog](https://looking4offswitch.github.io/blog/2026/01/04/ralph-wiggum-claude-code/)
 - Local codebase: plugins/ralph-specum/commands/implement.md
 - Local codebase: plugins/ralph-specum/agents/spec-executor.md

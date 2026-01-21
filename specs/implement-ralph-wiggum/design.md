@@ -1,8 +1,8 @@
-# Design: Ralph Wiggum Loop Integration
+# Design: Ralph Loop Loop Integration
 
 ## Overview
 
-Replace the custom stop-handler.sh loop mechanism with the official Ralph Wiggum plugin's `/ralph-loop` command. The `/implement` command becomes a thin wrapper (~80 lines) that constructs a coordinator prompt and invokes `/ralph-loop`. The coordinator prompt contains all task orchestration logic (task parsing, state management, parallel execution, verification, delegation to spec-executor). This eliminates 274 lines of shell scripting while preserving existing subagent patterns.
+Replace the custom stop-handler.sh loop mechanism with the official Ralph Loop plugin's `/ralph-loop` command. The `/implement` command becomes a thin wrapper (~80 lines) that constructs a coordinator prompt and invokes `/ralph-loop`. The coordinator prompt contains all task orchestration logic (task parsing, state management, parallel execution, verification, delegation to spec-executor). This eliminates 274 lines of shell scripting while preserving existing subagent patterns.
 
 ## Architecture
 
@@ -19,7 +19,7 @@ graph TB
         InvokeRL["/ralph-loop invocation"]
     end
 
-    subgraph RalphWiggum["Ralph Wiggum Plugin"]
+    subgraph RalphWiggum["Ralph Loop Plugin"]
         RL["/ralph-loop"]
         StopHook["stop-hook.sh (exit code 2)"]
         RWState[".claude/ralph-loop.local.md"]
@@ -80,11 +80,11 @@ graph TB
 
 ### Component 1: Thin Wrapper (implement.md)
 
-**Purpose**: Validate prerequisites, construct coordinator prompt, invoke Ralph Wiggum loop
+**Purpose**: Validate prerequisites, construct coordinator prompt, invoke Ralph Loop loop
 
 **Responsibilities**:
 - Read and validate spec from `.current-spec`
-- Check Ralph Wiggum plugin availability
+- Check Ralph Loop plugin availability
 - Read initial state from `.ralph-state.json`
 - Calculate `--max-iterations` from totalTasks * maxTaskIterations
 - Construct coordinator prompt with full orchestration logic
@@ -111,7 +111,7 @@ allowed-tools: [Read, Bash, Skill]
 1. Read ./specs/.current-spec
 2. Check spec directory exists
 3. Check tasks.md exists
-4. Check Ralph Wiggum available (see Component 2)
+4. Check Ralph Loop available (see Component 2)
 
 ## Initialize State
 1. Read .ralph-state.json or create default
@@ -133,7 +133,7 @@ Call: /ralph-loop "<coordinator-prompt>" --max-iterations $maxIterations --compl
 
 ### Component 2: Dependency Check
 
-**Purpose**: Detect if Ralph Wiggum plugin is installed before attempting invocation
+**Purpose**: Detect if Ralph Loop plugin is installed before attempting invocation
 
 **Responsibilities**:
 - Check for `/ralph-loop` command availability
@@ -148,9 +148,9 @@ Output: Boolean (available) or Error message
 
 **Detection Strategy**:
 ```markdown
-## Check Ralph Wiggum Dependency
+## Check Ralph Loop Dependency
 
-Before invoking /ralph-loop, verify the Ralph Wiggum plugin is installed.
+Before invoking /ralph-loop, verify the Ralph Loop plugin is installed.
 
 ### Detection Method
 
@@ -170,16 +170,16 @@ ls ~/.claude/plugins/ralph-wiggum/.claude-plugin/plugin.json 2>/dev/null
 
 ### Error Output on Missing Dependency
 
-If Ralph Wiggum is not detected:
+If Ralph Loop is not detected:
 
 ```
-ERROR: Ralph Wiggum plugin required but not installed.
+ERROR: Ralph Loop plugin required but not installed.
 
-The /implement command now uses Ralph Wiggum for its execution loop.
+The /implement command now uses Ralph Loop for its execution loop.
 This is a breaking change in version 2.0.0.
 
 Install the dependency:
-  /plugin install ralph-loop@claude-plugins-official
+  /plugin install ralph-wiggum@claude-plugins-official
 
 Then retry:
   /ralph-specum:implement
@@ -190,7 +190,7 @@ Do NOT proceed with state changes if dependency check fails.
 
 ### Component 3: Coordinator Prompt (Inline)
 
-**Purpose**: Contains all task orchestration logic executed each Ralph Wiggum iteration
+**Purpose**: Contains all task orchestration logic executed each Ralph Loop iteration
 
 **Responsibilities**:
 - Read current state from `.ralph-state.json`
@@ -205,7 +205,7 @@ Do NOT proceed with state changes if dependency check fails.
 
 **Interface**:
 ```
-Input: Injected by Ralph Wiggum each iteration
+Input: Injected by Ralph Loop each iteration
 Output: ALL_TASKS_COMPLETE (terminates loop) or implicit continuation
 State: Reads/writes .ralph-state.json
 ```
@@ -274,13 +274,13 @@ It contains these sections in order:
 
 ### Component 4: State Management
 
-**Purpose**: Track task progress across Ralph Wiggum iterations
+**Purpose**: Track task progress across Ralph Loop iterations
 
 **Responsibilities**:
 - Maintain task index and iteration counts
 - Track parallel group boundaries
 - Store task results for partial failure handling
-- Coexist with Ralph Wiggum's own state file
+- Coexist with Ralph Loop's own state file
 
 **Interface**:
 ```typescript
@@ -307,7 +307,7 @@ interface RalphSpecumState {
   };
 }
 
-// .claude/ralph-loop.local.md (Ralph Wiggum state - read only)
+// .claude/ralph-loop.local.md (Ralph Loop state - read only)
 // YAML frontmatter with: active, iteration, max_iterations, completion_promise, started_at
 ```
 
@@ -316,7 +316,7 @@ interface RalphSpecumState {
 sequenceDiagram
     participant Wrapper as implement.md
     participant Coord as Coordinator Prompt
-    participant RW as Ralph Wiggum
+    participant RW as Ralph Loop
     participant SE as spec-executor
 
     Wrapper->>Wrapper: Initialize .ralph-state.json
@@ -345,7 +345,7 @@ sequenceDiagram
 **Purpose**: Clean cancellation with dual state cleanup
 
 **Responsibilities**:
-- Invoke `/cancel-ralph` to stop Ralph Wiggum loop
+- Invoke `/cancel-ralph` to stop Ralph Loop loop
 - Delete `.ralph-state.json`
 - Preserve `.progress.md` for context
 - Report final state before cleanup
@@ -362,7 +362,7 @@ allowed-tools: [Read, Bash, Skill]
 
 1. Determine target spec (from $ARGUMENTS or .current-spec)
 2. Read current state from .ralph-state.json (for reporting)
-3. Call /cancel-ralph to stop Ralph Wiggum loop
+3. Call /cancel-ralph to stop Ralph Loop loop
 4. Delete .ralph-state.json
 5. Keep .progress.md
 6. Report cancellation status
@@ -425,8 +425,8 @@ sequenceDiagram
 |----------|-------------------|--------|-----------|
 | Prompt location | Separate file vs inline | Inline in implement.md | Simpler deployment, single file to maintain, no template loading complexity |
 | Dependency detection | File check vs command check | Command check via Skill tool | More reliable than path guessing, works with any install location |
-| State file approach | Replace vs coexist | Coexist | Ralph Wiggum needs its state, we need task-specific state. Separate concerns. |
-| Verification location | Keep in stop-hook vs move to prompt | Move to prompt | No custom stop-hook with Ralph Wiggum. Coordinator verifies before signaling. |
+| State file approach | Replace vs coexist | Coexist | Ralph Loop needs its state, we need task-specific state. Separate concerns. |
+| Verification location | Keep in stop-hook vs move to prompt | Move to prompt | No custom stop-hook with Ralph Loop. Coordinator verifies before signaling. |
 | Max iterations calc | Fixed vs dynamic | Dynamic (totalTasks * maxTaskIterations * 2) | Accounts for retries without excessive headroom |
 | Completion signal | TASK_COMPLETE vs new | ALL_TASKS_COMPLETE | Distinct from per-task signal, clear semantic meaning |
 
@@ -436,16 +436,16 @@ sequenceDiagram
 |------|--------|---------|
 | plugins/ralph-specum/commands/implement.md | Rewrite | Thin wrapper (~80 lines) + inline coordinator prompt (~700 lines) |
 | plugins/ralph-specum/commands/cancel.md | Modify | Add /cancel-ralph invocation, dual cleanup |
-| plugins/ralph-specum/hooks/scripts/stop-handler.sh | Delete | No longer needed (Ralph Wiggum provides loop) |
+| plugins/ralph-specum/hooks/scripts/stop-handler.sh | Delete | No longer needed (Ralph Loop provides loop) |
 | plugins/ralph-specum/hooks/hooks.json | Delete | No custom hooks registered |
 | plugins/ralph-specum/.claude-plugin/plugin.json | Modify | Version 1.6.1 -> 2.0.0 |
-| README.md | Modify | Document breaking change, Ralph Wiggum dependency |
+| README.md | Modify | Document breaking change, Ralph Loop dependency |
 
 ## Error Handling
 
 | Error Scenario | Handling Strategy | User Impact |
 |----------------|-------------------|-------------|
-| Ralph Wiggum not installed | Fail fast with clear install instructions | User sees: "ERROR: Ralph Wiggum plugin required. Install via /plugin install ralph-loop@claude-plugins-official" |
+| Ralph Loop not installed | Fail fast with clear install instructions | User sees: "ERROR: Ralph Loop plugin required. Install via /plugin install ralph-wiggum@claude-plugins-official" |
 | Task verification fails | Increment taskIteration, retry same task | User sees retry message in progress |
 | Contradiction detected | Reject TASK_COMPLETE, retry with specific error | User sees: "CONTRADICTION: claimed complete but requires manual action" |
 | Max iterations reached | Block with error, preserve state | User sees: "Max iterations reached. Run /cancel to cleanup." |
@@ -459,8 +459,8 @@ sequenceDiagram
 - **All tasks already complete**: taskIndex >= totalTasks on first iteration. Output ALL_TASKS_COMPLETE immediately.
 - **Empty tasks.md**: totalTasks = 0, taskIndex >= totalTasks, complete immediately with warning.
 - **Missing .progress.md**: Create default structure before execution.
-- **Ralph Wiggum state exists but our state does not**: Fresh start, initialize our state.
-- **Our state exists but Ralph Wiggum not running**: Resume from our state, start new Ralph Wiggum loop.
+- **Ralph Loop state exists but our state does not**: Fresh start, initialize our state.
+- **Our state exists but Ralph Loop not running**: Resume from our state, start new Ralph Loop loop.
 
 ## Test Strategy
 
@@ -469,7 +469,7 @@ sequenceDiagram
 1. **Basic sequential execution**: Create spec with 3 sequential tasks. Run /implement. Verify all complete.
 2. **Parallel execution**: Create spec with [P] marked tasks. Verify concurrent execution via timestamp checks.
 3. **Verification task**: Create spec with [VERIFY] task. Verify qa-engineer invoked.
-4. **Dependency missing**: Uninstall Ralph Wiggum. Run /implement. Verify error message.
+4. **Dependency missing**: Uninstall Ralph Loop. Run /implement. Verify error message.
 5. **Cancel mid-execution**: Start /implement, run /cancel. Verify both state files cleaned.
 6. **Partial failure**: Create task that fails verification. Verify retry behavior.
 7. **Max iterations**: Set low maxTaskIterations. Verify loop stops after limit.
@@ -481,7 +481,7 @@ sequenceDiagram
 - [ ] No hooks/hooks.json
 - [ ] /cancel calls /cancel-ralph
 - [ ] plugin.json version = 2.0.0
-- [ ] README documents Ralph Wiggum dependency
+- [ ] README documents Ralph Loop dependency
 
 ## Performance Considerations
 
@@ -512,9 +512,9 @@ Based on codebase analysis:
 
 ### For Users
 
-1. Install Ralph Wiggum before upgrading:
+1. Install Ralph Loop before upgrading:
    ```
-   /plugin install ralph-loop@claude-plugins-official
+   /plugin install ralph-wiggum@claude-plugins-official
    ```
 
 2. Existing in-progress specs will continue working (state file compatible)

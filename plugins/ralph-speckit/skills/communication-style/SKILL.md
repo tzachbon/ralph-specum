@@ -37,7 +37,7 @@ description: Output rules for all agents - concise, scannable, actionable. Based
 
 Every output follows this order:
 
-```
+```text
 1. Brief overview (2-3 sentences MAX)
 2. Main content (tables, bullets, diagrams)
 3. Unresolved questions (if any)
@@ -87,7 +87,7 @@ Catches ambiguities before they become bugs.
 
 ### Bad (verbose)
 
-```
+```text
 The authentication system will need to handle user login
 functionality. In order to accomplish this, we will need
 to implement a JWT-based authentication mechanism that
@@ -96,7 +96,7 @@ allows users to securely log in to the application.
 
 ### Good (concise)
 
-```
+```text
 Auth system: JWT-based login
 
 Components:

@@ -1,15 +1,15 @@
-# Tasks: Ralph Wiggum Loop Integration
+# Tasks: Ralph Loop Loop Integration
 
 ## Phase 1: Make It Work (POC)
 
 Focus: Validate /ralph-loop invocation works end-to-end with minimal coordinator logic.
 
 - [x] 1.1 Delete custom stop-handler files
-  - **Do**: Remove hooks/scripts/stop-handler.sh and hooks/hooks.json. These are replaced by Ralph Wiggum's stop-hook.
+  - **Do**: Remove hooks/scripts/stop-handler.sh and hooks/hooks.json. These are replaced by Ralph Loop's stop-hook.
   - **Files**: `plugins/ralph-specum/hooks/scripts/stop-handler.sh`, `plugins/ralph-specum/hooks/hooks.json`
   - **Done when**: Both files deleted, hooks directory empty or contains only README
   - **Verify**: `ls plugins/ralph-specum/hooks/ && ! test -f plugins/ralph-specum/hooks/hooks.json && ! test -f plugins/ralph-specum/hooks/scripts/stop-handler.sh && echo "PASS"`
-  - **Commit**: `feat(hooks): remove custom stop-handler, delegate to Ralph Wiggum`
+  - **Commit**: `feat(hooks): remove custom stop-handler, delegate to Ralph Loop`
   - _Requirements: FR-3, AC-3.1, AC-3.2, AC-3.3_
   - _Design: File Structure_
 
@@ -17,13 +17,13 @@ Focus: Validate /ralph-loop invocation works end-to-end with minimal coordinator
   - **Do**: Rewrite implement.md as thin wrapper that:
     1. Reads spec from .current-spec
     2. Validates prerequisites (spec dir, tasks.md exist)
-    3. Checks Ralph Wiggum dependency via Skill tool note
+    3. Checks Ralph Loop dependency via Skill tool note
     4. Initializes .ralph-state.json with phase=execution
     5. Has placeholder coordinator prompt that just outputs ALL_TASKS_COMPLETE
   - **Files**: `plugins/ralph-specum/commands/implement.md`
   - **Done when**: implement.md is <100 lines wrapper, invokes /ralph-loop with placeholder prompt
   - **Verify**: `wc -l plugins/ralph-specum/commands/implement.md | awk '{if ($1 < 100) print "PASS: " $1 " lines"; else print "FAIL: " $1 " lines"}'`
-  - **Commit**: `feat(implement): create thin wrapper for Ralph Wiggum loop`
+  - **Commit**: `feat(implement): create thin wrapper for Ralph Loop loop`
   - _Requirements: FR-1, FR-4, AC-1.1, AC-1.5, AC-4.1, AC-4.2_
   - _Design: Component 1, Component 2_
 
@@ -107,7 +107,7 @@ Focus: Validate /ralph-loop invocation works end-to-end with minimal coordinator
 
 - [x] 1.10 Update cancel.md to call /cancel-ralph
   - **Do**: Modify cancel.md to:
-    1. Call /cancel-ralph via Skill tool to stop Ralph Wiggum loop
+    1. Call /cancel-ralph via Skill tool to stop Ralph Loop loop
     2. Continue existing .ralph-state.json deletion
     3. Keep .progress.md preservation
     4. Update output message
@@ -132,7 +132,7 @@ Focus: Validate /ralph-loop invocation works end-to-end with minimal coordinator
     4. Check hooks directory has no stop-handler
   - **Done when**: All structural validations pass
   - **Verify**: `! test -f plugins/ralph-specum/hooks/scripts/stop-handler.sh && grep -q "ralph-loop" plugins/ralph-specum/commands/implement.md && grep -q "cancel-ralph" plugins/ralph-specum/commands/cancel.md && echo "POC PASS"`
-  - **Commit**: `feat(implement): complete POC for Ralph Wiggum integration`
+  - **Commit**: `feat(implement): complete POC for Ralph Loop integration`
 
 ## Phase 2: Refactoring
 
@@ -180,20 +180,20 @@ After POC validated, clean up code and documentation.
   - **Files**: `plugins/ralph-specum/.claude-plugin/plugin.json`
   - **Done when**: Version is 2.0.0
   - **Verify**: `grep -q '"version": "2.0.0"' plugins/ralph-specum/.claude-plugin/plugin.json && echo "PASS"`
-  - **Commit**: `chore(version): bump to 2.0.0 for Ralph Wiggum breaking change`
+  - **Commit**: `chore(version): bump to 2.0.0 for Ralph Loop breaking change`
   - _Requirements: FR-11, AC-11.1_
   - _Design: File Structure_
 
 - [x] 2.5 Update README with breaking change documentation
   - **Do**: Update README.md to:
-    1. Add "Requirements" section listing Ralph Wiggum dependency
-    2. Add installation command: `/plugin install ralph-loop@claude-plugins-official`
+    1. Add "Requirements" section listing Ralph Loop dependency
+    2. Add installation command: `/plugin install ralph-wiggum@claude-plugins-official`
     3. Add "Breaking Changes" section for v2.0.0
     4. Update troubleshooting for new error messages
   - **Files**: `README.md`
-  - **Done when**: README documents Ralph Wiggum dependency clearly
-  - **Verify**: `grep -q "ralph-loop@claude-plugins-official" README.md && grep -q "2.0.0" README.md && echo "PASS"`
-  - **Commit**: `docs(readme): document Ralph Wiggum dependency and breaking change`
+  - **Done when**: README documents Ralph Loop dependency clearly
+  - **Verify**: `grep -q "ralph-wiggum@claude-plugins-official" README.md && grep -q "2.0.0" README.md && echo "PASS"`
+  - **Commit**: `docs(readme): document Ralph Loop dependency and breaking change`
   - _Requirements: FR-10, AC-4.3, AC-4.4_
   - _Design: Migration Notes_
 
@@ -288,19 +288,19 @@ Manual verification for markdown-only plugin.
 
 - [x] 4.4 Create PR
   - **Do**: Create pull request with:
-    1. Title: "feat: integrate Ralph Wiggum loop mechanism"
+    1. Title: "feat: integrate Ralph Loop loop mechanism"
     2. Summary of changes (wrapper, deleted hooks, version bump)
-    3. Breaking change note about Ralph Wiggum dependency
+    3. Breaking change note about Ralph Loop dependency
     4. Test plan (manual verification checklist from design.md)
   - **Done when**: PR created, URL available
-  - **Verify**: `gh pr create --title "feat: integrate Ralph Wiggum loop mechanism" --body "## Summary
-- Replace custom stop-handler.sh with Ralph Wiggum plugin's /ralph-loop
+  - **Verify**: `gh pr create --title "feat: integrate Ralph Loop loop mechanism" --body "## Summary
+- Replace custom stop-handler.sh with Ralph Loop plugin's /ralph-loop
 - implement.md becomes thin wrapper + inline coordinator prompt
 - cancel.md now calls /cancel-ralph for dual cleanup
 - Version bump to 2.0.0 (breaking change)
 
 ## Breaking Change
-Requires Ralph Wiggum plugin: \`/plugin install ralph-loop@claude-plugins-official\`
+Requires Ralph Loop plugin: \`/plugin install ralph-wiggum@claude-plugins-official\`
 
 ## Test Plan
 - [ ] Verify implement.md invokes /ralph-loop
@@ -315,6 +315,6 @@ Requires Ralph Wiggum plugin: \`/plugin install ralph-loop@claude-plugins-offici
 
 ## Notes
 
-- **POC shortcuts taken**: Coordinator prompt is inline in implement.md (not separate file). No runtime testing of actual Ralph Wiggum invocation (markdown-only plugin).
-- **Production TODOs**: Consider extracting coordinator prompt to template file if maintenance becomes difficult. Add integration tests if Ralph Wiggum provides test utilities.
+- **POC shortcuts taken**: Coordinator prompt is inline in implement.md (not separate file). No runtime testing of actual Ralph Loop invocation (markdown-only plugin).
+- **Production TODOs**: Consider extracting coordinator prompt to template file if maintenance becomes difficult. Add integration tests if Ralph Loop provides test utilities.
 - **Manual verification required**: Since this is a markdown-only plugin, actual behavior must be tested by running the plugin in Claude Code.

@@ -1,8 +1,8 @@
 #!/bin/bash
 # Stop Watcher Hook for Ralph Speckit
 # This is a WATCHER only - does NOT control the loop
-# Ralph Wiggum plugin handles loop continuation via exit code 2
-# This hook always exits 0 to let Ralph Wiggum do its job
+# Ralph Loop plugin handles loop continuation via exit code 2
+# This hook always exits 0 to let Ralph Loop do its job
 
 # Read hook input from stdin
 INPUT=$(cat)
@@ -52,5 +52,5 @@ fi
 # Cleanup orphaned temp progress files (from interrupted parallel batches)
 find "$CWD/.specify/specs/$FEATURE_NAME" -name ".progress-task-*.md" -mmin +60 -delete 2>/dev/null || true
 
-# Always exit 0 - Ralph Wiggum handles loop continuation
+# Always exit 0 - Ralph Loop handles loop continuation
 exit 0

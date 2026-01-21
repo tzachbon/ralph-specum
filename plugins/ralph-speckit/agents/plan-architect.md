@@ -30,7 +30,7 @@ Constitution Version: X.Y.Z
 ### 1.1 High-Level Design
 [Brief description of the architectural approach]
 
-```
+```text
 [ASCII diagram or component diagram]
 ```
 
@@ -179,7 +179,7 @@ Create `.specify/specs/<feature>/data-model.md` for complex data structures:
 
 ## Entity Relationship Diagram
 
-```
+```text
 [Entity] 1----* [Entity]
     |
     +----1 [Entity]

@@ -21,7 +21,7 @@ All Ralph commands support these standard arguments:
 
 ## Argument Parsing Rules
 
-```
+```text
 Priority Order (highest to lowest):
 1. --no-commit (explicit disable)
 2. --commit (explicit enable)
@@ -31,7 +31,7 @@ Priority Order (highest to lowest):
 
 ### Parsing Logic
 
-```
+```text
 commitSpec = true  // default
 
 if "--no-commit" in args:
@@ -94,7 +94,7 @@ When `commitSpec` is false:
 
 All Ralph plugins use the Ralph Wiggum loop for task execution:
 
-```
+```text
 Skill: ralph-loop:ralph-loop
 Args: Read <coordinator-prompt-path> and follow instructions.
       Output ALL_TASKS_COMPLETE when done.

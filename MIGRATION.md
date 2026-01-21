@@ -4,20 +4,20 @@
 
 ### What Changed
 
-v2.0.0 delegates task execution to the official Ralph Wiggum plugin instead of using a custom stop-handler.
+v2.0.0 delegates task execution to the official Ralph Loop plugin instead of using a custom stop-handler.
 
 | Before (v1.x) | After (v2.0.0) |
 |---------------|----------------|
-| Built-in stop-handler controlled loop | Ralph Wiggum plugin controls loop |
+| Built-in stop-handler controlled loop | Ralph Loop plugin controls loop |
 | `/implement` managed iterations directly | `/implement` invokes `/ralph-loop` |
 | `/cancel` deleted state files only | `/cancel` calls `/cancel-ralph` + deletes state |
-| ~300 lines of bash for loop control | Thin wrapper around Ralph Wiggum |
+| ~300 lines of bash for loop control | Thin wrapper around Ralph Loop |
 
 ### Migration Steps
 
-1. **Install Ralph Wiggum**
+1. **Install Ralph Loop**
    ```bash
-   /plugin install ralph-loop@claude-plugins-official
+   /plugin install ralph-wiggum@claude-plugins-official
    ```
 
 2. **Restart Claude Code**
@@ -56,13 +56,13 @@ The new loop picks up from the last completed task.
 
 ### Troubleshooting
 
-**"Ralph Wiggum plugin not found"**
-- Install it: `/plugin install ralph-loop@claude-plugins-official`
+**"Ralph Loop plugin not found"**
+- Install it: `/plugin install ralph-wiggum@claude-plugins-official`
 - Restart Claude Code
 
 **"Loop state conflict"**
 - Another Ralph loop may be active
-- Run `/cancel-ralph` to reset Ralph Wiggum state
+- Run `/cancel-ralph` to reset Ralph Loop state
 - Then `/ralph-specum:implement` to resume
 
 **Tasks not advancing**

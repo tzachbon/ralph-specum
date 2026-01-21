@@ -65,7 +65,7 @@ Quick mode skips interactive phases. Does NOT change delegation requirement.
 
 ## Coordinator Pattern
 
-```
+```text
 User runs command
        ↓
 Coordinator parses args

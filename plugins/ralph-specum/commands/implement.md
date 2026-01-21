@@ -8,15 +8,15 @@ allowed-tools: [Read, Write, Edit, Task, Bash, Skill]
 
 You are starting the task execution loop.
 
-## Ralph Wiggum Dependency Check
+## Ralph Loop Dependency Check
 
-**BEFORE proceeding**, verify Ralph Wiggum plugin is installed by attempting to invoke the skill.
+**BEFORE proceeding**, verify Ralph Loop plugin is installed by attempting to invoke the skill.
 
-If the Skill tool fails with "skill not found" or similar error for `ralph-wiggum:ralph-loop`:
-1. Output error: "ERROR: Ralph Wiggum plugin not found. Install with: /plugin install ralph-loop@claude-plugins-official"
+If the Skill tool fails with "skill not found" or similar error for `ralph-loop:ralph-loop`:
+1. Output error: "ERROR: Ralph Loop plugin not found. Install with: /plugin install ralph-wiggum@claude-plugins-official"
 2. STOP execution immediately. Do NOT continue.
 
-This is a hard dependency. The command cannot function without Ralph Wiggum.
+This is a hard dependency. The command cannot function without Ralph Loop.
 
 ## Determine Active Spec
 
@@ -52,7 +52,12 @@ Write `.ralph-state.json`:
 
 ## Invoke Ralph Loop
 
-Calculate max iterations: `totalTasks * maxTaskIterations * 2`
+Calculate max iterations: `max(5, min(10, ceil(totalTasks / 5)))`
+
+This formula:
+- Minimum 5 iterations (safety floor for small specs)
+- Maximum 10 iterations (prevents runaway loops)
+- Scales with task count: 5 tasks = 5 iterations, 50 tasks = 10 iterations
 
 ### Step 1: Write Coordinator Prompt to File
 
@@ -437,7 +442,7 @@ Before outputting:
 2. Delete .ralph-state.json (cleanup execution state)
 3. Keep .progress.md (preserve learnings and history)
 
-This signal terminates the Ralph Wiggum loop.
+This signal terminates the Ralph Loop loop.
 
 Do NOT output ALL_TASKS_COMPLETE if tasks remain incomplete.
 Do NOT output TASK_COMPLETE (that's for spec-executor only).

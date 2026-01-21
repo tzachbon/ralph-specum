@@ -6,13 +6,13 @@ Common issues and solutions for Smart Ralph.
 
 ## Installation Issues
 
-### "Ralph Wiggum plugin not found"
+### "Ralph Loop plugin not found"
 
-Smart Ralph v2.0.0+ requires the Ralph Wiggum plugin as a dependency.
+Smart Ralph v2.0.0+ requires the Ralph Loop plugin as a dependency.
 
 **Solution:**
 ```bash
-/plugin install ralph-loop@claude-plugins-official
+/plugin install ralph-wiggum@claude-plugins-official
 ```
 
 Then restart Claude Code.
@@ -85,7 +85,7 @@ Upgrade to Smart Ralph v2.0.1+ which writes the prompt to the state file directl
 
 ### Task keeps failing / Max iterations reached
 
-After max iterations (default: 5), the Ralph Wiggum loop stops to prevent infinite loops.
+After max iterations (default: 5), the Ralph Loop stops to prevent infinite loops.
 
 **Solutions:**
 

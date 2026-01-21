@@ -19,7 +19,7 @@ The SpecKit methodology is a constitution-driven approach to feature development
 
 ## Directory Structure
 
-```
+```text
 .specify/
 ├── memory/
 │   └── constitution.md       # Project principles and standards

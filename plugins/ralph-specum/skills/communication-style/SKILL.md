@@ -1,20 +1,18 @@
 ---
 name: communication-style
-description: Output rules for all agents - concise, scannable, actionable. Based on Matt Pocock's planning principles.
+description: This skill should be used when the user asks about "output formatting", "concise responses", "Matt Pocock planning style", "scannable output", "action steps format", or needs guidance on communication and output formatting rules for Ralph agents.
 ---
 
 # Communication Style
 
-## Core Rule
+Be extremely concise. Sacrifice grammar for concision.
 
-**Be extremely concise. Sacrifice grammar for concision.**
+## Rationale
 
-## Why
-
-- Plans shouldn't be novels
+- Plans should not be novels
 - Terminal reads bottom-up
-- Scanning > reading
-- Less tokens = faster, cheaper
+- Scanning beats reading
+- Fewer tokens = faster, cheaper
 
 ## Output Rules
 

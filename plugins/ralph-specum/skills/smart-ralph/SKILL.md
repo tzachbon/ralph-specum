@@ -1,6 +1,6 @@
 ---
 name: smart-ralph
-description: Core Smart Ralph skill defining common arguments, execution modes, and shared behaviors across all Ralph plugins.
+description: This skill should be used when the user asks about "ralph arguments", "quick mode", "commit spec", "max iterations", "ralph state file", "execution modes", "ralph loop integration", or needs guidance on common Ralph plugin arguments and state management patterns.
 ---
 
 # Smart Ralph
@@ -60,22 +60,11 @@ else if "--quick" in args:
 - Does NOT commit by default (use `--commit` to override)
 - Still delegates to subagents (delegation is mandatory)
 
-## State File Structure
+## State File
 
-All Ralph plugins use a state file with common fields:
+All Ralph plugins use `.ralph-state.json` for execution state. See `references/state-file-schema.md` for full schema.
 
-```json
-{
-  "phase": "research|requirements|design|tasks|execution",
-  "taskIndex": 0,
-  "totalTasks": 0,
-  "taskIteration": 1,
-  "maxTaskIterations": 5,
-  "awaitingApproval": false
-}
-```
-
-Plugins may extend with additional fields.
+Key fields: `phase`, `taskIndex`, `totalTasks`, `taskIteration`, `maxTaskIterations`, `awaitingApproval`.
 
 ## Commit Behavior
 
@@ -90,60 +79,19 @@ When `commitSpec` is false:
 - Files remain uncommitted
 - User can manually commit later
 
-## Ralph Wiggum Integration
+## Ralph Loop Integration
 
-All Ralph plugins use the Ralph Wiggum loop for task execution:
+All Ralph plugins use Ralph Wiggum loop for task execution. See `references/ralph-loop-integration.md` for details.
 
-```text
-Skill: ralph-loop:ralph-loop
-Args: Read <coordinator-prompt-path> and follow instructions.
-      Output ALL_TASKS_COMPLETE when done.
-      --max-iterations <calculated>
-      --completion-promise ALL_TASKS_COMPLETE
-```
-
-### Coordinator Prompt File
-
-Write coordinator prompt to file before invoking Ralph loop:
-- Avoids shell argument parsing issues
-- Enables complex multi-line prompts
-- Path: `<spec-path>/.coordinator-prompt.md`
-
-## Task Completion Protocol
-
-### Executor Signals
-
-| Signal | Meaning |
-|--------|---------|
-| `TASK_COMPLETE` | Task finished successfully |
-| `VERIFICATION_PASS` | Verification task passed |
-| `VERIFICATION_FAIL` | Verification failed, needs retry |
-
-### Coordinator Signals
-
-| Signal | Meaning |
-|--------|---------|
-| `ALL_TASKS_COMPLETE` | All tasks done, end loop |
+Key signals:
+- `TASK_COMPLETE` - executor finished task
+- `ALL_TASKS_COMPLETE` - coordinator ends loop
 
 ## Error Handling
 
-### Max Retries
+When `taskIteration > maxTaskIterations`: block task, suggest manual intervention.
 
-When `taskIteration` exceeds `maxTaskIterations`:
-
-1. Output error with task index and attempt count
-2. Include last failure reason
-3. Suggest manual intervention
-4. Do NOT output ALL_TASKS_COMPLETE
-5. Do NOT continue execution
-
-### State Corruption
-
-If state file missing or invalid:
-
-1. Output error with state file path
-2. Suggest re-running the implement command
-3. Do NOT continue execution
+If state file missing/invalid: output error, suggest re-running implement command.
 
 ## Branch Management
 

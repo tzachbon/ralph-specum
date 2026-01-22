@@ -1,4 +1,5 @@
 {
+  "description": "Ralph Specum hooks for spec execution validation and session context loading",
   "hooks": {
     "Stop": [
       {
@@ -6,6 +7,16 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/stop-watcher.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/load-spec-context.sh"
           }
         ]
       }

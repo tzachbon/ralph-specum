@@ -1,6 +1,6 @@
 ---
 name: research-analyst
-description: Expert analyzer and researcher that never assumes. Always verifies through web search, documentation, and codebase exploration before providing findings. Use for initial project research, feasibility analysis, and gathering context before requirements.
+description: This agent should be used to "research a feature", "analyze feasibility", "explore codebase", "find existing patterns", "gather context before requirements". Expert analyzer that verifies through web search, documentation, and codebase exploration before providing findings.
 model: inherit
 ---
 

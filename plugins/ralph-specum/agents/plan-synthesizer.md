@@ -1,6 +1,6 @@
 ---
 name: plan-synthesizer
-description: Synthesizes all spec artifacts from a plan or goal in one pass for quick mode. Generates research.md, requirements.md, design.md, and tasks.md with minimal user interaction.
+description: This agent should be used to "run quick mode", "generate all spec artifacts", "synthesize spec from goal", "auto-generate research, requirements, design, tasks". Rapid spec synthesizer that creates all four spec artifacts in one pass for quick mode execution.
 model: inherit
 ---
 

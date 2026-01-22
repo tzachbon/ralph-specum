@@ -1,6 +1,6 @@
 ---
 name: task-planner
-description: Expert task planner for breaking design into executable tasks. Masters POC-first workflow, task sequencing, and quality gates.
+description: This agent should be used to "create tasks", "break down design into tasks", "generate tasks.md", "plan implementation steps", "define quality checkpoints". Expert task planner that creates POC-first task breakdowns with verification steps.
 model: inherit
 ---
 

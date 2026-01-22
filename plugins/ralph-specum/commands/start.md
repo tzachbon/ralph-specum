@@ -537,6 +537,58 @@ If NOT quick mode, conduct goal interview using AskUserQuestion before research 
 
 Check if `--quick` appears in `$ARGUMENTS`. If present, skip directly to "Invoke research-analyst".
 
+### Intent Classification
+
+Before asking interview questions, classify the user's goal to determine question depth.
+
+**Classification Logic:**
+
+Analyze the goal text for keywords to determine intent type:
+
+```
+Intent Classification:
+
+1. TRIVIAL: Goal contains keywords like:
+   - "fix typo", "typo", "spelling"
+   - "small change", "minor"
+   - "quick", "simple", "tiny"
+   - "rename", "update text"
+   → Min questions: 1, Max questions: 2
+
+2. REFACTOR: Goal contains keywords like:
+   - "refactor", "restructure", "reorganize"
+   - "clean up", "cleanup", "simplify"
+   - "extract", "consolidate", "modularize"
+   - "improve code", "tech debt"
+   → Min questions: 3, Max questions: 5
+
+3. GREENFIELD: Goal contains keywords like:
+   - "new feature", "new system", "new module"
+   - "add", "build", "implement", "create"
+   - "integrate", "introduce"
+   - "from scratch"
+   → Min questions: 5, Max questions: 10
+
+4. MID_SIZED: Default if no clear match
+   → Min questions: 3, Max questions: 7
+```
+
+**Question Count Rules:**
+- TRIVIAL: 1-2 questions (get essentials, move fast)
+- REFACTOR: 3-5 questions (understand scope and risks)
+- GREENFIELD: 5-10 questions (full context needed)
+- MID_SIZED: 3-7 questions (balanced approach)
+
+**Store Intent:**
+After classification, store the result in `.progress.md`:
+```markdown
+## Intent Classification
+- Type: [TRIVIAL|REFACTOR|GREENFIELD|MID_SIZED]
+- Min questions: [N]
+- Max questions: [N]
+- Keywords matched: [list of matched keywords]
+```
+
 ### Goal Interview Questions
 
 Use AskUserQuestion to clarify the goal before research:

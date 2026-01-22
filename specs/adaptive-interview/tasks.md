@@ -20,7 +20,7 @@ Focus: Get single-question flow working in start.md first, then propagate to oth
 
 ### 1.1 Add Intent Classifier to start.md
 
-- [ ] 1.1 Add intent classifier section to start.md Goal Interview
+- [x] 1.1 Add intent classifier section to start.md Goal Interview
   - **Do**:
     1. Open `/Users/zachbonfil/projects/smart-ralph-speckit-adaptive-interview/plugins/ralph-specum/commands/start.md`
     2. Insert new "Intent Classification" section after line 525 (before Goal Interview Questions)

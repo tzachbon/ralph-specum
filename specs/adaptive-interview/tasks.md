@@ -327,7 +327,7 @@ After POC validated, apply pattern to research.md, requirements.md, design.md, t
 
 ### 4.1 V5 [VERIFY] Full local validation
 
-- [ ] 4.1 [VERIFY] Full local CI: validate all files and test workflow
+- [x] 4.1 [VERIFY] Full local CI: validate all files and test workflow
   - **Do**:
     1. Verify all command files have valid frontmatter
     2. Run `claude --plugin-dir ./plugins/ralph-specum` to verify plugin loads

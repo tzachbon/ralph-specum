@@ -168,7 +168,7 @@ After POC validated, apply pattern to research.md, requirements.md, design.md, t
 
 ### 2.3 V2 [VERIFY] Quality checkpoint after requirements.md
 
-- [ ] 2.3 [VERIFY] Quality checkpoint: verify requirements.md is valid
+- [x] 2.3 [VERIFY] Quality checkpoint: verify requirements.md is valid
   - **Do**: Validate requirements.md has valid structure
   - **Verify**: `head -5 plugins/ralph-specum/commands/requirements.md | grep -c "^---"` returns 1
   - **Done when**: requirements.md has valid frontmatter

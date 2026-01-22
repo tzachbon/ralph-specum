@@ -589,31 +589,134 @@ After classification, store the result in `.progress.md`:
 - Keywords matched: [list of matched keywords]
 ```
 
-### Goal Interview Questions
+### Goal Interview Questions (Single-Question Flow)
 
-Use AskUserQuestion to clarify the goal before research:
+Use individual AskUserQuestion calls to clarify the goal before research. This enables adaptive questioning based on prior answers.
+
+**Single-Question Loop Structure:**
+
+```
+Initialize:
+  askedCount = 0
+  responses = {}
+  intent = [result from Intent Classification]
+  minRequired = intent.minQuestions
+  maxAllowed = intent.maxQuestions
+  completionSignals = ["done", "proceed", "skip", "enough", "that's all", "continue", "next"]
+
+Question Pool (asked in order until completion):
+  1. problemQuestion: "What problem are you solving?"
+  2. constraintsQuestion: "Any constraints or must-haves?"
+  3. successQuestion: "How will you know this is successful?"
+  4. finalQuestion: "Any other context you'd like to share?" (always last, optional)
+
+Loop:
+  WHILE askedCount < maxAllowed:
+    |
+    +-- Select next question from pool
+    |
+    +-- Ask single question:
+    |   ```
+    |   AskUserQuestion:
+    |     question: "[Current question text]"
+    |     options:
+    |       - "[Option 1]"
+    |       - "[Option 2]"
+    |       - "[Option 3]"
+    |       - "Other"
+    |   ```
+    |
+    +-- Store response in responses[questionKey]
+    |
+    +-- askedCount++
+    |
+    +-- Check completion conditions:
+    |   |
+    |   +-- If askedCount >= minRequired AND user response matches completionSignal:
+    |   |   → EXIT loop (user signaled done)
+    |   |
+    |   +-- If askedCount >= minRequired AND currentQuestion == finalQuestion:
+    |   |   → EXIT loop (reached final optional question)
+    |   |
+    |   +-- If user selected "Other":
+    |   |   → Ask follow-up (see Adaptive Depth)
+    |   |   → DO NOT increment toward maxAllowed
+    |   |
+    |   +-- Otherwise:
+    |       → CONTINUE to next question
+```
+
+**Question 1: Problem Definition**
 
 ```
 AskUserQuestion:
-  questions:
-    - question: "What problem are you solving with this feature?"
-      options:
-        - "Fixing a bug or issue"
-        - "Adding new functionality"
-        - "Improving existing behavior"
-        - "Other"
-    - question: "Any constraints or must-haves for this feature?"
-      options:
-        - "No special constraints"
-        - "Must integrate with existing code"
-        - "Performance is critical"
-        - "Other"
-    - question: "How will you know this feature is successful?"
-      options:
-        - "Tests pass and code works"
-        - "Users can complete specific workflow"
-        - "Performance meets target metrics"
-        - "Other"
+  question: "What problem are you solving with this feature?"
+  options:
+    - "Fixing a bug or issue"
+    - "Adding new functionality"
+    - "Improving existing behavior"
+    - "Other"
+```
+
+Store response as `responses.problem`.
+
+**Question 2: Constraints**
+
+```
+AskUserQuestion:
+  question: "Any constraints or must-haves for this feature?"
+  options:
+    - "No special constraints"
+    - "Must integrate with existing code"
+    - "Performance is critical"
+    - "Other"
+```
+
+Store response as `responses.constraints`.
+
+**Question 3: Success Criteria**
+
+```
+AskUserQuestion:
+  question: "How will you know this feature is successful?"
+  options:
+    - "Tests pass and code works"
+    - "Users can complete specific workflow"
+    - "Performance meets target metrics"
+    - "Other"
+```
+
+Store response as `responses.success`.
+
+**Final Question: Additional Context (Optional)**
+
+After reaching minRequired questions, ask final optional question:
+
+```
+AskUserQuestion:
+  question: "Any other context you'd like to share? (or say 'done' to proceed)"
+  options:
+    - "No, let's proceed"
+    - "Yes, I have more details"
+    - "Other"
+```
+
+Store response as `responses.additionalContext`.
+
+**Completion Signal Detection:**
+
+After each response, check if user wants to end the interview:
+- If response contains any of: "done", "proceed", "skip", "enough", "that's all", "continue", "next"
+- AND askedCount >= minRequired
+- THEN exit the interview loop
+
+Example detection:
+```
+userResponse = [last answer from AskUserQuestion]
+if askedCount >= minRequired:
+  for signal in completionSignals:
+    if signal in userResponse.lower():
+      → EXIT interview loop
 ```
 
 ### Adaptive Depth

@@ -39,7 +39,7 @@ Focus: Get single-question flow working in start.md first, then propagate to oth
 
 ### 1.2 Replace Batch Interview with Single-Question Loop in start.md
 
-- [ ] 1.2 Convert Goal Interview to single-question flow
+- [x] 1.2 Convert Goal Interview to single-question flow
   - **Do**:
     1. Replace the batch AskUserQuestion block (lines 544-565) with single-question loop structure
     2. Each question asked individually via separate AskUserQuestion call

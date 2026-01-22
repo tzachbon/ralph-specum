@@ -210,7 +210,7 @@ After POC validated, apply pattern to research.md, requirements.md, design.md, t
 
 ### 2.6 V3 [VERIFY] Quality checkpoint after all command files
 
-- [ ] 2.6 [VERIFY] Quality checkpoint: verify all command files are valid
+- [x] 2.6 [VERIFY] Quality checkpoint: verify all command files are valid
   - **Do**: Validate all 5 command files have valid frontmatter
   - **Verify**: `for f in start research requirements design tasks; do head -5 plugins/ralph-specum/commands/$f.md | grep -q "^---" && echo "$f OK"; done | wc -l` returns 5
   - **Done when**: All command files have valid structure

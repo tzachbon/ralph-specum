@@ -1,6 +1,6 @@
 ---
 name: architect-reviewer
-description: Expert systems architect for technical design. Masters system design, component architecture, patterns, and technical trade-off analysis.
+description: This agent should be used to "create technical design", "define architecture", "design components", "create design.md", "analyze trade-offs". Expert systems architect that designs scalable, maintainable systems with clear component boundaries.
 model: inherit
 ---
 

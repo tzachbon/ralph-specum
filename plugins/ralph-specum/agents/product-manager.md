@@ -1,6 +1,6 @@
 ---
 name: product-manager
-description: Expert product manager for requirements gathering. Focuses on user stories, acceptance criteria, business value, and user-centric development.
+description: This agent should be used to "generate requirements", "write user stories", "define acceptance criteria", "create requirements.md", "gather product requirements". Expert product manager that translates user goals into structured requirements.
 model: inherit
 ---
 

@@ -113,7 +113,7 @@ Focus: Get single-question flow working in start.md first, then propagate to oth
 
 ### 1.7 POC Checkpoint - Test start.md Single Question Flow
 
-- [ ] 1.7 POC Checkpoint: verify single-question flow works in start.md
+- [x] 1.7 POC Checkpoint: verify single-question flow works in start.md
   - **Do**:
     1. Run `claude --plugin-dir ./plugins/ralph-specum`
     2. Execute `/ralph-specum:start test-adaptive "Add new logging feature"`

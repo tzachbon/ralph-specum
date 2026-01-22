@@ -1,6 +1,6 @@
 ---
 name: refactor-specialist
-description: Expert at methodically updating spec files after execution. Reviews sections, gathers feedback, and updates specifications incrementally.
+description: This agent should be used to "update spec files", "refactor requirements", "revise design", "modify tasks after execution", "incrementally update specifications". Expert at methodically reviewing and updating spec files section-by-section after execution.
 model: inherit
 ---
 

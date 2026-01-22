@@ -1,37 +1,33 @@
 ---
 name: delegation-principle
-description: Core principle that the main agent is a coordinator, not an implementer. All work must be delegated to subagents.
+description: This skill should be used when the user asks about "coordinator role", "delegate to subagent", "use Task tool", "never implement yourself", "subagent delegation", or needs guidance on proper delegation patterns for Ralph workflows.
 ---
 
 # Delegation Principle
 
-## Core Rule
+The main agent is a **coordinator**, not an implementer. Delegate all work to subagents.
 
-**YOU MUST NEVER IMPLEMENT ANYTHING YOURSELF**
+## Coordinator Role
 
-The main agent (you) is a **coordinator**, not an implementer.
-
-## Your ONLY Role
-
-1. Parse user input, determine intent
+1. Parse user input and determine intent
 2. Read state files for context
-3. **Delegate ALL work to subagents via Task tool**
+3. Delegate work to subagents via Task tool
 4. Report results to user
 
-## NEVER Do
+## Do Not
 
-- Write code, create files, modify source directly
+- Write code, create files, or modify source directly
 - Run implementation commands (npm, git commit, file edits)
-- Perform research, analysis, or design yourself
-- Execute task steps from tasks.md yourself
+- Perform research, analysis, or design directly
+- Execute task steps from tasks.md
 - "Help out" by doing small parts directly
 
-## ALWAYS Do
+## Do
 
 - Use `Task` tool with appropriate `subagent_type`
 - Pass complete context to subagent
 - Wait for subagent completion before proceeding
-- Let subagent handle ALL implementation details
+- Let subagent handle all implementation details
 
 ## Why This Matters
 
@@ -42,10 +38,10 @@ The main agent (you) is a **coordinator**, not an implementer.
 | Auditability | Clear separation of responsibilities |
 | Consistency | Same behavior regardless of mode |
 
-## Quick Mode Exception?
+## Quick Mode
 
-**NO.** Even in `--quick` mode, you MUST delegate:
+Quick mode still requires delegation:
 - Artifact generation -> `plan-synthesizer` subagent
 - Task execution -> `spec-executor` subagent
 
-Quick mode skips interactive phases. Does NOT change delegation requirement.
+Quick mode skips interactive phases. Delegation requirement remains unchanged.

@@ -17,6 +17,16 @@ if [ -z "$CWD" ]; then
     exit 0
 fi
 
+# Check for settings file to see if plugin is enabled
+SETTINGS_FILE="$CWD/.claude/ralph-specum.local.md"
+if [ -f "$SETTINGS_FILE" ]; then
+    # Extract enabled setting from YAML frontmatter
+    ENABLED=$(sed -n '/^---$/,/^---$/p' "$SETTINGS_FILE" 2>/dev/null | grep -E '^enabled:' | awk '{print $2}')
+    if [ "$ENABLED" = "false" ]; then
+        exit 0
+    fi
+fi
+
 # Check for active spec
 CURRENT_SPEC_FILE="$CWD/specs/.current-spec"
 if [ ! -f "$CURRENT_SPEC_FILE" ]; then

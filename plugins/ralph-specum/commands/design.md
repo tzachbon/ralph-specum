@@ -235,16 +235,39 @@ If user selects "Other" for any question:
 2. Continue until clarity reached or 5 follow-up rounds complete
 3. Each follow-up should probe deeper into the "Other" response
 
-Example follow-up:
+**Context-Specific Follow-up Instructions:**
+
+Follow-up questions MUST be context-specific, not generic. When user provides an "Other" response:
+
+1. **Acknowledge the specific response**: Reference what the user actually typed, not just "[Other response]"
+2. **Ask a probing question based on response content**: Analyze keywords in their response to form relevant follow-up
+3. **Include context from prior answers**: Reference earlier responses (from Goal, Research, Requirements Interviews) to create continuity
+
+**Follow-up questions should reference the specific 'Other' text.**
+
+Example - if user types "Microservices with event sourcing" for architecture style:
 ```
 AskUserQuestion:
-  question: "You mentioned [Other response]. Can you elaborate?"
+  question: "You mentioned microservices with event sourcing. Given your users are '{users}' and priority is '{priority}', which event store approach fits?"
   options:
-    - "[Contextual option 1]"
-    - "[Contextual option 2]"
-    - "This is sufficient detail"
+    - "Kafka for high throughput events"
+    - "EventStoreDB for event-sourced aggregates"
+    - "Simple database with outbox pattern"
     - "Other"
 ```
+
+Example - if user types "Must avoid vendor lock-in" for technology constraints:
+```
+AskUserQuestion:
+  question: "You want to avoid vendor lock-in. Since your technical approach is '{technicalApproach}', how strict is this requirement?"
+  options:
+    - "Strict - only open source, self-hostable"
+    - "Moderate - cloud-agnostic but managed OK"
+    - "Flexible - minimize but accept some lock-in"
+    - "Other"
+```
+
+**Do NOT use generic follow-ups like "Can you elaborate?" - always tailor to their specific response.**
 
 ### Store Design Interview Responses
 

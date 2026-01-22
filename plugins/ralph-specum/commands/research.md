@@ -280,16 +280,41 @@ If user selects "Other" for any question:
 2. Continue until clarity reached or 5 follow-up rounds complete
 3. Each follow-up should probe deeper into the "Other" response
 
-Example follow-up:
+**Context-Specific Follow-up Instructions:**
+
+Follow-up questions MUST be context-specific, not generic. When user provides an "Other" response:
+
+1. **Acknowledge the specific response**: Reference what the user actually typed, not just "[Other response]"
+2. **Ask a probing question based on response content**: Analyze keywords in their response to form relevant follow-up
+3. **Include context from prior answers**: Reference earlier responses (from Goal Interview) to create continuity
+
+**Follow-up questions should reference the specific 'Other' text.**
+
+Example - if user types "We have a legacy system constraint" for technical approach:
 ```
 AskUserQuestion:
-  question: "You mentioned [Other response]. Can you elaborate?"
+  question: "You mentioned a legacy system constraint. Given your goal of '{goal}', how should we handle this:
+    - wrap the legacy system, or
+    - migrate incrementally?"
   options:
-    - "[Contextual option 1]"
-    - "[Contextual option 2]"
-    - "This is sufficient detail"
+    - "Wrap with adapter layer - preserve legacy"
+    - "Incremental migration - phase out legacy"
+    - "Parallel systems during transition"
     - "Other"
 ```
+
+Example - if user types "Need to support offline mode" for integration points:
+```
+AskUserQuestion:
+  question: "You mentioned offline mode support. Since your problem is '{problem}', which offline approach fits best?"
+  options:
+    - "Local storage with sync on reconnect"
+    - "Service worker with cached responses"
+    - "Full offline-first architecture"
+    - "Other"
+```
+
+**Do NOT use generic follow-ups like "Can you elaborate?" - always tailor to their specific response.**
 
 ### Store Research Interview Responses
 

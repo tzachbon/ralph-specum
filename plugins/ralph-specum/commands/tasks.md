@@ -237,16 +237,39 @@ If user selects "Other" for any question:
 2. Continue until clarity reached or 5 follow-up rounds complete
 3. Each follow-up should probe deeper into the "Other" response
 
-Example follow-up:
+**Context-Specific Follow-up Instructions:**
+
+Follow-up questions MUST be context-specific, not generic. When user provides an "Other" response:
+
+1. **Acknowledge the specific response**: Reference what the user actually typed, not just "[Other response]"
+2. **Ask a probing question based on response content**: Analyze keywords in their response to form relevant follow-up
+3. **Include context from prior answers**: Reference earlier responses (from Goal, Research, Requirements, Design Interviews) to create continuity
+
+**Follow-up questions should reference the specific 'Other' text.**
+
+Example - if user types "Need contract tests with partners" for testing depth:
 ```
 AskUserQuestion:
-  question: "You mentioned [Other response]. Can you elaborate?"
+  question: "You mentioned contract tests with partners. Given your architecture is '{architecture}' and integration approach is '{integrationApproach}', which contract testing tool?"
   options:
-    - "[Contextual option 1]"
-    - "[Contextual option 2]"
-    - "This is sufficient detail"
+    - "Pact for consumer-driven contracts"
+    - "OpenAPI spec validation"
+    - "Custom schema validation layer"
     - "Other"
 ```
+
+Example - if user types "Blue-green with database migration" for deployment:
+```
+AskUserQuestion:
+  question: "You want blue-green deployment with database migration. Since your priority is '{priority}', how should we handle the migration?"
+  options:
+    - "Zero-downtime with expand-contract pattern"
+    - "Brief maintenance window acceptable"
+    - "Shadow writes during transition period"
+    - "Other"
+```
+
+**Do NOT use generic follow-ups like "Can you elaborate?" - always tailor to their specific response.**
 
 ### Store Tasks Interview Responses
 

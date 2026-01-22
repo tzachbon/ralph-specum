@@ -951,17 +951,42 @@ If user selects "Other" for any question:
 2. Continue until clarity reached or 5 rounds complete
 3. Each follow-up round uses single question focused on the "Other" response
 
-Example follow-up:
+**Context-Specific Follow-up Instructions:**
+
+Follow-up questions MUST be context-specific, not generic. When user provides an "Other" response:
+
+1. **Acknowledge the specific response**: Reference what the user actually typed, not just "[Other response]"
+2. **Ask a probing question based on response content**: Analyze keywords in their response to form relevant follow-up
+3. **Include context from prior answers**: Reference earlier responses to create continuity
+
+**Follow-up questions should reference the specific 'Other' text.**
+
+Example - if user types "We need GraphQL support" for constraints question:
 ```
 AskUserQuestion:
-  questions:
-    - question: "You mentioned [Other response]. Can you elaborate?"
-      options:
-        - "[Contextual option 1]"
-        - "[Contextual option 2]"
-        - "This is sufficient detail"
-        - "Other"
+  question: "You mentioned needing GraphQL support. Is this for:
+    - the entire API layer, or
+    - specific endpoints only?
+    Also, does this relate to your earlier goal of '{goal}'?"
+  options:
+    - "Full API layer - replace REST"
+    - "Hybrid - GraphQL for new endpoints only"
+    - "Specific queries for mobile clients"
+    - "Other"
 ```
+
+Example - if user types "Security is critical" for success criteria:
+```
+AskUserQuestion:
+  question: "You emphasized security is critical. Given your constraint of '{constraints}', which security aspects matter most?"
+  options:
+    - "Authentication and authorization"
+    - "Data encryption at rest and in transit"
+    - "Audit logging and compliance"
+    - "Other"
+```
+
+**Do NOT use generic follow-ups like "Can you elaborate?" - always tailor to their specific response.**
 
 ### Store Goal Context
 

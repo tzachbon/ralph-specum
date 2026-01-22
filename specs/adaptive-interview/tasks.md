@@ -259,7 +259,7 @@ After POC validated, apply pattern to research.md, requirements.md, design.md, t
 
 ### 3.3 Add Adaptive Follow-ups
 
-- [ ] 3.3 Enhance "Other" follow-ups to be context-specific
+- [x] 3.3 Enhance "Other" follow-ups to be context-specific
   - **Do**:
     1. Update Adaptive Depth section in all command files
     2. Replace generic "You mentioned [Other response]. Can you elaborate?" with:

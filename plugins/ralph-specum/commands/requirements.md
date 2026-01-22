@@ -231,16 +231,39 @@ If user selects "Other" for any question:
 2. Continue until clarity reached or 5 follow-up rounds complete
 3. Each follow-up should probe deeper into the "Other" response
 
-Example follow-up:
+**Context-Specific Follow-up Instructions:**
+
+Follow-up questions MUST be context-specific, not generic. When user provides an "Other" response:
+
+1. **Acknowledge the specific response**: Reference what the user actually typed, not just "[Other response]"
+2. **Ask a probing question based on response content**: Analyze keywords in their response to form relevant follow-up
+3. **Include context from prior answers**: Reference earlier responses (from Goal Interview, Research Interview) to create continuity
+
+**Follow-up questions should reference the specific 'Other' text.**
+
+Example - if user types "Both internal tools and customer portal" for primary users:
 ```
 AskUserQuestion:
-  question: "You mentioned [Other response]. Can you elaborate?"
+  question: "You mentioned both internal tools and customer portal as users. Given your technical approach of '{technicalApproach}', which should we prioritize?"
   options:
-    - "[Contextual option 1]"
-    - "[Contextual option 2]"
-    - "This is sufficient detail"
+    - "Internal tools first - validate with team"
+    - "Customer portal first - external value"
+    - "Build shared core for both simultaneously"
     - "Other"
 ```
+
+Example - if user types "We need audit compliance" for success criteria:
+```
+AskUserQuestion:
+  question: "You mentioned audit compliance as success criteria. Since your constraint is '{constraints}', what compliance framework applies?"
+  options:
+    - "SOC 2 Type II"
+    - "GDPR / data privacy"
+    - "Industry-specific (HIPAA, PCI, etc.)"
+    - "Other"
+```
+
+**Do NOT use generic follow-ups like "Can you elaborate?" - always tailor to their specific response.**
 
 ### Store Requirements Interview Responses
 

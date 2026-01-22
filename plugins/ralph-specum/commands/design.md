@@ -48,26 +48,185 @@ If NOT quick mode, conduct interview using AskUserQuestion before delegating to 
 
 Check if `--quick` appears anywhere in `$ARGUMENTS`. If present, skip directly to "Execute Design".
 
-### Design Interview
+### Read Context from .progress.md
 
-Use AskUserQuestion to gather architecture and technology context:
+Before conducting the interview, read `.progress.md` to get:
+1. **Intent Classification** from start.md (TRIVIAL, REFACTOR, GREENFIELD, MID_SIZED)
+2. **All prior interview responses** to enable parameter chain (skip already-answered questions)
+
+```
+Context Reading:
+1. Read ./specs/$spec/.progress.md
+2. Parse "## Intent Classification" section for intent type and question counts
+3. Parse "## Interview Responses" section for prior answers (Goal Interview, Research Interview, Requirements Interview)
+4. Store parsed data for parameter chain checks
+```
+
+**Intent-Based Question Counts (same as start.md):**
+- TRIVIAL: 1-2 questions (minimal architecture context needed)
+- REFACTOR: 3-5 questions (understand architecture impact)
+- GREENFIELD: 5-10 questions (full architecture context)
+- MID_SIZED: 3-7 questions (balanced approach)
+
+### Design Interview (Single-Question Flow)
+
+Use individual AskUserQuestion calls to gather architecture and technology context. This single-question flow enables adaptive questioning based on prior answers and context.
+
+**Parameter Chain Logic:**
+
+Before asking each question, check if the answer already exists in .progress.md:
+
+```
+Parameter Chain:
+  BEFORE asking any question:
+    1. Parse .progress.md for existing answers
+    2. Map question to semantic key:
+       - "architecture style" → architecture, architectureStyle
+       - "technology constraints" → constraints, techConstraints
+       - "integration approach" → integration, integrationApproach
+    3. If answer exists in prior responses:
+       → SKIP this question (do not ask again)
+       → Log: "Skipping [question] - already answered in previous phase"
+    4. If no prior answer:
+       → Ask via AskUserQuestion
+```
+
+**Question Piping:**
+
+Before asking each question, replace {var} placeholders with values from .progress.md:
+- `{goal}` - Original goal text
+- `{intent}` - Intent classification (TRIVIAL, REFACTOR, etc.)
+- `{problem}` - Problem description from Goal Interview
+- `{constraints}` - Constraints from prior interviews
+- `{users}` - Primary users from Requirements Interview
+- `{priority}` - Priority tradeoffs from Requirements Interview
+- `{technicalApproach}` - Technical approach from Research Interview
+
+If a variable is not found, use the original question text (graceful fallback).
+
+**Single-Question Loop Structure:**
+
+```
+Initialize:
+  askedCount = 0
+  responses = {}
+  intent = [from .progress.md Intent Classification]
+  minRequired = intent.minQuestions (adjusted for design phase)
+  maxAllowed = intent.maxQuestions (adjusted for design phase)
+  completionSignals = ["done", "proceed", "skip", "enough", "that's all", "continue", "next"]
+
+Design Question Pool (asked in order until completion):
+  1. architectureStyle: "What architecture style fits this feature for {goal}?"
+  2. techConstraints: "Any technology constraints for {goal}?"
+  3. integrationApproach: "How should this integrate with existing systems?"
+  4. finalQuestion: "Any other design context? (or say 'done' to proceed)" (always last, optional)
+
+Loop:
+  WHILE askedCount < maxAllowed:
+    |
+    +-- Select next question from pool
+    |
+    +-- Apply question piping: replace {var} with values from .progress.md
+    |
+    +-- Check parameter chain: does answer exist in .progress.md?
+    |   |
+    |   +-- Yes: SKIP this question, continue to next
+    |   +-- No: Proceed to ask
+    |
+    +-- Ask single question:
+    |   ```
+    |   AskUserQuestion:
+    |     question: "[Current question text with piped values]"
+    |     options:
+    |       - "[Option 1]"
+    |       - "[Option 2]"
+    |       - "[Option 3]"
+    |       - "Other"
+    |   ```
+    |
+    +-- Store response in responses[questionKey]
+    |
+    +-- askedCount++
+    |
+    +-- Check completion conditions:
+    |   |
+    |   +-- If askedCount >= minRequired AND user response matches completionSignal:
+    |   |   → EXIT loop (user signaled done)
+    |   |
+    |   +-- If askedCount >= minRequired AND currentQuestion == finalQuestion:
+    |   |   → EXIT loop (reached final optional question)
+    |   |
+    |   +-- If user selected "Other":
+    |   |   → Ask follow-up (see Adaptive Depth)
+    |   |   → DO NOT increment toward maxAllowed
+    |   |
+    |   +-- Otherwise:
+    |       → CONTINUE to next question
+```
+
+**Question 1: Architecture Style**
 
 ```
 AskUserQuestion:
-  questions:
-    - question: "What architecture style fits this feature?"
-      options:
-        - "Extend existing architecture (Recommended)"
-        - "Create isolated module"
-        - "Major refactor to support this"
-        - "Other"
-    - question: "Any technology constraints?"
-      options:
-        - "No constraints"
-        - "Must use specific library/framework"
-        - "Must avoid certain dependencies"
-        - "Other"
+  question: "What architecture style fits this feature for {goal}?"
+  options:
+    - "Extend existing architecture (Recommended)"
+    - "Create isolated module"
+    - "Major refactor to support this"
+    - "Other"
 ```
+
+Store response as `responses.architectureStyle`.
+
+**Question 2: Technology Constraints**
+
+```
+AskUserQuestion:
+  question: "Any technology constraints for {goal}?"
+  options:
+    - "No constraints"
+    - "Must use specific library/framework"
+    - "Must avoid certain dependencies"
+    - "Other"
+```
+
+Store response as `responses.techConstraints`.
+
+**Question 3: Integration Approach**
+
+```
+AskUserQuestion:
+  question: "How should this integrate with existing systems?"
+  options:
+    - "Use existing APIs and interfaces"
+    - "Create new integration layer"
+    - "Minimal integration needed"
+    - "Other"
+```
+
+Store response as `responses.integrationApproach`.
+
+**Final Question: Additional Design Context (Optional)**
+
+After reaching minRequired questions, ask final optional question:
+
+```
+AskUserQuestion:
+  question: "Any other design context? (or say 'done' to proceed)"
+  options:
+    - "No, let's proceed"
+    - "Yes, I have more details"
+    - "Other"
+```
+
+Store response as `responses.additionalDesignContext`.
+
+**Completion Signal Detection:**
+
+After each response, check if user wants to end the interview:
+- If response contains any of: "done", "proceed", "skip", "enough", "that's all", "continue", "next"
+- AND askedCount >= minRequired
+- THEN exit the interview loop
 
 ### Adaptive Depth
 
@@ -76,14 +235,47 @@ If user selects "Other" for any question:
 2. Continue until clarity reached or 5 follow-up rounds complete
 3. Each follow-up should probe deeper into the "Other" response
 
+Example follow-up:
+```
+AskUserQuestion:
+  question: "You mentioned [Other response]. Can you elaborate?"
+  options:
+    - "[Contextual option 1]"
+    - "[Contextual option 2]"
+    - "This is sufficient detail"
+    - "Other"
+```
+
+### Store Design Interview Responses
+
+After interview, append to `.progress.md` under the "Interview Responses" section:
+
+```markdown
+### Design Interview (from design.md)
+- Architecture style: [responses.architectureStyle]
+- Technology constraints: [responses.techConstraints]
+- Integration approach: [responses.integrationApproach]
+- Additional design context: [responses.additionalDesignContext]
+[Any follow-up responses from "Other" selections]
+```
+
+**Context Accumulator Instructions:**
+
+1. Read existing .progress.md content
+2. Append new "### Design Interview" subsection under "## Interview Responses"
+3. Use semantic keys matching the question type
+4. For "Other" follow-up responses, append with descriptive key
+5. Format must be parseable for parameter chain checks in subsequent phases
+
 ### Interview Context Format
 
-After interview, format responses as:
+Pass the combined context (prior + new responses) to the Task delegation prompt:
 
 ```
 Interview Context:
 - Architecture style: [Answer]
 - Technology constraints: [Answer]
+- Integration approach: [Answer]
 - Follow-up details: [Any additional clarifications]
 ```
 

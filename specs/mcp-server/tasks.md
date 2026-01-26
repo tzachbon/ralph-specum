@@ -544,7 +544,7 @@ After POC validated, clean up code.
   - _Requirements: FR-8, FR-9, AC-1.1 through AC-1.4_
   - _Design: Build Script, Install Script_
 
-- [ ] 4.2 Create GitHub Actions workflow
+- [x] 4.2 Create GitHub Actions workflow
   - **Do**:
     1. Create `.github/workflows/mcp-release.yml`
     2. Trigger on tag push (v*)

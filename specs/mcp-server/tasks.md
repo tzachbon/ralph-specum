@@ -485,7 +485,7 @@ After POC validated, clean up code.
   - **Commit**: `test(mcp): add unit tests for MCPLogger`
   - _Design: Test Strategy - Unit Tests_
 
-- [ ] 3.6 Unit tests for tool handlers
+- [x] 3.6 Unit tests for tool handlers
   - **Do**:
     1. Create `mcp-server/tests/tools/` directory
     2. Create tests for each direct tool: status, switch, cancel, help, start, complete-phase

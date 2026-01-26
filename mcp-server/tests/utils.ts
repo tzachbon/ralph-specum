@@ -75,7 +75,12 @@ export async function createMockStateFile(
   specDir: string,
   state: Partial<RalphState> = {}
 ): Promise<void> {
+  // Extract spec name from path for default values
+  const specName = specDir.split("/").pop() ?? "test-spec";
   const defaultState: RalphState = {
+    source: "spec",
+    name: specName,
+    basePath: `./specs/${specName}`,
     phase: "research",
     ...state,
   };

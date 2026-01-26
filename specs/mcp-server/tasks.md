@@ -209,7 +209,7 @@ Focus: Validate the idea works end-to-end. Skip tests, accept hardcoded values.
   - _Requirements: US-10, US-11, AC-10.1 through AC-10.4, AC-11.1 through AC-11.4_
   - _Design: Direct Tools_
 
-- [ ] 1.13 Implement ralph_start tool
+- [x] 1.13 Implement ralph_start tool
   - **Do**:
     1. Create `mcp-server/src/tools/start.ts`
     2. Input schema: name?, goal?, quick?

@@ -473,7 +473,7 @@ After POC validated, clean up code.
   - **Done when**: No type errors, all tests pass
   - **Commit**: `chore(mcp): pass quality checkpoint` (only if fixes needed)
 
-- [ ] 3.5 Unit tests for MCPLogger
+- [x] 3.5 Unit tests for MCPLogger
   - **Do**:
     1. Create `mcp-server/tests/logger.test.ts`
     2. Test all log levels: debug, info, warning, error

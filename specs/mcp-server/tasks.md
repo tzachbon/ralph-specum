@@ -266,7 +266,7 @@ Focus: Validate the idea works end-to-end. Skip tests, accept hardcoded values.
   - _Requirements: US-4, US-5, US-6, US-7, AC-4.1 through AC-7.5_
   - _Design: Instruction Tools_
 
-- [ ] 1.17 Implement ralph_implement tool
+- [x] 1.17 Implement ralph_implement tool
   - **Do**:
     1. Create `mcp-server/src/tools/implement.ts`
     2. Input schema: max_iterations?

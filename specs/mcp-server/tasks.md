@@ -92,7 +92,7 @@ Focus: Validate the idea works end-to-end. Skip tests, accept hardcoded values.
   - _Requirements: FR-2_
   - _Design: Embedded Assets_
 
-- [ ] 1.4 Copy templates to MCP server assets
+- [x] 1.4 Copy templates to MCP server assets
   - **Do**:
     1. Copy `plugins/ralph-specum/templates/progress.md` to `mcp-server/src/assets/templates/`
     2. Copy `plugins/ralph-specum/templates/research.md` to `mcp-server/src/assets/templates/`

@@ -439,7 +439,7 @@ After POC validated, clean up code.
   - **Commit**: `test(mcp): set up test infrastructure`
   - _Design: Test Strategy_
 
-- [ ] 3.2 Unit tests for StateManager
+- [x] 3.2 Unit tests for StateManager
   - **Do**:
     1. Create `mcp-server/tests/state.test.ts`
     2. Test read(): returns state, returns null for missing, handles corruption

@@ -1,22 +1,12 @@
 ---
 description: Start task execution loop
 argument-hint: [--max-task-iterations 5]
-allowed-tools: [Read, Write, Edit, Task, Bash, Skill]
+allowed-tools: [Read, Write, Edit, Task, Bash]
 ---
 
 # Start Execution
 
 You are starting the task execution loop.
-
-## Ralph Loop Dependency Check
-
-**BEFORE proceeding**, verify Ralph Loop plugin is installed by attempting to invoke the skill.
-
-If the Skill tool fails with "skill not found" or similar error for `ralph-loop:ralph-loop`:
-1. Output error: "ERROR: Ralph Loop plugin not found. Install with: /plugin install ralph-wiggum@claude-plugins-official"
-2. STOP execution immediately. Do NOT continue.
-
-This is a hard dependency. The command cannot function without Ralph Loop.
 
 ## Determine Active Spec
 
@@ -46,34 +36,17 @@ Write `.ralph-state.json`:
   "taskIndex": <first incomplete>,
   "totalTasks": <count>,
   "taskIteration": 1,
-  "maxTaskIterations": <parsed from --max-task-iterations or default 5>
+  "maxTaskIterations": <parsed from --max-task-iterations or default 5>,
+  "globalIteration": 1,
+  "maxGlobalIterations": 100
 }
 ```
 
-## Invoke Ralph Loop
-
-Calculate max iterations: `max(5, min(10, ceil(totalTasks / 5)))`
-
-This formula:
-- Minimum 5 iterations (safety floor for small specs)
-- Maximum 10 iterations (prevents runaway loops)
-- Scales with task count: 5 tasks = 5 iterations, 50 tasks = 10 iterations
-
-### Step 1: Write Coordinator Prompt to File
+## Write Coordinator Prompt
 
 Write the ENTIRE coordinator prompt (from section below) to `./specs/$spec/.coordinator-prompt.md`.
 
-This file contains the full instructions for task execution. Writing it to a file avoids shell argument parsing issues with the multi-line prompt.
-
-### Step 2: Invoke Ralph Loop Skill
-
-Use the Skill tool to invoke `ralph-loop:ralph-loop` with args:
-
-```
-Read ./specs/$spec/.coordinator-prompt.md and follow those instructions exactly. Output ALL_TASKS_COMPLETE when done. --max-iterations <calculated> --completion-promise ALL_TASKS_COMPLETE
-```
-
-Replace `$spec` with the actual spec name and `<calculated>` with the calculated max iterations value.
+This file contains the full instructions for task execution. The stop-hook will inject this prompt when blocking exit.
 
 ## Coordinator Prompt
 
@@ -401,7 +374,7 @@ State structure:
 
 Check if all tasks complete:
 - If taskIndex >= totalTasks: proceed to section 10 (Completion Signal)
-- If taskIndex < totalTasks: continue to next iteration (loop re-invokes coordinator)
+- If taskIndex < totalTasks: continue to next iteration (stop-hook will re-invoke coordinator)
 
 ### 9. Progress Merge
 
@@ -455,7 +428,7 @@ Before outputting:
 2. Delete .ralph-state.json (cleanup execution state)
 3. Keep .progress.md (preserve learnings and history)
 
-This signal terminates the Ralph Loop loop.
+This signal terminates the execution loop. The stop-hook detects this and allows the session to exit.
 
 Do NOT output ALL_TASKS_COMPLETE if tasks remain incomplete.
 Do NOT output TASK_COMPLETE (that's for spec-executor only).
@@ -577,8 +550,11 @@ Tasks: $completed/$total completed
 Starting from task $taskIndex
 
 The execution loop will:
-- Execute one task at a time
+- Execute one task at a time via Task tool delegation
+- Stop-hook blocks exit until ALL_TASKS_COMPLETE detected
 - Continue until all tasks complete or max iterations reached
 
 Beginning execution...
 ```
+
+After outputting this message, immediately read the coordinator prompt from `./specs/$spec/.coordinator-prompt.md` and follow those instructions to begin task execution.

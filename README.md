@@ -12,8 +12,6 @@
 
 **Spec-driven development for Claude Code. Task-by-task execution with fresh context per task.**
 
-Ralph Loop + Spec-Driven Development = <3
-
 [Quick Start](#-quick-start) | [Commands](#-commands) | [How It Works](#-how-it-works) | [Troubleshooting](#-troubleshooting)
 
 </div>
@@ -37,42 +35,9 @@ Named after the [Ralph agentic loop pattern](https://ghuntley.com/ralph/) and ev
 
 ---
 
-## Requirements
-
-**v2.0.0+** requires the Ralph Loop plugin for task execution:
-
-```bash
-/plugin install ralph-loop@claude-plugins-official
-```
-
-**Note:** The plugin is named `ralph-loop` (implementing the Ralph Wiggum technique). Some documentation may reference `ralph-wiggum` - both refer to the same plugin, use `ralph-loop`.
-
-Ralph Loop provides the execution loop. Smart Ralph provides the spec-driven workflow on top.
-
----
-
 ## Installation
 
-### Step 1: Install Ralph Loop Dependency
-
-First, ensure you have the Ralph Loop plugin installed:
-
-```bash
-/plugin install ralph-loop@claude-plugins-official
-```
-
-**Troubleshooting:** If you get a "marketplace not found" error:
-```bash
-# Add the official marketplace (if not already added)
-/plugin marketplace add anthropics/claude-code
-
-# Then install Ralph Loop
-/plugin install ralph-loop@claude-plugins-official
-```
-
-### Step 2: Install Smart Ralph
-
-#### From Marketplace
+### From Marketplace
 
 ```bash
 # Add the marketplace
@@ -207,7 +172,7 @@ smart-ralph/
 │   │   │   └── plugin.json
 │   │   ├── agents/             # Sub-agent definitions
 │   │   ├── commands/           # Slash commands
-│   │   ├── hooks/              # Stop watcher (logging only)
+│   │   ├── hooks/              # Stop hook (loop control)
 │   │   ├── templates/          # Spec templates
 │   │   └── schemas/            # Validation schemas
 │   └── ralph-speckit/          # Spec-kit methodology
@@ -254,9 +219,6 @@ Specs live in `./specs/` in your project:
 ### Installation
 
 ```bash
-# Install Ralph Loop dependency first
-/plugin install ralph-loop@claude-plugins-official
-
 # Install ralph-speckit
 /plugin install ralph-speckit@smart-ralph
 ```
@@ -319,15 +281,6 @@ Specs live in `./specs/` in your project:
 
 ## Troubleshooting
 
-**"Ralph Loop plugin not found"?**
-Install the dependency: `/plugin install ralph-loop@claude-plugins-official`
-
-If still not found, add the official marketplace first:
-```bash
-/plugin marketplace add anthropics/claude-code
-/plugin install ralph-loop@claude-plugins-official
-```
-
 **"stop-handler.sh: No such file or directory"?**
 Old v1.x installation conflict. Reinstall the plugin or see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
@@ -335,13 +288,10 @@ Old v1.x installation conflict. Reinstall the plugin or see [TROUBLESHOOTING.md]
 After max iterations, the loop stops. Check `.progress.md` for errors. Fix manually, then `/ralph-specum:implement` to resume.
 
 **Want to start over?**
-`/ralph-specum:cancel` cleans up state (both Ralph Loop and Smart Ralph state files). Then start fresh.
+`/ralph-specum:cancel` cleans up state. Then start fresh.
 
 **Resume existing spec?**
 Just `/ralph-specum:start` - it auto-detects and continues where you left off.
-
-**"Loop state conflict"?**
-Another Ralph loop may be running. Use `/cancel-ralph` to reset Ralph Loop state, then retry.
 
 **More issues?** See the full [Troubleshooting Guide](TROUBLESHOOTING.md).
 
@@ -349,29 +299,31 @@ Another Ralph loop may be running. Use `/cancel-ralph` to reset Ralph Loop state
 
 ## Breaking Changes
 
-### v2.0.0
+### v3.0.0
 
-**Ralph Loop dependency required**
+**No external dependencies required**
 
-Starting with v2.0.0, Smart Ralph delegates task execution to the official Ralph Loop plugin.
+Starting with v3.0.0, Smart Ralph is fully self-contained. The execution loop is now handled by an internal stop-hook.
 
-**Migration from v1.x:** See [MIGRATION.md](MIGRATION.md) for detailed guide.
-
-Quick version:
-1. Install Ralph Loop: `/plugin install ralph-loop@claude-plugins-official`
-2. Restart Claude Code
-3. Existing specs continue working. No spec file changes needed.
+**Migration from v2.x:**
+- Remove the ralph-wiggum plugin if installed (optional, no conflicts)
+- No spec file changes needed
+- Existing specs continue working
 
 **What changed:**
-- Custom stop-handler removed. Ralph Loop provides the execution loop.
-- `/implement` now invokes `/ralph-loop` internally
-- `/cancel` now calls `/cancel-ralph` for cleanup
-- Same task format, same verification, same workflow. Just different internals.
+- Stop-hook now controls execution loop (inlined ~50 lines of loop logic)
+- `/implement` executes directly (no skill invocation)
+- `/cancel` cleans up state directly
+- Same task format, same verification, same workflow
 
 **Why:**
-- Less code to maintain (deleted ~300 lines of bash)
-- Official plugin gets updates and fixes
-- Better reliability for the execution loop
+- Zero dependencies for users
+- Simpler installation (single plugin install)
+- Full control over the execution loop
+
+### v2.0.0
+
+v2.0.0 added Ralph Loop as a dependency. v3.0.0 removes this dependency by inlining the functionality.
 
 ---
 

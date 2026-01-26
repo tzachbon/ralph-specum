@@ -1,6 +1,6 @@
 ---
 name: smart-ralph
-description: This skill should be used when the user asks about "ralph arguments", "quick mode", "commit spec", "max iterations", "ralph state file", "execution modes", "ralph loop integration", or needs guidance on common Ralph plugin arguments and state management patterns.
+description: Core Smart Ralph skill defining common arguments, execution modes, and shared behaviors across all Ralph plugins.
 ---
 
 # Smart Ralph
@@ -60,11 +60,33 @@ else if "--quick" in args:
 - Does NOT commit by default (use `--commit` to override)
 - Still delegates to subagents (delegation is mandatory)
 
-## State File
+## State File Structure
 
-All Ralph plugins use `.ralph-state.json` for execution state. See `references/state-file-schema.md` for full schema.
+All Ralph plugins use a state file with common fields:
 
-Key fields: `phase`, `taskIndex`, `totalTasks`, `taskIteration`, `maxTaskIterations`, `awaitingApproval`.
+```json
+{
+  "phase": "research|requirements|design|tasks|execution",
+  "taskIndex": 0,
+  "totalTasks": 0,
+  "taskIteration": 1,
+  "maxTaskIterations": 5,
+  "awaitingApproval": false,
+  "globalIteration": 1,
+  "maxGlobalIterations": 100
+}
+```
+
+### Field Descriptions
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `taskIteration` | number | Retry counter for current task (resets on task advance) |
+| `maxTaskIterations` | number | Max retries per task before blocking (default: 5) |
+| `globalIteration` | number | Total loop iterations across all tasks (v3.0.0+) |
+| `maxGlobalIterations` | number | Safety limit for total iterations (default: 100, v3.0.0+) |
+
+The `globalIteration` counter prevents runaway loops by limiting total stop-hook blocks across the entire execution, while `taskIteration` limits retries per individual task.
 
 ## Commit Behavior
 
@@ -79,19 +101,60 @@ When `commitSpec` is false:
 - Files remain uncommitted
 - User can manually commit later
 
-## Ralph Loop Integration
+## Execution Loop
 
-All Ralph plugins use Ralph Wiggum loop for task execution. See `references/ralph-loop-integration.md` for details.
+All Ralph plugins use an internal stop-hook for task execution:
 
-Key signals:
-- `TASK_COMPLETE` - executor finished task
-- `ALL_TASKS_COMPLETE` - coordinator ends loop
+```text
+Stop-hook: hooks/scripts/stop-watcher.sh
+- Blocks session exit during execution phase
+- Injects continuation prompt with coordinator instructions
+- Detects ALL_TASKS_COMPLETE signal to end loop
+- Safety limit: 100 iterations maximum
+```
+
+### Coordinator Prompt File
+
+Write coordinator prompt to file for stop-hook injection:
+- Stop-hook injects continuation prompt referencing this file
+- Enables complex multi-line coordinator instructions
+- Path: `<spec-path>/.coordinator-prompt.md`
+
+## Task Completion Protocol
+
+### Executor Signals
+
+| Signal | Meaning |
+|--------|---------|
+| `TASK_COMPLETE` | Task finished successfully |
+| `VERIFICATION_PASS` | Verification task passed |
+| `VERIFICATION_FAIL` | Verification failed, needs retry |
+
+### Coordinator Signals
+
+| Signal | Meaning |
+|--------|---------|
+| `ALL_TASKS_COMPLETE` | All tasks done, end loop |
 
 ## Error Handling
 
-When `taskIteration > maxTaskIterations`: block task, suggest manual intervention.
+### Max Retries
 
-If state file missing/invalid: output error, suggest re-running implement command.
+When `taskIteration` exceeds `maxTaskIterations`:
+
+1. Output error with task index and attempt count
+2. Include last failure reason
+3. Suggest manual intervention
+4. Do NOT output ALL_TASKS_COMPLETE
+5. Do NOT continue execution
+
+### State Corruption
+
+If state file missing or invalid:
+
+1. Output error with state file path
+2. Suggest re-running the implement command
+3. Do NOT continue execution
 
 ## Branch Management
 

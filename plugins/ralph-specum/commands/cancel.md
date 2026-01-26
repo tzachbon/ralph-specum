@@ -1,7 +1,7 @@
 ---
 description: Cancel active execution loop, cleanup state, and remove spec
 argument-hint: [spec-name]
-allowed-tools: [Read, Bash, Task]
+allowed-tools: [Read, Bash]
 ---
 
 # Cancel Execution
@@ -28,15 +28,14 @@ If state file exists, read and display:
 
 ## Cleanup
 
-1. Stop Ralph loop (if running):
-   ```text
-   Use the Skill tool to invoke ralph-loop:cancel-ralph
-   This stops any active Ralph loop iteration
+1. Delete state file:
+   ```bash
+   rm -f ./specs/$spec/.ralph-state.json
    ```
 
-2. Delete state file:
+2. Delete coordinator prompt file (if exists):
    ```bash
-   rm ./specs/$spec/.ralph-state.json
+   rm -f ./specs/$spec/.coordinator-prompt.md
    ```
 
 3. Remove spec directory:
@@ -49,6 +48,8 @@ If state file exists, read and display:
    rm -f ./specs/.current-spec
    ```
 
+Note: The stop-hook automatically stops blocking exit when the state file is removed.
+
 ## Output
 
 ```
@@ -60,8 +61,8 @@ State before cancellation:
 - Iterations: <globalIteration>
 
 Cleanup:
-- [x] Stopped Ralph loop (/ralph-loop:cancel-ralph)
-- [x] Removed .ralph-state.json
+- [x] Removed .ralph-state.json (stops execution loop)
+- [x] Removed .coordinator-prompt.md
 - [x] Removed spec directory (./specs/$spec)
 - [x] Cleared current spec marker
 

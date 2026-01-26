@@ -6,30 +6,6 @@ Common issues and solutions for Smart Ralph.
 
 ## Installation Issues
 
-### "Ralph Loop plugin not found"
-
-Smart Ralph v2.0.0+ requires the Ralph Loop plugin as a dependency.
-
-**Solution:**
-```bash
-/plugin install ralph-loop@claude-plugins-official
-```
-
-**If marketplace not found:**
-```bash
-# Add the official marketplace first
-/plugin marketplace add anthropics/claude-code
-
-# Then install Ralph Loop
-/plugin install ralph-loop@claude-plugins-official
-```
-
-Then restart Claude Code.
-
-**Note:** The plugin is named `ralph-loop` (not `ralph-wiggum`). Both names refer to the same Ralph Wiggum technique, but the actual plugin name is `ralph-loop`.
-
----
-
 ### "stop-handler.sh: No such file or directory"
 
 ```
@@ -81,11 +57,11 @@ This error occurs when you have an old plugin installation (v1.x) that reference
 (eval):cd:6: too many arguments
 ```
 
-This error occurs when the ralph-loop skill's setup script receives the coordinator prompt as unquoted shell arguments, causing the shell to interpret the prompt text as commands.
+This error was caused by the legacy ralph-loop skill's setup script receiving the coordinator prompt as unquoted shell arguments.
 
 **Solution:**
 
-Upgrade to Smart Ralph v2.0.1+ which writes the prompt to the state file directly instead of passing it through CLI arguments.
+Upgrade to Smart Ralph v3.0.0+ which uses an internal stop-hook instead of external dependencies.
 
 ```bash
 /plugin uninstall ralph-specum
@@ -96,7 +72,7 @@ Upgrade to Smart Ralph v2.0.1+ which writes the prompt to the state file directl
 
 ### Task keeps failing / Max iterations reached
 
-After max iterations (default: 5), the Ralph Loop stops to prevent infinite loops.
+After max iterations (default: 5 per task, 100 globally), the execution loop stops to prevent infinite loops.
 
 **Solutions:**
 
@@ -113,12 +89,12 @@ After max iterations (default: 5), the Ralph Loop stops to prevent infinite loop
 
 ### "Loop state conflict"
 
-Another Ralph loop may already be running in this session.
+Another execution loop may already be running in this session.
 
 **Solution:**
 ```bash
 # Cancel the existing loop
-/cancel-ralph
+/ralph-specum:cancel
 
 # Then retry
 /ralph-specum:implement

@@ -6,22 +6,13 @@
 import { z } from "zod";
 import { FileManager } from "../lib/files";
 import { StateManager, type RalphState } from "../lib/state";
+import { MCPLogger } from "../lib/logger";
 import { TEMPLATES } from "../assets";
-
-/**
- * MCP TextContent response format.
- */
-export interface TextContent {
-  type: "text";
-  text: string;
-}
-
-/**
- * MCP tool result format.
- */
-export interface ToolResult {
-  content: TextContent[];
-}
+import {
+  handleUnexpectedError,
+  createErrorResponse,
+  type ToolResult,
+} from "../lib/errors";
 
 /**
  * Zod schema for start tool input validation.
@@ -88,141 +79,130 @@ function createProgressContent(goal: string): string {
 export function handleStart(
   fileManager: FileManager,
   stateManager: StateManager,
-  input: StartInput
+  input: StartInput,
+  logger?: MCPLogger
 ): ToolResult {
-  // Validate input with Zod
-  const parsed = StartInputSchema.safeParse(input);
-  if (!parsed.success) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: ${parsed.error.errors[0]?.message ?? "Invalid input"}`,
-        },
-      ],
+  try {
+    // Validate input with Zod
+    const parsed = StartInputSchema.safeParse(input);
+    if (!parsed.success) {
+      return createErrorResponse(
+        "VALIDATION_ERROR",
+        parsed.error.errors[0]?.message ?? "Invalid input",
+        logger
+      );
+    }
+
+    const { name, goal, quick } = parsed.data;
+
+    // Determine spec name
+    let specName: string;
+
+    if (name) {
+      // Use provided name
+      specName = name;
+    } else if (goal) {
+      // Generate from goal
+      specName = generateNameFromGoal(goal);
+      if (!specName) {
+        return createErrorResponse(
+          "VALIDATION_ERROR",
+          "Could not generate spec name from goal. Please provide a name.",
+          logger
+        );
+      }
+    } else {
+      // Neither provided
+      return createErrorResponse(
+        "VALIDATION_ERROR",
+        "Either 'name' or 'goal' must be provided to create a spec.",
+        logger
+      );
+    }
+
+    // Ensure unique name
+    specName = getUniqueSpecName(fileManager, specName);
+
+    // Determine goal text
+    const goalText = goal ?? `Implement ${specName}`;
+
+    // Create spec directory
+    if (!fileManager.createSpecDir(specName)) {
+      return createErrorResponse(
+        "FILE_OPERATION_ERROR",
+        `Failed to create spec directory for "${specName}".`,
+        logger
+      );
+    }
+
+    // Initialize .progress.md from template
+    const progressContent = createProgressContent(goalText);
+    if (!fileManager.writeSpecFile(specName, ".progress.md", progressContent)) {
+      return createErrorResponse(
+        "FILE_OPERATION_ERROR",
+        `Failed to create .progress.md for "${specName}".`,
+        logger
+      );
+    }
+
+    // Initialize .ralph-state.json with phase: "research"
+    const specDir = fileManager.getSpecDir(specName);
+    const initialState: RalphState = {
+      source: "spec",
+      name: specName,
+      basePath: `./specs/${specName}`,
+      phase: "research",
     };
-  }
 
-  const { name, goal, quick } = parsed.data;
+    if (!stateManager.write(specDir, initialState)) {
+      return createErrorResponse(
+        "FILE_OPERATION_ERROR",
+        `Failed to create .ralph-state.json for "${specName}".`,
+        logger
+      );
+    }
 
-  // Determine spec name
-  let specName: string;
-
-  if (name) {
-    // Use provided name
-    specName = name;
-  } else if (goal) {
-    // Generate from goal
-    specName = generateNameFromGoal(goal);
-    if (!specName) {
+    // Update ./specs/.current-spec
+    if (!fileManager.setCurrentSpec(specName)) {
+      // Non-fatal warning - spec was created successfully
+      logger?.warning(`Spec created but failed to set as current: ${specName}`);
       return {
         content: [
           {
             type: "text",
-            text: "Error: Could not generate spec name from goal. Please provide a name.",
+            text: `Warning: Spec created but failed to set as current. Run ralph_switch to activate.`,
           },
         ],
       };
     }
-  } else {
-    // Neither provided
+
+    // Build success response
+    const lines: string[] = [];
+    lines.push(`# Spec Created: ${specName}`);
+    lines.push("");
+    lines.push(`**Goal**: ${goalText}`);
+    lines.push(`**Phase**: research`);
+    lines.push(`**Quick mode**: ${quick ? "Yes" : "No"}`);
+    lines.push("");
+    lines.push("## Files Created");
+    lines.push(`- \`./specs/${specName}/.progress.md\``);
+    lines.push(`- \`./specs/${specName}/.ralph-state.json\``);
+    lines.push("");
+    lines.push("## Next Step");
+    lines.push("");
+    lines.push("Run **ralph_research** to begin the research phase.");
+    lines.push("");
+    lines.push("This will analyze the codebase and gather context for your goal.");
+
     return {
       content: [
         {
           type: "text",
-          text: "Error: Either 'name' or 'goal' must be provided to create a spec.",
+          text: lines.join("\n"),
         },
       ],
     };
+  } catch (error) {
+    return handleUnexpectedError(error, "ralph_start", logger);
   }
-
-  // Ensure unique name
-  specName = getUniqueSpecName(fileManager, specName);
-
-  // Determine goal text
-  const goalText = goal ?? `Implement ${specName}`;
-
-  // Create spec directory
-  if (!fileManager.createSpecDir(specName)) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: Failed to create spec directory for "${specName}".`,
-        },
-      ],
-    };
-  }
-
-  // Initialize .progress.md from template
-  const progressContent = createProgressContent(goalText);
-  if (!fileManager.writeSpecFile(specName, ".progress.md", progressContent)) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: Failed to create .progress.md for "${specName}".`,
-        },
-      ],
-    };
-  }
-
-  // Initialize .ralph-state.json with phase: "research"
-  const specDir = fileManager.getSpecDir(specName);
-  const initialState: RalphState = {
-    source: "spec",
-    name: specName,
-    basePath: `./specs/${specName}`,
-    phase: "research",
-  };
-
-  if (!stateManager.write(specDir, initialState)) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: Failed to create .ralph-state.json for "${specName}".`,
-        },
-      ],
-    };
-  }
-
-  // Update ./specs/.current-spec
-  if (!fileManager.setCurrentSpec(specName)) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Warning: Spec created but failed to set as current. Run ralph_switch to activate.`,
-        },
-      ],
-    };
-  }
-
-  // Build success response
-  const lines: string[] = [];
-  lines.push(`# Spec Created: ${specName}`);
-  lines.push("");
-  lines.push(`**Goal**: ${goalText}`);
-  lines.push(`**Phase**: research`);
-  lines.push(`**Quick mode**: ${quick ? "Yes" : "No"}`);
-  lines.push("");
-  lines.push("## Files Created");
-  lines.push(`- \`./specs/${specName}/.progress.md\``);
-  lines.push(`- \`./specs/${specName}/.ralph-state.json\``);
-  lines.push("");
-  lines.push("## Next Step");
-  lines.push("");
-  lines.push("Run **ralph_research** to begin the research phase.");
-  lines.push("");
-  lines.push("This will analyze the codebase and gather context for your goal.");
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: lines.join("\n"),
-      },
-    ],
-  };
 }

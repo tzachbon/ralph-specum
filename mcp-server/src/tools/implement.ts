@@ -6,22 +6,13 @@
 import { z } from "zod";
 import { FileManager } from "../lib/files";
 import { StateManager } from "../lib/state";
+import { MCPLogger } from "../lib/logger";
 import { AGENTS } from "../assets";
-
-/**
- * MCP TextContent response format.
- */
-export interface TextContent {
-  type: "text";
-  text: string;
-}
-
-/**
- * MCP tool result format.
- */
-export interface ToolResult {
-  content: TextContent[];
-}
+import {
+  handleUnexpectedError,
+  createErrorResponse,
+  type ToolResult,
+} from "../lib/errors";
 
 /**
  * Zod schema for implement tool input validation.
@@ -174,142 +165,127 @@ If the task cannot be completed:
 export function handleImplement(
   fileManager: FileManager,
   stateManager: StateManager,
-  input: ImplementInput
+  input: ImplementInput,
+  logger?: MCPLogger
 ): ToolResult {
-  // Validate input with Zod
-  const parsed = ImplementInputSchema.safeParse(input);
-  if (!parsed.success) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: ${parsed.error.errors[0]?.message ?? "Invalid input"}`,
-        },
-      ],
-    };
-  }
+  try {
+    // Validate input with Zod
+    const parsed = ImplementInputSchema.safeParse(input);
+    if (!parsed.success) {
+      return createErrorResponse(
+        "VALIDATION_ERROR",
+        parsed.error.errors[0]?.message ?? "Invalid input",
+        logger
+      );
+    }
 
-  const { max_iterations } = parsed.data;
+    const { max_iterations } = parsed.data;
 
-  // Get current spec
-  const currentSpec = fileManager.getCurrentSpec();
-  if (!currentSpec) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: "Error: No current spec set. Run ralph_start first.",
-        },
-      ],
-    };
-  }
+    // Get current spec
+    const currentSpec = fileManager.getCurrentSpec();
+    if (!currentSpec) {
+      return createErrorResponse(
+        "MISSING_PREREQUISITES",
+        "No current spec set. Run ralph_start first.",
+        logger
+      );
+    }
 
-  // Verify spec exists
-  if (!fileManager.specExists(currentSpec)) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: Spec "${currentSpec}" not found. Run ralph_status to see available specs.`,
-        },
-      ],
-    };
-  }
+    // Verify spec exists
+    if (!fileManager.specExists(currentSpec)) {
+      return createErrorResponse(
+        "SPEC_NOT_FOUND",
+        `Spec "${currentSpec}" not found. Run ralph_status to see available specs.`,
+        logger
+      );
+    }
 
-  // Read current state
-  const specDir = fileManager.getSpecDir(currentSpec);
-  const state = stateManager.read(specDir);
+    // Read current state
+    const specDir = fileManager.getSpecDir(currentSpec);
+    const state = stateManager.read(specDir);
 
-  if (!state) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: No state found for spec "${currentSpec}". Run ralph_start to initialize the spec.`,
-        },
-      ],
-    };
-  }
+    if (!state) {
+      return createErrorResponse(
+        "INVALID_STATE",
+        `No state found for spec "${currentSpec}". Run ralph_start to initialize the spec.`,
+        logger
+      );
+    }
 
-  // Validate we're in execution phase (tasks phase can also implement)
-  if (state.phase !== "execution" && state.phase !== "tasks") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: Spec "${currentSpec}" is in "${state.phase}" phase. Complete the tasks phase first (run ralph_tasks, then ralph_complete_phase).`,
-        },
-      ],
-    };
-  }
+    // Validate we're in execution phase (tasks phase can also implement)
+    if (state.phase !== "execution" && state.phase !== "tasks") {
+      return createErrorResponse(
+        "PHASE_MISMATCH",
+        `Spec "${currentSpec}" is in "${state.phase}" phase. Complete the tasks phase first (run ralph_tasks, then ralph_complete_phase).`,
+        logger
+      );
+    }
 
-  // Read tasks.md
-  const tasksContent = fileManager.readSpecFile(currentSpec, "tasks.md");
-  if (!tasksContent) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: tasks.md not found for spec "${currentSpec}". Run ralph_tasks to generate tasks.`,
-        },
-      ],
-    };
-  }
+    // Read tasks.md
+    const tasksContent = fileManager.readSpecFile(currentSpec, "tasks.md");
+    if (!tasksContent) {
+      return createErrorResponse(
+        "MISSING_PREREQUISITES",
+        `tasks.md not found for spec "${currentSpec}". Run ralph_tasks to generate tasks.`,
+        logger
+      );
+    }
 
-  // Parse tasks
-  const tasks = parseTasksFile(tasksContent);
-  if (tasks.length === 0) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: No tasks found in tasks.md for spec "${currentSpec}". Run ralph_tasks to generate tasks.`,
-        },
-      ],
-    };
-  }
+    // Parse tasks
+    const tasks = parseTasksFile(tasksContent);
+    if (tasks.length === 0) {
+      return createErrorResponse(
+        "MISSING_PREREQUISITES",
+        `No tasks found in tasks.md for spec "${currentSpec}". Run ralph_tasks to generate tasks.`,
+        logger
+      );
+    }
 
-  // Determine current task index
-  // Use state.taskIndex if available, otherwise find first uncompleted task
-  let taskIndex = state.taskIndex ?? 0;
+    // Determine current task index
+    // Use state.taskIndex if available, otherwise find first uncompleted task
+    let taskIndex = state.taskIndex ?? 0;
 
-  // If the task at taskIndex is already completed, find the next uncompleted one
-  if (taskIndex < tasks.length && tasks[taskIndex].startsWith("- [x]")) {
-    taskIndex = getFirstUncompletedTaskIndex(tasks);
-  }
+    // If the task at taskIndex is already completed, find the next uncompleted one
+    if (taskIndex < tasks.length && tasks[taskIndex].startsWith("- [x]")) {
+      taskIndex = getFirstUncompletedTaskIndex(tasks);
+    }
 
-  // Check if all tasks are complete
-  if (taskIndex === -1 || taskIndex >= tasks.length) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `All tasks complete for spec "${currentSpec}". Total: ${tasks.length} tasks executed.
+    // Check if all tasks are complete
+    if (taskIndex === -1 || taskIndex >= tasks.length) {
+      logger?.info(`All tasks complete for spec "${currentSpec}". Total: ${tasks.length} tasks.`);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `All tasks complete for spec "${currentSpec}". Total: ${tasks.length} tasks executed.
 
 Spec execution finished successfully.`,
-        },
-      ],
-    };
+          },
+        ],
+      };
+    }
+
+    // Get current task
+    const currentTask = tasks[taskIndex];
+
+    // Read .progress.md for context
+    const progressContent = fileManager.readSpecFile(currentSpec, ".progress.md");
+    const progressContext = progressContent
+      ? progressContent
+      : "No progress file found.";
+
+    // Build execution response
+    return buildExecutionResponse({
+      specName: currentSpec,
+      specPath: specDir,
+      taskIndex,
+      totalTasks: tasks.length,
+      maxIterations: max_iterations,
+      currentTask,
+      progressContext,
+      agentPrompt: AGENTS.specExecutor,
+    });
+  } catch (error) {
+    return handleUnexpectedError(error, "ralph_implement", logger);
   }
-
-  // Get current task
-  const currentTask = tasks[taskIndex];
-
-  // Read .progress.md for context
-  const progressContent = fileManager.readSpecFile(currentSpec, ".progress.md");
-  const progressContext = progressContent
-    ? progressContent
-    : "No progress file found.";
-
-  // Build execution response
-  return buildExecutionResponse({
-    specName: currentSpec,
-    specPath: specDir,
-    taskIndex,
-    totalTasks: tasks.length,
-    maxIterations: max_iterations,
-    currentTask,
-    progressContext,
-    agentPrompt: AGENTS.specExecutor,
-  });
 }

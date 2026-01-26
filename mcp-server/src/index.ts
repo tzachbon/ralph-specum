@@ -120,8 +120,8 @@ async function main(): Promise<void> {
   const fileManager = new FileManager(undefined, logger);
   const stateManager = new StateManager(logger);
 
-  // Register all tools
-  registerTools(server, fileManager, stateManager);
+  // Register all tools with logger for error handling
+  registerTools(server, fileManager, stateManager, logger);
 
   logger.info("Tools registered", { count: 11 });
 

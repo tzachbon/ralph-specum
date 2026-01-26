@@ -6,21 +6,12 @@
 import { z } from "zod";
 import { FileManager } from "../lib/files";
 import { StateManager, type Phase } from "../lib/state";
-
-/**
- * MCP TextContent response format.
- */
-export interface TextContent {
-  type: "text";
-  text: string;
-}
-
-/**
- * MCP tool result format.
- */
-export interface ToolResult {
-  content: TextContent[];
-}
+import { MCPLogger } from "../lib/logger";
+import {
+  handleUnexpectedError,
+  createErrorResponse,
+  type ToolResult,
+} from "../lib/errors";
 
 /**
  * Phase transition map: current phase -> next phase
@@ -68,169 +59,158 @@ export type CompletePhaseInput = z.infer<typeof CompletePhaseInputSchema>;
 export function handleCompletePhase(
   fileManager: FileManager,
   stateManager: StateManager,
-  input: CompletePhaseInput
+  input: CompletePhaseInput,
+  logger?: MCPLogger
 ): ToolResult {
-  // Validate input with Zod
-  const parsed = CompletePhaseInputSchema.safeParse(input);
-  if (!parsed.success) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: ${parsed.error.errors[0]?.message ?? "Invalid input"}`,
-        },
-      ],
-    };
-  }
-
-  const { spec_name, phase, summary } = parsed.data;
-
-  // Determine spec name (use provided or current)
-  let specName: string;
-  if (spec_name) {
-    specName = spec_name;
-  } else {
-    const currentSpec = fileManager.getCurrentSpec();
-    if (!currentSpec) {
-      return {
-        content: [
-          {
-            type: "text",
-            text: "Error: No spec specified and no current spec set. Run ralph_start first or specify spec_name.",
-          },
-        ],
-      };
+  try {
+    // Validate input with Zod
+    const parsed = CompletePhaseInputSchema.safeParse(input);
+    if (!parsed.success) {
+      return createErrorResponse(
+        "VALIDATION_ERROR",
+        parsed.error.errors[0]?.message ?? "Invalid input",
+        logger
+      );
     }
-    specName = currentSpec;
-  }
 
-  // Verify spec exists
-  if (!fileManager.specExists(specName)) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: Spec "${specName}" not found. Run ralph_status to see available specs.`,
-        },
-      ],
-    };
-  }
+    const { spec_name, phase, summary } = parsed.data;
 
-  // Read current state
-  const specDir = fileManager.getSpecDir(specName);
-  const state = stateManager.read(specDir);
-
-  if (!state) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: No state found for spec "${specName}". Run ralph_start to initialize the spec.`,
-        },
-      ],
-    };
-  }
-
-  // Validate phase matches current state
-  if (state.phase !== phase) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: Phase mismatch. Current phase is "${state.phase}", but you tried to complete "${phase}". Complete the current phase first.`,
-        },
-      ],
-    };
-  }
-
-  // Get next phase
-  const nextPhase = PHASE_TRANSITIONS[phase];
-
-  // Update state with next phase
-  const updatedState = {
-    ...state,
-    phase: nextPhase ?? state.phase, // Keep execution phase if already there
-  };
-
-  if (!stateManager.write(specDir, updatedState)) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: Failed to update state for spec "${specName}".`,
-        },
-      ],
-    };
-  }
-
-  // Append summary to .progress.md
-  const progressContent = fileManager.readSpecFile(specName, ".progress.md");
-  if (progressContent !== null) {
-    const timestamp = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-    const phaseHeading = `### ${phase.charAt(0).toUpperCase() + phase.slice(1)} Phase Complete (${timestamp})`;
-    const summarySection = `\n\n${phaseHeading}\n\n${summary}\n`;
-
-    // Find the "## Learnings" section or append at end
-    let updatedProgress: string;
-    const learningsIndex = progressContent.indexOf("\n## Learnings");
-    if (learningsIndex !== -1) {
-      // Insert before Learnings section
-      updatedProgress =
-        progressContent.slice(0, learningsIndex) +
-        summarySection +
-        progressContent.slice(learningsIndex);
+    // Determine spec name (use provided or current)
+    let specName: string;
+    if (spec_name) {
+      specName = spec_name;
     } else {
-      // Append at end
-      updatedProgress = progressContent + summarySection;
+      const currentSpec = fileManager.getCurrentSpec();
+      if (!currentSpec) {
+        return createErrorResponse(
+          "MISSING_PREREQUISITES",
+          "No spec specified and no current spec set. Run ralph_start first or specify spec_name.",
+          logger
+        );
+      }
+      specName = currentSpec;
     }
 
-    if (!fileManager.writeSpecFile(specName, ".progress.md", updatedProgress)) {
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Warning: State updated but failed to append summary to .progress.md for spec "${specName}".`,
-          },
-        ],
-      };
+    // Verify spec exists
+    if (!fileManager.specExists(specName)) {
+      return createErrorResponse(
+        "SPEC_NOT_FOUND",
+        `Spec "${specName}" not found. Run ralph_status to see available specs.`,
+        logger
+      );
     }
+
+    // Read current state
+    const specDir = fileManager.getSpecDir(specName);
+    const state = stateManager.read(specDir);
+
+    if (!state) {
+      return createErrorResponse(
+        "INVALID_STATE",
+        `No state found for spec "${specName}". Run ralph_start to initialize the spec.`,
+        logger
+      );
+    }
+
+    // Validate phase matches current state
+    if (state.phase !== phase) {
+      return createErrorResponse(
+        "PHASE_MISMATCH",
+        `Current phase is "${state.phase}", but you tried to complete "${phase}". Complete the current phase first.`,
+        logger
+      );
+    }
+
+    // Get next phase
+    const nextPhase = PHASE_TRANSITIONS[phase];
+
+    // Update state with next phase
+    const updatedState = {
+      ...state,
+      phase: nextPhase ?? state.phase, // Keep execution phase if already there
+    };
+
+    if (!stateManager.write(specDir, updatedState)) {
+      return createErrorResponse(
+        "FILE_OPERATION_ERROR",
+        `Failed to update state for spec "${specName}".`,
+        logger
+      );
+    }
+
+    // Append summary to .progress.md
+    const progressContent = fileManager.readSpecFile(specName, ".progress.md");
+    if (progressContent !== null) {
+      const timestamp = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+      const phaseHeading = `### ${phase.charAt(0).toUpperCase() + phase.slice(1)} Phase Complete (${timestamp})`;
+      const summarySection = `\n\n${phaseHeading}\n\n${summary}\n`;
+
+      // Find the "## Learnings" section or append at end
+      let updatedProgress: string;
+      const learningsIndex = progressContent.indexOf("\n## Learnings");
+      if (learningsIndex !== -1) {
+        // Insert before Learnings section
+        updatedProgress =
+          progressContent.slice(0, learningsIndex) +
+          summarySection +
+          progressContent.slice(learningsIndex);
+      } else {
+        // Append at end
+        updatedProgress = progressContent + summarySection;
+      }
+
+      if (!fileManager.writeSpecFile(specName, ".progress.md", updatedProgress)) {
+        // Non-fatal warning - state was updated successfully
+        logger?.warning(`State updated but failed to append summary to .progress.md for spec "${specName}"`);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Warning: State updated but failed to append summary to .progress.md for spec "${specName}".`,
+            },
+          ],
+        };
+      }
+    }
+
+    // Build success response
+    const lines: string[] = [];
+    lines.push(`# Phase Complete: ${phase}`);
+    lines.push("");
+    lines.push(`**Spec**: ${specName}`);
+    lines.push(`**Completed Phase**: ${phase}`);
+
+    if (nextPhase) {
+      lines.push(`**Next Phase**: ${nextPhase}`);
+      lines.push("");
+      lines.push("## Summary");
+      lines.push("");
+      lines.push(summary);
+      lines.push("");
+      lines.push("## Next Step");
+      lines.push("");
+      lines.push(NEXT_STEP_INSTRUCTIONS[phase]);
+    } else {
+      lines.push(`**Status**: All phases complete`);
+      lines.push("");
+      lines.push("## Summary");
+      lines.push("");
+      lines.push(summary);
+      lines.push("");
+      lines.push("## Next Step");
+      lines.push("");
+      lines.push(NEXT_STEP_INSTRUCTIONS.execution);
+    }
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: lines.join("\n"),
+        },
+      ],
+    };
+  } catch (error) {
+    return handleUnexpectedError(error, "ralph_complete_phase", logger);
   }
-
-  // Build success response
-  const lines: string[] = [];
-  lines.push(`# Phase Complete: ${phase}`);
-  lines.push("");
-  lines.push(`**Spec**: ${specName}`);
-  lines.push(`**Completed Phase**: ${phase}`);
-
-  if (nextPhase) {
-    lines.push(`**Next Phase**: ${nextPhase}`);
-    lines.push("");
-    lines.push("## Summary");
-    lines.push("");
-    lines.push(summary);
-    lines.push("");
-    lines.push("## Next Step");
-    lines.push("");
-    lines.push(NEXT_STEP_INSTRUCTIONS[phase]);
-  } else {
-    lines.push(`**Status**: All phases complete`);
-    lines.push("");
-    lines.push("## Summary");
-    lines.push("");
-    lines.push(summary);
-    lines.push("");
-    lines.push("## Next Step");
-    lines.push("");
-    lines.push(NEXT_STEP_INSTRUCTIONS.execution);
-  }
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: lines.join("\n"),
-      },
-    ],
-  };
 }

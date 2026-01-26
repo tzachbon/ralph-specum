@@ -3,20 +3,8 @@
  * Returns usage information and tool list.
  */
 
-/**
- * MCP TextContent response format.
- */
-export interface TextContent {
-  type: "text";
-  text: string;
-}
-
-/**
- * MCP tool result format.
- */
-export interface ToolResult {
-  content: TextContent[];
-}
+import { MCPLogger } from "../lib/logger";
+import { handleUnexpectedError, type ToolResult } from "../lib/errors";
 
 /**
  * Tool information for help display.
@@ -92,55 +80,59 @@ const TOOLS: ToolInfo[] = [
  * Handle the ralph_help tool.
  * Returns usage information and tool list.
  */
-export function handleHelp(): ToolResult {
-  const lines: string[] = [];
+export function handleHelp(logger?: MCPLogger): ToolResult {
+  try {
+    const lines: string[] = [];
 
-  lines.push("# Ralph Specum MCP Server");
-  lines.push("");
-  lines.push("Spec-driven development workflow for AI-assisted coding.");
-  lines.push("");
-  lines.push("## Workflow");
-  lines.push("");
-  lines.push("1. **ralph_start** - Create a new spec with a goal");
-  lines.push("2. **ralph_research** - Analyze codebase and gather context");
-  lines.push("3. **ralph_requirements** - Define user stories and acceptance criteria");
-  lines.push("4. **ralph_design** - Create technical architecture");
-  lines.push("5. **ralph_tasks** - Generate implementation tasks");
-  lines.push("6. **ralph_implement** - Execute tasks one by one");
-  lines.push("");
-  lines.push("Use **ralph_complete_phase** after each phase (research through tasks).");
-  lines.push("");
-  lines.push("## Available Tools");
-  lines.push("");
-  lines.push("| Tool | Description | Arguments |");
-  lines.push("|------|-------------|-----------|");
+    lines.push("# Ralph Specum MCP Server");
+    lines.push("");
+    lines.push("Spec-driven development workflow for AI-assisted coding.");
+    lines.push("");
+    lines.push("## Workflow");
+    lines.push("");
+    lines.push("1. **ralph_start** - Create a new spec with a goal");
+    lines.push("2. **ralph_research** - Analyze codebase and gather context");
+    lines.push("3. **ralph_requirements** - Define user stories and acceptance criteria");
+    lines.push("4. **ralph_design** - Create technical architecture");
+    lines.push("5. **ralph_tasks** - Generate implementation tasks");
+    lines.push("6. **ralph_implement** - Execute tasks one by one");
+    lines.push("");
+    lines.push("Use **ralph_complete_phase** after each phase (research through tasks).");
+    lines.push("");
+    lines.push("## Available Tools");
+    lines.push("");
+    lines.push("| Tool | Description | Arguments |");
+    lines.push("|------|-------------|-----------|");
 
-  for (const tool of TOOLS) {
-    lines.push(`| ${tool.name} | ${tool.description} | ${tool.args} |`);
+    for (const tool of TOOLS) {
+      lines.push(`| ${tool.name} | ${tool.description} | ${tool.args} |`);
+    }
+
+    lines.push("");
+    lines.push("## Quick Start");
+    lines.push("");
+    lines.push("```");
+    lines.push("ralph_start({ goal: 'Add user authentication', quick: true })");
+    lines.push("```");
+    lines.push("");
+    lines.push("This creates a spec and immediately starts the research phase.");
+    lines.push("");
+    lines.push("## More Information");
+    lines.push("");
+    lines.push("- Specs are stored in `./specs/<name>/`");
+    lines.push("- Current spec tracked in `./specs/.current-spec`");
+    lines.push("- State stored in `.ralph-state.json` within spec directory");
+    lines.push("- Use `ralph_status` to see all specs and their progress");
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: lines.join("\n"),
+        },
+      ],
+    };
+  } catch (error) {
+    return handleUnexpectedError(error, "ralph_help", logger);
   }
-
-  lines.push("");
-  lines.push("## Quick Start");
-  lines.push("");
-  lines.push("```");
-  lines.push("ralph_start({ goal: 'Add user authentication', quick: true })");
-  lines.push("```");
-  lines.push("");
-  lines.push("This creates a spec and immediately starts the research phase.");
-  lines.push("");
-  lines.push("## More Information");
-  lines.push("");
-  lines.push("- Specs are stored in `./specs/<name>/`");
-  lines.push("- Current spec tracked in `./specs/.current-spec`");
-  lines.push("- State stored in `.ralph-state.json` within spec directory");
-  lines.push("- Use `ralph_status` to see all specs and their progress");
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: lines.join("\n"),
-      },
-    ],
-  };
 }

@@ -366,7 +366,7 @@ After POC validated, clean up code.
   - **Commit**: `refactor(mcp): extract instruction response builder`
   - _Design: Instruction-Return Template_
 
-- [ ] 2.2 Add comprehensive error handling
+- [x] 2.2 Add comprehensive error handling
   - **Do**:
     1. Add try/catch to all tool handlers
     2. Return MCP-compliant error responses

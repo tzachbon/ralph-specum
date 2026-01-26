@@ -7,9 +7,11 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { FileManager } from "../lib/files";
 import { StateManager } from "../lib/state";
+import { MCPLogger } from "../lib/logger";
+import { type ToolResult } from "../lib/errors";
 
 // Import tool handlers
-import { handleStatus, type ToolResult } from "./status";
+import { handleStatus } from "./status";
 import { handleHelp } from "./help";
 import { handleSwitch, SwitchInputSchema } from "./switch";
 import { handleCancel, CancelInputSchema } from "./cancel";
@@ -62,11 +64,13 @@ export {
  * @param server - The McpServer instance to register tools with
  * @param fileManager - FileManager instance for spec file operations
  * @param stateManager - StateManager instance for state file operations
+ * @param logger - MCPLogger instance for error logging
  */
 export function registerTools(
   server: McpServer,
   fileManager: FileManager,
-  stateManager: StateManager
+  stateManager: StateManager,
+  logger?: MCPLogger
 ): void {
   // 1. ralph_status - List all specs with phase and progress
   server.registerTool(
@@ -77,7 +81,7 @@ export function registerTools(
       inputSchema: {},
     },
     async () => {
-      return toCallToolResult(handleStatus(fileManager, stateManager));
+      return toCallToolResult(handleStatus(fileManager, stateManager, logger));
     }
   );
 
@@ -90,7 +94,7 @@ export function registerTools(
       inputSchema: {},
     },
     async () => {
-      return toCallToolResult(handleHelp());
+      return toCallToolResult(handleHelp(logger));
     }
   );
 
@@ -105,7 +109,7 @@ export function registerTools(
       },
     },
     async (input) => {
-      return toCallToolResult(handleSwitch(fileManager, input));
+      return toCallToolResult(handleSwitch(fileManager, input, logger));
     }
   );
 
@@ -125,7 +129,7 @@ export function registerTools(
       },
     },
     async (input) => {
-      return toCallToolResult(handleCancel(fileManager, stateManager, input));
+      return toCallToolResult(handleCancel(fileManager, stateManager, input, logger));
     }
   );
 
@@ -148,7 +152,7 @@ export function registerTools(
       },
     },
     async (input) => {
-      return toCallToolResult(handleStart(fileManager, stateManager, input));
+      return toCallToolResult(handleStart(fileManager, stateManager, input, logger));
     }
   );
 
@@ -171,7 +175,7 @@ export function registerTools(
       },
     },
     async (input) => {
-      return toCallToolResult(handleCompletePhase(fileManager, stateManager, input));
+      return toCallToolResult(handleCompletePhase(fileManager, stateManager, input, logger));
     }
   );
 
@@ -188,7 +192,7 @@ export function registerTools(
       },
     },
     async (input) => {
-      return toCallToolResult(handleResearch(fileManager, stateManager, input));
+      return toCallToolResult(handleResearch(fileManager, stateManager, input, logger));
     }
   );
 
@@ -205,7 +209,7 @@ export function registerTools(
       },
     },
     async (input) => {
-      return toCallToolResult(handleRequirements(fileManager, stateManager, input));
+      return toCallToolResult(handleRequirements(fileManager, stateManager, input, logger));
     }
   );
 
@@ -222,7 +226,7 @@ export function registerTools(
       },
     },
     async (input) => {
-      return toCallToolResult(handleDesign(fileManager, stateManager, input));
+      return toCallToolResult(handleDesign(fileManager, stateManager, input, logger));
     }
   );
 
@@ -239,7 +243,7 @@ export function registerTools(
       },
     },
     async (input) => {
-      return toCallToolResult(handleTasks(fileManager, stateManager, input));
+      return toCallToolResult(handleTasks(fileManager, stateManager, input, logger));
     }
   );
 
@@ -256,7 +260,7 @@ export function registerTools(
       },
     },
     async (input) => {
-      return toCallToolResult(handleImplement(fileManager, stateManager, input));
+      return toCallToolResult(handleImplement(fileManager, stateManager, input, logger));
     }
   );
 }

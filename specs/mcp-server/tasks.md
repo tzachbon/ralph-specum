@@ -425,7 +425,7 @@ After POC validated, clean up code.
 
 ## Phase 3: Testing
 
-- [ ] 3.1 Set up test infrastructure
+- [x] 3.1 Set up test infrastructure
   - **Do**:
     1. Add `bun:test` configuration to package.json
     2. Create `mcp-server/tests/` directory

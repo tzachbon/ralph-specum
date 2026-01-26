@@ -10,7 +10,8 @@
   "scripts": {
     "start": "bun run src/index.ts",
     "build": "bun build src/index.ts --compile --outfile=dist/ralph-specum-mcp",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

@@ -328,7 +328,7 @@ Focus: Validate the idea works end-to-end. Skip tests, accept hardcoded values.
   - _Requirements: AC-1.5_
   - _Design: McpServer Entry Point_
 
-- [ ] 1.22 POC Checkpoint: End-to-end validation with real MCP client
+- [x] 1.22 POC Checkpoint: End-to-end validation with real MCP client
   - **Do**:
     1. Build the MCP server: `cd mcp-server && bun run build`
     2. Add server to Claude Desktop config (claude_desktop_config.json)

@@ -180,7 +180,7 @@ Focus: Validate the idea works end-to-end. Skip tests, accept hardcoded values.
   - **Done when**: No type errors
   - **Commit**: `chore(mcp): pass quality checkpoint` (only if fixes needed)
 
-- [ ] 1.11 Implement direct tools: status, help
+- [x] 1.11 Implement direct tools: status, help
   - **Do**:
     1. Create `mcp-server/src/tools/status.ts` - handleStatus: list all specs with phase, task progress
     2. Create `mcp-server/src/tools/help.ts` - handleHelp: return usage info and tool list

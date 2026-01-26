@@ -505,7 +505,7 @@ After POC validated, clean up code.
   - **Commit**: `test(mcp): add unit tests for tool handlers`
   - _Design: Test Strategy - Unit Tests_
 
-- [ ] 3.7 Integration tests for full workflow
+- [x] 3.7 Integration tests for full workflow
   - **Do**:
     1. Create `mcp-server/tests/integration/workflow.test.ts`
     2. Test full workflow: start -> research -> requirements -> design -> tasks

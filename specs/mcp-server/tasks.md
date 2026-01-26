@@ -247,7 +247,7 @@ Focus: Validate the idea works end-to-end. Skip tests, accept hardcoded values.
   - _Requirements: US-12, AC-12.1 through AC-12.4_
   - _Design: ralph_complete_phase handler_
 
-- [ ] 1.16 Implement instruction tools: research, requirements, design, tasks
+- [x] 1.16 Implement instruction tools: research, requirements, design, tasks
   - **Do**:
     1. Create `mcp-server/src/tools/research.ts` - return research-analyst prompt + goal context
     2. Create `mcp-server/src/tools/requirements.ts` - return product-manager prompt + research context

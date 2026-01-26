@@ -195,7 +195,7 @@ Focus: Validate the idea works end-to-end. Skip tests, accept hardcoded values.
   - _Requirements: US-9, US-13, AC-9.1 through AC-9.4, AC-13.1 through AC-13.4_
   - _Design: Direct Tools_
 
-- [ ] 1.12 Implement direct tools: switch, cancel
+- [x] 1.12 Implement direct tools: switch, cancel
   - **Do**:
     1. Create `mcp-server/src/tools/switch.ts` - handleSwitch: validate spec exists, update .current-spec
     2. Create `mcp-server/src/tools/cancel.ts` - handleCancel: delete .ralph-state.json, optionally delete spec dir

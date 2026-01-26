@@ -73,7 +73,7 @@ Focus: Validate the idea works end-to-end. Skip tests, accept hardcoded values.
   - _Requirements: FR-1, FR-4_
   - _Design: File Structure_
 
-- [ ] 1.3 Copy agent prompts to MCP server assets
+- [x] 1.3 Copy agent prompts to MCP server assets
   - **Do**:
     1. Copy `plugins/ralph-specum/agents/research-analyst.md` to `mcp-server/src/assets/agents/`
     2. Copy `plugins/ralph-specum/agents/product-manager.md` to `mcp-server/src/assets/agents/`

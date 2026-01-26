@@ -299,7 +299,7 @@ Focus: Validate the idea works end-to-end. Skip tests, accept hardcoded values.
   - **Done when**: No type errors
   - **Commit**: `chore(mcp): pass quality checkpoint` (only if fixes needed)
 
-- [ ] 1.20 Create MCP server entry point
+- [x] 1.20 Create MCP server entry point
   - **Do**:
     1. Create `mcp-server/src/index.ts`
     2. Create McpServer instance with name "ralph-specum", version from package.json

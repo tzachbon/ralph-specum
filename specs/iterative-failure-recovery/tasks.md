@@ -94,7 +94,7 @@ Focus: Validate recovery loop works. Skip edge cases, accept basic fix task gene
   - **Done when**: All three patterns found
   - **Commit**: `chore(recovery): pass quality checkpoint` (only if fixes needed)
 
-- [ ] 1.9 POC end-to-end test with intentional failure
+- [x] 1.9 POC end-to-end test with intentional failure
   - **Do**: Create test spec at ./specs/test-recovery/ with task that will fail (use invalid command). Run `/ralph-specum:implement --recovery-mode` and verify fix task is created and executed.
   - **Files**: `specs/test-recovery/tasks.md`, `specs/test-recovery/.progress.md`, `specs/test-recovery/.ralph-state.json`
   - **Done when**: Recovery loop creates fix task and retries original

@@ -70,7 +70,7 @@ Focus: Validate recovery loop works. Skip edge cases, accept basic fix task gene
   - _Requirements: FR-2, AC-1.2, AC-1.4, FR-9_
   - _Design: Component 2 - Fix Task Generator_
 
-- [ ] 1.6 Add task inserter to implement.md
+- [x] 1.6 Add task inserter to implement.md
   - **Do**: Add logic to insert generated fix task into tasks.md after current task. Find task block end, insert fix task, increment totalTasks in state. Use Edit tool pattern for clean insertion.
   - **Files**: `plugins/ralph-specum/commands/implement.md`
   - **Done when**: Fix task appears in tasks.md after failed task

@@ -461,11 +461,84 @@ After generating the fix task:
 
 **Insert Fix Task into tasks.md**:
 
-1. Read tasks.md content
-2. Find the current task line: `- [ ] $taskId` or `- [x] $taskId`
-3. Find end of current task block (next `- [ ]` or `- [x]` or phase header)
-4. Insert fix task markdown at that position
-5. Increment `totalTasks` in .ralph-state.json
+Use the Edit tool to cleanly insert the fix task after the current task block.
+
+**Algorithm**:
+
+1. **Read tasks.md content** using Read tool
+
+2. **Locate current task start**:
+   - Search for pattern: `- [ ] $taskId ` or `- [x] $taskId `
+   - Store the line number as `taskStartLine`
+
+3. **Find current task block end**:
+   - Scan forward from `taskStartLine + 1`
+   - Task block ends at first line matching:
+     - `- [ ]` (next task start)
+     - `- [x]` (next completed task)
+     - `## Phase` (next phase header)
+     - End of file
+   - Store this line as `insertPosition`
+
+4. **Build insertion content**:
+   - Start with newline if needed for spacing
+   - Add the complete fix task markdown block:
+   ```
+   - [ ] X.Y.N [FIX X.Y] Fix: $errorSummary
+     - **Do**: Address the error: $errorDetails
+       1. Analyze the failure: $attemptedFix
+       2. Review related code in Files list
+       3. Implement fix for: $errorDetails
+     - **Files**: $originalTaskFiles
+     - **Done when**: Error "$errorDetails" no longer occurs
+     - **Verify**: $originalTaskVerify
+     - **Commit**: `fix($scope): address $errorType from task $taskId`
+   ```
+   - Ensure proper indentation (2 spaces for sub-bullets)
+
+5. **Insert using Edit tool**:
+   - Use Edit tool with `old_string` = content at insertion point
+   - `new_string` = fix task markdown + original content at insertion point
+   - This places fix task immediately after original task block
+
+6. **Update state totalTasks**:
+   - Read .ralph-state.json
+   - Increment `totalTasks` by 1
+   - Write updated state
+
+**Example Insertion**:
+
+Before insertion (task 1.3 failed):
+```markdown
+- [ ] 1.3 Add failure parser
+  - **Do**: Add parsing logic
+  - **Files**: implement.md
+  - **Verify**: grep pattern
+  - **Commit**: feat: add parser
+
+- [ ] 1.4 Next task
+```
+
+After insertion:
+```markdown
+- [ ] 1.3 Add failure parser
+  - **Do**: Add parsing logic
+  - **Files**: implement.md
+  - **Verify**: grep pattern
+  - **Commit**: feat: add parser
+
+- [ ] 1.3.1 [FIX 1.3] Fix: File not found error
+  - **Do**: Address the error: File not found
+    1. Analyze the failure: Checked alternate paths
+    2. Review related code in Files list
+    3. Implement fix for: File not found
+  - **Files**: implement.md
+  - **Done when**: Error "File not found" no longer occurs
+  - **Verify**: grep pattern
+  - **Commit**: `fix(recovery): address missing file from task 1.3`
+
+- [ ] 1.4 Next task
+```
 
 **Execute Fix Task**:
 

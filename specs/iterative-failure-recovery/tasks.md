@@ -79,7 +79,7 @@ Focus: Validate recovery loop works. Skip edge cases, accept basic fix task gene
   - _Requirements: FR-3, AC-1.3_
   - _Design: Component 3 - Task Inserter_
 
-- [ ] 1.7 Add recovery orchestrator loop to implement.md
+- [x] 1.7 Add recovery orchestrator loop to implement.md
   - **Do**: Add Section 6b after task delegation. Check recoveryMode, parse failure, check limits, generate fix task, insert, execute, retry original. Follow design flow exactly.
   - **Files**: `plugins/ralph-specum/commands/implement.md`
   - **Done when**: Full recovery loop implemented: failure -> fix -> retry

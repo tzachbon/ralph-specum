@@ -555,6 +555,232 @@ After fix task completes:
 3. If TASK_COMPLETE: proceed to section 7 (verification) then section 8 (state update)
 4. If failure: loop back to section 6c (generate another fix task)
 
+### 6d. Iterative Failure Recovery Orchestrator
+
+This section orchestrates the complete failure recovery loop when recoveryMode is enabled.
+
+**Entry Point**:
+
+When spec-executor does NOT output TASK_COMPLETE:
+1. First, check if `recoveryMode` is true in .ralph-state.json
+2. If recoveryMode is false or missing: skip to "ERROR: Max Retries Reached" (existing behavior)
+3. If recoveryMode is true: proceed with iterative recovery
+
+**Recovery Loop Flow**:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    ITERATIVE FAILURE RECOVERY                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  1. Task fails (no TASK_COMPLETE)                               │
+│     │                                                           │
+│     ▼                                                           │
+│  2. Check recoveryMode in state                                 │
+│     │                                                           │
+│     ├── false ──► Normal retry/stop behavior                    │
+│     │                                                           │
+│     ▼ (true)                                                    │
+│  3. Parse failure output (Section 6b)                           │
+│     Extract: taskId, error, attemptedFix                        │
+│     │                                                           │
+│     ▼                                                           │
+│  4. Check fix limits (Section 6c)                               │
+│     Read: fixTaskMap[taskId].attempts                           │
+│     │                                                           │
+│     ├── >= maxFixTasksPerOriginal ──► STOP with error           │
+│     │                                                           │
+│     ▼ (under limit)                                             │
+│  5. Generate fix task (Section 6c)                              │
+│     Create: X.Y.N [FIX X.Y] Fix: <error>                        │
+│     │                                                           │
+│     ▼                                                           │
+│  6. Insert fix task into tasks.md (Section 6c)                  │
+│     Position: immediately after original task                   │
+│     │                                                           │
+│     ▼                                                           │
+│  7. Update state                                                │
+│     - Increment fixTaskMap[taskId].attempts                     │
+│     - Add fix task ID to fixTaskMap[taskId].fixTaskIds          │
+│     - Increment totalTasks                                      │
+│     │                                                           │
+│     ▼                                                           │
+│  8. Execute fix task                                            │
+│     Delegate to spec-executor (same as Section 6)               │
+│     │                                                           │
+│     ├── TASK_COMPLETE ──► Proceed to step 9                     │
+│     │                                                           │
+│     └── No completion ──► Loop back to step 3                   │
+│         (fix task becomes current, can spawn its own fixes)     │
+│     │                                                           │
+│     ▼                                                           │
+│  9. Retry original task                                         │
+│     Delegate original task to spec-executor again               │
+│     │                                                           │
+│     ├── TASK_COMPLETE ──► Success! Section 7 verification       │
+│     │                                                           │
+│     └── No completion ──► Loop back to step 3                   │
+│         (generate another fix for original task)                │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Step-by-Step Implementation**:
+
+**Step 1: Check Recovery Mode**
+
+```
+Read .ralph-state.json
+If recoveryMode !== true:
+  - Increment taskIteration
+  - If taskIteration > maxTaskIterations: ERROR and STOP
+  - Otherwise: retry same task (existing behavior)
+  - EXIT this section
+```
+
+**Step 2: Parse Failure (calls Section 6b)**
+
+```
+Parse spec-executor output using pattern from Section 6b
+Build failure object:
+{
+  "taskId": "X.Y",
+  "error": "<from Error: line>",
+  "attemptedFix": "<from Attempted fix: line>",
+  "rawOutput": "<full output>"
+}
+```
+
+**Step 3: Check Fix Limits (from Section 6c)**
+
+```
+Read fixTaskMap from state
+currentAttempts = fixTaskMap[taskId].attempts || 0
+
+If currentAttempts >= maxFixTasksPerOriginal:
+  - Output ERROR: "Max fix attempts ($max) reached for task $taskId"
+  - Show fix history: fixTaskMap[taskId].fixTaskIds
+  - Do NOT output ALL_TASKS_COMPLETE
+  - STOP execution
+```
+
+**Step 4: Generate Fix Task (calls Section 6c)**
+
+```
+Use failure object to create fix task markdown:
+- [ ] X.Y.N [FIX X.Y] Fix: <errorSummary>
+  - **Do**: Address the error: <error>
+  - **Files**: <originalTask.files>
+  - **Done when**: Error no longer occurs
+  - **Verify**: <originalTask.verify>
+  - **Commit**: fix(<scope>): address <errorType>
+
+Where N = currentAttempts + 1
+```
+
+**Step 5: Insert Fix Task (calls Section 6c)**
+
+```
+Use Edit tool to insert fix task into tasks.md
+Position: immediately after original task block
+Update totalTasks in state
+```
+
+**Step 6: Update State**
+
+```
+Read .ralph-state.json
+Update fixTaskMap[taskId]:
+  - attempts: currentAttempts + 1
+  - fixTaskIds: [...existing, "X.Y.N"]
+  - lastError: failure.error
+Write updated state
+```
+
+**Step 7: Execute Fix Task**
+
+```
+Delegate fix task to spec-executor via Task tool
+Same delegation pattern as Section 6
+
+If TASK_COMPLETE:
+  - Mark fix task [x] in tasks.md
+  - Proceed to Step 8
+
+If no TASK_COMPLETE:
+  - Fix task itself failed
+  - Loop back to Step 2 with fix task as current task
+  - (Fix task can spawn its own fix tasks)
+```
+
+**Step 8: Retry Original Task**
+
+```
+Return to original task (taskIndex unchanged)
+Delegate original task to spec-executor again
+
+If TASK_COMPLETE:
+  - Success! Proceed to Section 7 (verification layers)
+  - Then Section 8 (state update, advance taskIndex)
+
+If no TASK_COMPLETE:
+  - Original still failing after fix
+  - Loop back to Step 2
+  - Generate another fix task for original
+```
+
+**Example Recovery Sequence**:
+
+```
+Initial: Task 1.3 fails
+  ↓
+Recovery Mode enabled
+  ↓
+Parse: error = "syntax error in parser.ts"
+  ↓
+Check: fixTaskMap["1.3"].attempts = 0 (under limit of 3)
+  ↓
+Generate: Task 1.3.1 [FIX 1.3] Fix: syntax error
+  ↓
+Insert: Add 1.3.1 after 1.3 in tasks.md
+  ↓
+Update: fixTaskMap["1.3"] = {attempts: 1, fixTaskIds: ["1.3.1"]}
+  ↓
+Execute: Delegate 1.3.1 to spec-executor
+  ↓
+1.3.1 completes with TASK_COMPLETE
+  ↓
+Retry: Delegate 1.3 to spec-executor again
+  ↓
+1.3 completes with TASK_COMPLETE
+  ↓
+Success! → Section 7 → Section 8 → Next task
+```
+
+**Nested Fix Example** (fix task fails):
+
+```
+Task 1.3 fails → Generate 1.3.1
+  ↓
+1.3.1 fails → Generate 1.3.1.1 (fix for the fix)
+  ↓
+1.3.1.1 completes
+  ↓
+Retry 1.3.1 → completes
+  ↓
+Retry 1.3 → completes
+  ↓
+Success!
+```
+
+**Important Notes**:
+
+- Fix tasks can spawn their own fix tasks (recursive recovery)
+- Each original task tracks its own fix count independently
+- taskIndex does NOT advance during fix task execution
+- Only after original task passes does taskIndex advance
+- Fix task IDs use dot notation to show lineage: 1.3.1, 1.3.2, 1.3.1.1
+
 **ERROR: Max Retries Reached**
 
 If taskIteration exceeds maxTaskIterations:

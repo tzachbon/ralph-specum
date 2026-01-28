@@ -183,7 +183,7 @@ After POC validated, add robustness and edge cases.
   - **Done when**: All verification commands pass
   - **Commit**: `chore(recovery): pass local verification` (if fixes needed)
 
-- [ ] 4.2 Clean up test specs
+- [x] 4.2 Clean up test specs
   - **Do**: Remove test-recovery, test-recovery-multi, test-recovery-limit directories
   - **Files**: `specs/test-recovery/`, `specs/test-recovery-multi/`, `specs/test-recovery-limit/`
   - **Done when**: Test directories removed

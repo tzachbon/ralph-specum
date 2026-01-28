@@ -28,7 +28,7 @@ POC-first workflow with 4 phases:
 
 Focus: Validate recovery loop works. Skip edge cases, accept basic fix task generation.
 
-- [ ] 1.1 Add recovery state fields to schema
+- [x] 1.1 Add recovery state fields to schema
   - **Do**: Extend spec.schema.json with recoveryMode (boolean), maxFixTasksPerOriginal (integer), and fixTaskMap (object) fields
   - **Files**: `plugins/ralph-specum/schemas/spec.schema.json`
   - **Done when**: Schema includes all three new fields with proper types and defaults

@@ -151,7 +151,7 @@ After POC validated, add robustness and edge cases.
 
 ## Phase 3: Testing
 
-- [ ] 3.1 Test recovery with multiple failures
+- [x] 3.1 Test recovery with multiple failures
   - **Do**: Create test spec with task that fails twice before succeeding (use counter file). Verify 2 fix tasks created, then original passes.
   - **Files**: `specs/test-recovery-multi/tasks.md`, `specs/test-recovery-multi/.progress.md`
   - **Done when**: Recovery handles multiple consecutive failures

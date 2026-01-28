@@ -61,7 +61,7 @@ Focus: Validate recovery loop works. Skip edge cases, accept basic fix task gene
   - **Done when**: Schema parses, recoveryMode in implement.md
   - **Commit**: `chore(recovery): pass quality checkpoint` (only if fixes needed)
 
-- [ ] 1.5 Add fix task generator to implement.md
+- [x] 1.5 Add fix task generator to implement.md
   - **Do**: Add function to create fix task from failure details. Use format from design: `X.Y.N [FIX X.Y] Fix: <summary>`. Include Do, Files, Done when, Verify, Commit fields derived from error and original task.
   - **Files**: `plugins/ralph-specum/commands/implement.md`
   - **Done when**: Coordinator can generate properly formatted fix task markdown

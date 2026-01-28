@@ -363,6 +363,125 @@ Parsed failure object:
 
 This failure object is used by the recovery orchestrator (section 6c) to generate fix tasks when recoveryMode is enabled.
 
+### 6c. Fix Task Generator
+
+When recoveryMode is enabled and a task fails, generate a fix task from the failure details.
+
+**Check Recovery Mode**:
+
+First, verify recovery mode is enabled:
+1. Read `recoveryMode` from .ralph-state.json
+2. If `recoveryMode` is false or missing, skip to "ERROR: Max Retries Reached"
+3. If `recoveryMode` is true, proceed with fix task generation
+
+**Check Fix Task Limits**:
+
+Before generating a fix task:
+1. Read `fixTaskMap` from .ralph-state.json
+2. Check if `fixTaskMap[taskId].attempts >= maxFixTasksPerOriginal`
+3. If limit reached:
+   - Output error: "ERROR: Max fix attempts ($maxFixTasksPerOriginal) reached for task $taskId"
+   - Show fix history: "Fix attempts: $fixTaskMap[taskId].fixTaskIds"
+   - Do NOT output ALL_TASKS_COMPLETE
+   - STOP execution
+
+**Generate Fix Task Markdown**:
+
+Use the failure object from section 6b to create a fix task:
+
+```
+Fix Task ID: $taskId.$attemptNumber
+  where attemptNumber = fixTaskMap[taskId].attempts + 1 (or 1 if first attempt)
+
+Fix Task Format:
+- [ ] $taskId.$attemptNumber [FIX $taskId] Fix: $errorSummary
+  - **Do**: Address the error: $failure.error
+    1. Analyze the failure: $failure.attemptedFix
+    2. Review related code in Files list
+    3. Implement fix for: $failure.error
+  - **Files**: $originalTask.files
+  - **Done when**: Error "$failure.error" no longer occurs
+  - **Verify**: $originalTask.verify
+  - **Commit**: `fix($scope): address $errorType from task $taskId`
+```
+
+**Field Derivation**:
+
+| Field | Source | Fallback |
+|-------|--------|----------|
+| errorSummary | First 50 chars of failure.error | "task $taskId failure" |
+| failure.error | Parsed from Error: line | "Task execution failed" |
+| failure.attemptedFix | Parsed from Attempted fix: line | "No previous fix attempted" |
+| originalTask.files | Files field from original task | Same directory as original |
+| originalTask.verify | Verify field from original task | "echo 'Verify manually'" |
+| $scope | Derived from spec name or task area | "recovery" |
+| $errorType | Error category (e.g., "syntax", "missing file") | "error" |
+
+**Example Fix Task Generation**:
+
+Original task (failed):
+```
+- [ ] 1.3 Add failure parser
+  - **Do**: Add parsing logic to implement.md
+  - **Files**: plugins/ralph-specum/commands/implement.md
+  - **Done when**: Parser extracts error details
+  - **Verify**: grep -q "Parse Failure" implement.md
+  - **Commit**: feat(coordinator): add failure parser
+```
+
+Failure object:
+```json
+{
+  "taskId": "1.3",
+  "error": "File not found: src/parser.ts",
+  "attemptedFix": "Checked alternate paths"
+}
+```
+
+Generated fix task:
+```
+- [ ] 1.3.1 [FIX 1.3] Fix: File not found: src/parser.ts
+  - **Do**: Address the error: File not found: src/parser.ts
+    1. Analyze the failure: Checked alternate paths
+    2. Review related code in Files list
+    3. Implement fix for: File not found: src/parser.ts
+  - **Files**: plugins/ralph-specum/commands/implement.md
+  - **Done when**: Error "File not found: src/parser.ts" no longer occurs
+  - **Verify**: grep -q "Parse Failure" implement.md
+  - **Commit**: `fix(recovery): address missing file from task 1.3`
+```
+
+**Update State After Generation**:
+
+After generating the fix task:
+1. Increment `fixTaskMap[taskId].attempts`
+2. Add fix task ID to `fixTaskMap[taskId].fixTaskIds` array
+3. Store error in `fixTaskMap[taskId].lastError`
+4. Write updated .ralph-state.json
+
+**Insert Fix Task into tasks.md**:
+
+1. Read tasks.md content
+2. Find the current task line: `- [ ] $taskId` or `- [x] $taskId`
+3. Find end of current task block (next `- [ ]` or `- [x]` or phase header)
+4. Insert fix task markdown at that position
+5. Increment `totalTasks` in .ralph-state.json
+
+**Execute Fix Task**:
+
+After insertion:
+1. Delegate fix task to spec-executor (same as section 6)
+2. On TASK_COMPLETE: retry original task
+3. On failure: loop back to section 6c (new fix task for fix task)
+
+**Retry Original Task**:
+
+After fix task completes:
+1. Return to original task (taskIndex unchanged)
+2. Delegate original task to spec-executor
+3. If TASK_COMPLETE: proceed to section 7 (verification) then section 8 (state update)
+4. If failure: loop back to section 6c (generate another fix task)
+
 **ERROR: Max Retries Reached**
 
 If taskIteration exceeds maxTaskIterations:

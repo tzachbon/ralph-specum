@@ -126,32 +126,32 @@ WORKTREE_PATH="../${REPO_NAME}-${SPEC_NAME}"
 # Create worktree with new branch
 git worktree add "$WORKTREE_PATH" -b "feat/${SPEC_NAME}"
 
-# Copy spec state files to worktree
+# Copy spec state files to worktree (failures are warnings, not errors)
 if [ -d "./specs" ]; then
-    mkdir -p "$WORKTREE_PATH/specs"
+    mkdir -p "$WORKTREE_PATH/specs" || echo "Warning: Failed to create specs directory in worktree"
 
     # Copy .current-spec if exists
     if [ -f "./specs/.current-spec" ]; then
-        cp "./specs/.current-spec" "$WORKTREE_PATH/specs/.current-spec"
+        cp "./specs/.current-spec" "$WORKTREE_PATH/specs/.current-spec" || echo "Warning: Failed to copy .current-spec to worktree"
     fi
 
     # If SPEC_NAME empty but .current-spec exists, read from it
     if [ -z "$SPEC_NAME" ] && [ -f "./specs/.current-spec" ]; then
-        SPEC_NAME=$(cat "./specs/.current-spec")
+        SPEC_NAME=$(cat "./specs/.current-spec") || true
     fi
 
     # If spec name known, copy spec state files
     if [ -n "$SPEC_NAME" ] && [ -d "./specs/$SPEC_NAME" ]; then
-        mkdir -p "$WORKTREE_PATH/specs/$SPEC_NAME"
+        mkdir -p "$WORKTREE_PATH/specs/$SPEC_NAME" || echo "Warning: Failed to create spec directory in worktree"
 
         # Copy state files (don't overwrite existing)
-        [ -f "./specs/$SPEC_NAME/.ralph-state.json" ] && \
-            [ ! -f "$WORKTREE_PATH/specs/$SPEC_NAME/.ralph-state.json" ] && \
-            cp "./specs/$SPEC_NAME/.ralph-state.json" "$WORKTREE_PATH/specs/$SPEC_NAME/"
+        if [ -f "./specs/$SPEC_NAME/.ralph-state.json" ] && [ ! -f "$WORKTREE_PATH/specs/$SPEC_NAME/.ralph-state.json" ]; then
+            cp "./specs/$SPEC_NAME/.ralph-state.json" "$WORKTREE_PATH/specs/$SPEC_NAME/" || echo "Warning: Failed to copy .ralph-state.json to worktree"
+        fi
 
-        [ -f "./specs/$SPEC_NAME/.progress.md" ] && \
-            [ ! -f "$WORKTREE_PATH/specs/$SPEC_NAME/.progress.md" ] && \
-            cp "./specs/$SPEC_NAME/.progress.md" "$WORKTREE_PATH/specs/$SPEC_NAME/"
+        if [ -f "./specs/$SPEC_NAME/.progress.md" ] && [ ! -f "$WORKTREE_PATH/specs/$SPEC_NAME/.progress.md" ]; then
+            cp "./specs/$SPEC_NAME/.progress.md" "$WORKTREE_PATH/specs/$SPEC_NAME/" || echo "Warning: Failed to copy .progress.md to worktree"
+        fi
     fi
 fi
 ```

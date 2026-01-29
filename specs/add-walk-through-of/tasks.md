@@ -73,7 +73,7 @@ Focus: Add walkthrough generation to research-analyst as proof of concept.
 
 Apply walkthrough pattern to remaining agents.
 
-- [ ] 2.1 Add walkthrough generation to product-manager
+- [x] 2.1 Add walkthrough generation to product-manager
   - **Do**: Copy walkthrough section from research-analyst, adapt for requirements phase
     1. Add "## Generate Phase Walkthrough" section
     2. Update phase name reference

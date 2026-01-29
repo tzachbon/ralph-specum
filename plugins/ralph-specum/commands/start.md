@@ -132,6 +132,11 @@ Copy uses non-overwrite semantics (skips if file already exists in target).
 # Get repo name for path suggestion
 REPO_NAME=$(basename $(git rev-parse --show-toplevel))
 
+# If SPEC_NAME empty but .current-spec exists, read from it (before using for path/branch)
+if [ -z "$SPEC_NAME" ] && [ -f "./specs/.current-spec" ]; then
+    SPEC_NAME=$(cat "./specs/.current-spec") || true
+fi
+
 # Default worktree path
 WORKTREE_PATH="../${REPO_NAME}-${SPEC_NAME}"
 
@@ -142,14 +147,9 @@ git worktree add "$WORKTREE_PATH" -b "feat/${SPEC_NAME}"
 if [ -d "./specs" ]; then
     mkdir -p "$WORKTREE_PATH/specs" || echo "Warning: Failed to create specs directory in worktree"
 
-    # Copy .current-spec if exists
-    if [ -f "./specs/.current-spec" ]; then
+    # Copy .current-spec if exists (don't overwrite existing)
+    if [ -f "./specs/.current-spec" ] && [ ! -f "$WORKTREE_PATH/specs/.current-spec" ]; then
         cp "./specs/.current-spec" "$WORKTREE_PATH/specs/.current-spec" || echo "Warning: Failed to copy .current-spec to worktree"
-    fi
-
-    # If SPEC_NAME empty but .current-spec exists, read from it
-    if [ -z "$SPEC_NAME" ] && [ -f "./specs/.current-spec" ]; then
-        SPEC_NAME=$(cat "./specs/.current-spec") || true
     fi
 
     # If spec name known, copy spec state files
@@ -171,7 +171,7 @@ fi
 After worktree creation:
 - Inform user of the worktree path
 - IMPORTANT: Output clear guidance for the user:
-  ```
+  ```text
   Created worktree at '<path>' on branch '<branch-name>'
   Spec state files copied to worktree.
 

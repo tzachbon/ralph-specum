@@ -39,7 +39,7 @@ Focus: Add state file copy after worktree creation. Minimal, working solution.
 
 After POC validated, clean up code.
 
-- [ ] 2.1 Handle edge case: SPEC_NAME not yet known
+- [x] 2.1 Handle edge case: SPEC_NAME not yet known
   - **Do**: The SPEC_NAME variable may be empty if user is creating worktree before naming spec. Add fallback to read from .current-spec if SPEC_NAME is empty but .current-spec exists.
   - **Files**: `plugins/ralph-specum/commands/start.md`
   - **Done when**: State copy works even when SPEC_NAME is not explicitly provided

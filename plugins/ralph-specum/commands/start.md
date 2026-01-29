@@ -135,6 +135,11 @@ if [ -d "./specs" ]; then
         cp "./specs/.current-spec" "$WORKTREE_PATH/specs/.current-spec"
     fi
 
+    # If SPEC_NAME empty but .current-spec exists, read from it
+    if [ -z "$SPEC_NAME" ] && [ -f "./specs/.current-spec" ]; then
+        SPEC_NAME=$(cat "./specs/.current-spec")
+    fi
+
     # If spec name known, copy spec state files
     if [ -n "$SPEC_NAME" ] && [ -d "./specs/$SPEC_NAME" ]; then
         mkdir -p "$WORKTREE_PATH/specs/$SPEC_NAME"

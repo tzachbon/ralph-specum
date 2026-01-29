@@ -165,7 +165,7 @@ Validate walkthrough functionality via file inspection.
   - **Done when**: All checks pass
   - **Commit**: `fix(walkthrough): address any issues` (if fixes needed)
 
-- [ ] 4.2 Create PR and verify CI
+- [x] 4.2 Create PR and verify CI
   - **Do**:
     1. Verify on feature branch: `git branch --show-current`
     2. Push branch: `git push -u origin $(git branch --show-current)`

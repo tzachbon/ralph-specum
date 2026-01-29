@@ -85,7 +85,7 @@ Apply walkthrough pattern to remaining agents.
   - _Requirements: FR-1, AC-1.2_
   - _Design: Walkthrough Generator_
 
-- [ ] 2.2 Add walkthrough generation to architect-reviewer
+- [x] 2.2 Add walkthrough generation to architect-reviewer
   - **Do**: Copy walkthrough section, adapt for design phase
     1. Add "## Generate Phase Walkthrough" section
     2. Update phase name reference

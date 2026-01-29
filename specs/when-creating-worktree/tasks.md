@@ -67,7 +67,7 @@ After POC validated, clean up code.
 
 ## Phase 4: Quality Gates
 
-- [ ] 4.1 Version bump plugin
+- [x] 4.1 Version bump plugin
   - **Do**: Bump version in plugin.json and marketplace.json. Use patch version increment.
   - **Files**: `plugins/ralph-specum/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`
   - **Done when**: Version numbers incremented in both files

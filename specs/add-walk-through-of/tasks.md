@@ -96,7 +96,7 @@ Apply walkthrough pattern to remaining agents.
   - _Requirements: FR-1, AC-1.3_
   - _Design: Walkthrough Generator_
 
-- [ ] 2.3 Add walkthrough generation to task-planner
+- [x] 2.3 Add walkthrough generation to task-planner
   - **Do**: Copy walkthrough section, adapt for tasks phase
     1. Add "## Generate Phase Walkthrough" section
     2. Update phase name reference

@@ -453,7 +453,7 @@ Focus: Extract procedural logic from commands/agents into reusable skills, then 
   - **Commit**: `refactor(ralph-specum): simplify task-planner.md to reference skills`
   - _Design: Agent Simplification Plan_
 
-- [ ] 2.22 Simplify research-analyst.md agent
+- [x] 2.22 Simplify research-analyst.md agent
   - **Do**:
     1. Replace inline quality command discovery with skill reference to quality-commands
     2. Target: ~200 lines (down from 340)

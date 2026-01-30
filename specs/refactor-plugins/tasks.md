@@ -311,13 +311,13 @@ Focus: Extract procedural logic from commands/agents into reusable skills, then 
   - **Commit**: `feat(ralph-specum): add parallel-research skill`
   - _Design: New Skills - parallel-research_
 
-- [ ] 2.9 [VERIFY] Quality checkpoint: new skills batch 2
+- [x] 2.9 [VERIFY] Quality checkpoint: new skills batch 2
   - **Do**: Verify skills 4-7 have proper structure
   - **Verify**: `count=0; for s in branch-management intent-classification spec-scanner parallel-research; do test -f "plugins/ralph-specum/skills/$s/SKILL.md" && grep -q "^version:" "plugins/ralph-specum/skills/$s/SKILL.md" || ((count++)); done; test $count -eq 0`
   - **Done when**: All 4 skills exist with version field
   - **Commit**: `chore(ralph-specum): pass new skills batch 2 checkpoint` (only if fixes needed)
 
-- [ ] 2.10 Create phase-rules skill
+- [x] 2.10 Create phase-rules skill
   - **Do**:
     1. Extract phase-specific rules from spec-executor.md
     2. Document POC/Refactor/Testing/Quality phase behaviors, shortcuts allowed per phase

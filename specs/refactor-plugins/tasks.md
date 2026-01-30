@@ -33,7 +33,7 @@ Focus: Fix all missing frontmatter fields (color, version, matcher, name) and ad
   - _Requirements: AC-1.1, AC-1.3, AC-1.4, AC-1.5_
   - _Design: ralph-specum Agents, Agent Color Assignments_
 
-- [ ] 1.2 Add color and examples to ralph-speckit agents (6 files)
+- [x] 1.2 Add color and examples to ralph-speckit agents (6 files)
   - **Do**:
     1. For each of 6 agents, add `color` field after `model` in frontmatter
     2. Add 2 `<example>` blocks with Context/user/assistant/commentary format to description

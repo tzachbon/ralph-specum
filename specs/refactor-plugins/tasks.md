@@ -339,7 +339,7 @@ Focus: Extract procedural logic from commands/agents into reusable skills, then 
   - **Commit**: `feat(ralph-specum): add commit-discipline skill`
   - _Design: New Skills - commit-discipline_
 
-- [ ] 2.12 Create quality-checkpoints skill
+- [x] 2.12 Create quality-checkpoints skill
   - **Do**:
     1. Extract [VERIFY] task rules from task-planner.md
     2. Document checkpoint frequency, format, verification commands

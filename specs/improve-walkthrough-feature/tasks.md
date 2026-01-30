@@ -21,7 +21,7 @@ POC-first workflow with 4 phases:
 
 Focus: Add walkthrough output to each phase command. Validate user sees useful summary after each phase.
 
-- [ ] 1.1 Add walkthrough to research.md command
+- [x] 1.1 Add walkthrough to research.md command
   - **Do**:
     1. Read `plugins/ralph-specum/commands/research.md`
     2. Find the `## Output` section (around line 685)

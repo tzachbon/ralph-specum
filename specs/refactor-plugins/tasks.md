@@ -182,7 +182,7 @@ Focus: Fix all missing frontmatter fields (color, version, matcher, name) and ad
 
 ### A5: Validation and Documentation
 
-- [ ] 1.12 Create validation script
+- [x] 1.12 Create validation script
   - **Do**:
     1. Create `scripts/validate-plugins.sh` with compliance checks:
        - Agents have color field

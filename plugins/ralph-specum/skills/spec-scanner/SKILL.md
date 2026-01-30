@@ -206,9 +206,9 @@ This context may inform the interview questions.
 **Keywords extracted**: ["refactor", "authentication", "use", "new", "token", "system"]
 
 **Matching**:
-- user-auth: 3 matches ("authentication", "token", "jwt")
-- token-refresh: 2 matches ("token", "refresh")
-- api-auth: 2 matches ("authentication", "api")
+- user-auth: 2 matches ("authentication", "token")
+- token-refresh: 1 match ("token")
+- api-auth: 1 match ("authentication")
 
 **Output**:
 ```text

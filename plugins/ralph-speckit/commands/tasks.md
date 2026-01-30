@@ -95,7 +95,7 @@ Every task MUST strictly follow this format:
 
 **Examples**:
 
-- CORRECT: `- [ ] T001 Create project structure per implementation plan`
+- CORRECT: `- [ ] T001 Create project structure in scripts/setup/project-structure.sh`
 - CORRECT: `- [ ] T005 [P] Implement authentication middleware in src/middleware/auth.py`
 - CORRECT: `- [ ] T012 [P] [US1] Create User model in src/models/user.py`
 - CORRECT: `- [ ] T014 [US1] Implement UserService in src/services/user_service.py`

@@ -13,7 +13,7 @@ Refactor ralph-specum and ralph-speckit plugins to fully comply with plugin-dev 
 ## User Decisions
 
 | Question | Response |
-|----------|----------|
+| -------- | -------- |
 | Primary users | Both developers and end users |
 | Priority tradeoffs | Prioritize thoroughness over speed |
 | Success criteria | Full compliance + documentation (all issues fixed plus validation scripts and docs) |

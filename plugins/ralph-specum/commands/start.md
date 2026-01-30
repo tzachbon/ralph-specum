@@ -145,7 +145,7 @@ Apply `plugins/ralph-specum/skills/interview-framework/SKILL.md` for single-ques
 **Goal Interview Question Pool:**
 
 | # | Question | Required | Key |
-|---|----------|----------|-----|
+| --- | -------- | -------- | --- |
 | 1 | What problem are you solving with this feature? | Required | `problem` |
 | 2 | Any constraints or must-haves for this feature? | Required | `constraints` |
 | 3 | How will you know this feature is successful? | Required | `success` |

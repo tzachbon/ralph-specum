@@ -45,7 +45,7 @@ Intent Classification:
 ### TRIVIAL Keywords
 
 | Keyword | Confidence Boost |
-|---------|------------------|
+| ------- | ---------------- |
 | fix typo | high |
 | typo | high |
 | spelling | high |
@@ -60,7 +60,7 @@ Intent Classification:
 ### REFACTOR Keywords
 
 | Keyword | Confidence Boost |
-|---------|------------------|
+| ------- | ---------------- |
 | refactor | high |
 | restructure | high |
 | reorganize | high |
@@ -76,7 +76,7 @@ Intent Classification:
 ### GREENFIELD Keywords
 
 | Keyword | Confidence Boost |
-|---------|------------------|
+| ------- | ---------------- |
 | new feature | high |
 | new system | high |
 | new module | high |
@@ -91,7 +91,7 @@ Intent Classification:
 ## Confidence Threshold
 
 | Match Count | Confidence | Action |
-|-------------|------------|--------|
+| ----------- | ---------- | ------ |
 | 3+ keywords | High | Use matched category |
 | 1-2 keywords | Medium | Use matched category |
 | 0 keywords | Low | Default to MID_SIZED |
@@ -101,7 +101,7 @@ Intent Classification:
 Intent classification determines the question count range, not which questions to ask. All goals use the same interview question pool, but the number of questions varies by intent:
 
 | Intent | Min Questions | Max Questions |
-|--------|---------------|---------------|
+| ------ | ------------- | ------------- |
 | TRIVIAL | 1 | 2 |
 | REFACTOR | 3 | 5 |
 | GREENFIELD | 5 | 10 |
@@ -184,7 +184,7 @@ After classification, store the result in `.progress.md`:
 **Goal**: "Build a new authentication system with OAuth2"
 
 **Classification**:
-- Keywords matched: "build", "new"
+- Keywords matched: "build", "new system"
 - Type: GREENFIELD
 - Confidence: medium (2 keywords)
 - Min questions: 5

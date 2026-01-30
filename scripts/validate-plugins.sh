@@ -25,12 +25,12 @@ log_pass() {
 
 log_fail() {
     echo -e "${RED}✗${NC} $1"
-    ((errors++))
+    ((errors++)) || true
 }
 
 log_warn() {
     echo -e "${YELLOW}!${NC} $1"
-    ((warnings++))
+    ((warnings++)) || true
 }
 
 log_section() {

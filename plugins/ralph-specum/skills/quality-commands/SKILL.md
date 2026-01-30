@@ -44,7 +44,7 @@ grep -E '^[a-z]+:' Makefile
 
 Look for keywords: `lint`, `test`, `check`, `build`, `e2e`, `integration`, `unit`, `verify` targets
 
-### 3. CI Configs (.github/workflows/*.yml)
+### 3. CI Configs (GitHub Actions: .github/workflows/*.yml)
 
 ```bash
 grep -E 'run:' .github/workflows/*.yml
@@ -72,7 +72,7 @@ grep -rh 'run:' .github/workflows/*.yml 2>/dev/null | head -20 || echo "No CI co
 Detect the correct package manager:
 
 | File Exists | Package Manager | Run Prefix |
-|-------------|-----------------|------------|
+| ------------------- | --------------- | ---------- |
 | `pnpm-lock.yaml` | pnpm | `pnpm run` |
 | `yarn.lock` | yarn | `yarn` |
 | `bun.lockb` | bun | `bun run` |
@@ -125,7 +125,7 @@ Mark as "Not found" so task-planner knows to skip that check in `[VERIFY]` tasks
 When project lacks explicit scripts, use these fallbacks:
 
 | Type | Fallback | Condition |
-|------|----------|-----------|
+| --------- | ------------------ | ---------------------- |
 | TypeCheck | `npx tsc --noEmit` | tsconfig.json exists |
 | Lint | `npx eslint .` | .eslintrc* exists |
 | Test | `npx jest` | jest.config.* exists |

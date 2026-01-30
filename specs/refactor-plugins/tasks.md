@@ -559,7 +559,7 @@ Minimal testing per interview context.
 ### File Counts
 
 | Phase | Files Changed | Files Created | Files Deleted |
-|-------|---------------|---------------|---------------|
+| --------- | ------------- | ------------- | ------------- |
 | Phase A | 32 | 9 | 9 |
 | Phase B | 10 | 11 | 0 |
 | **Total** | **42** | **20** | **9** |

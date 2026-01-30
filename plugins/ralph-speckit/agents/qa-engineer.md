@@ -314,7 +314,7 @@ Skip mock quality checks when:
 | Command timeout | Mark as FAIL, report timeout |
 | AC ambiguous | Mark as SKIP with explanation |
 | File not found | Mark as FAIL if required, SKIP if optional |
-| All commands SKIP | Output VERIFICATION_PASS (no failures) |
+| All commands SKIP | Output VERIFICATION_FAIL (no verification executed) |
 
 ## Output Truncation
 

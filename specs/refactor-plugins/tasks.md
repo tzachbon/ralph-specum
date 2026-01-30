@@ -420,7 +420,7 @@ Focus: Extract procedural logic from commands/agents into reusable skills, then 
   - **Commit**: `refactor(ralph-specum): simplify phase commands to reference skills`
   - _Design: Command Simplification Plan_
 
-- [ ] 2.19 [VERIFY] Quality checkpoint: command simplification
+- [x] 2.19 [VERIFY] Quality checkpoint: command simplification
   - **Do**: Verify all simplified commands are under target line counts
   - **Verify**: `count=0; test $(wc -l < plugins/ralph-specum/commands/implement.md) -lt 300 || ((count++)); test $(wc -l < plugins/ralph-specum/commands/start.md) -lt 350 || ((count++)); test $(wc -l < plugins/ralph-specum/commands/research.md) -lt 250 || ((count++)); test $count -eq 0`
   - **Done when**: All major commands under target line counts
@@ -428,7 +428,7 @@ Focus: Extract procedural logic from commands/agents into reusable skills, then 
 
 ### B3: Simplify Agents
 
-- [ ] 2.20 Simplify spec-executor.md agent
+- [x] 2.20 Simplify spec-executor.md agent
   - **Do**:
     1. Replace inline phase rules with skill reference to phase-rules
     2. Replace inline commit discipline with skill reference to commit-discipline

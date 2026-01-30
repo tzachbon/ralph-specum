@@ -361,7 +361,7 @@ Focus: Extract procedural logic from commands/agents into reusable skills, then 
   - **Commit**: `feat(ralph-specum): add quality-commands skill`
   - _Design: New Skills - quality-commands_
 
-- [ ] 2.14 [VERIFY] Quality checkpoint: new skills batch 3
+- [x] 2.14 [VERIFY] Quality checkpoint: new skills batch 3
   - **Do**: Verify skills 8-11 have proper structure
   - **Verify**: `count=0; for s in phase-rules commit-discipline quality-checkpoints quality-commands; do test -f "plugins/ralph-specum/skills/$s/SKILL.md" && grep -q "^version:" "plugins/ralph-specum/skills/$s/SKILL.md" || ((count++)); done; test $count -eq 0`
   - **Done when**: All 4 skills exist with version field
@@ -369,7 +369,7 @@ Focus: Extract procedural logic from commands/agents into reusable skills, then 
 
 ### B2: Simplify Commands
 
-- [ ] 2.15 Simplify implement.md command
+- [x] 2.15 Simplify implement.md command
   - **Do**:
     1. Replace inline coordinator prompt with skill reference to coordinator-pattern
     2. Replace inline recovery logic with skill reference to failure-recovery

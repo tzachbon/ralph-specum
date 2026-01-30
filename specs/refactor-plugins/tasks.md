@@ -350,7 +350,7 @@ Focus: Extract procedural logic from commands/agents into reusable skills, then 
   - **Commit**: `feat(ralph-specum): add quality-checkpoints skill`
   - _Design: New Skills - quality-checkpoints_
 
-- [ ] 2.13 Create quality-commands skill
+- [x] 2.13 Create quality-commands skill
   - **Do**:
     1. Extract quality command discovery from research-analyst.md
     2. Document package.json/Makefile/CI discovery patterns, fallback commands

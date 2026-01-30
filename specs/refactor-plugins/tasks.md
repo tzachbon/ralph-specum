@@ -441,7 +441,7 @@ Focus: Extract procedural logic from commands/agents into reusable skills, then 
   - **Commit**: `refactor(ralph-specum): simplify spec-executor.md to reference skills`
   - _Design: Agent Simplification Plan_
 
-- [ ] 2.21 Simplify task-planner.md agent
+- [x] 2.21 Simplify task-planner.md agent
   - **Do**:
     1. Replace inline POC workflow with skill reference to phase-rules
     2. Replace inline quality checkpoints with skill reference to quality-checkpoints

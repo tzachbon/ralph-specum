@@ -154,7 +154,7 @@ Focus: Verify walkthrough quality through usage.
   - **Commit**: `test(ralph-specum): verify walkthrough with real spec`
   - _Requirements: All ACs_
 
-- [ ] 3.2 [VERIFY] Quality checkpoint: full quality check
+- [x] 3.2 [VERIFY] Quality checkpoint: full quality check
   - **Do**: Run lint, type check (if applicable for md files)
   - **Verify**: No syntax errors in markdown files
   - **Done when**: All files pass basic validation
@@ -162,7 +162,7 @@ Focus: Verify walkthrough quality through usage.
 
 ## Phase 4: Quality Gates
 
-- [ ] 4.1 Bump plugin version
+- [x] 4.1 Bump plugin version
   - **Do**:
     1. Read `plugins/ralph-specum/.claude-plugin/plugin.json`
     2. Increment patch version (e.g., 0.5.0 -> 0.5.1)

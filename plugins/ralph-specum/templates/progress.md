@@ -20,8 +20,8 @@ _Discoveries and insights will be captured here_
 
 ## Phase Walkthrough
 
-| Phase | Files Changed | Summary |
-|-------|---------------|---------|
+| File | Change Type | Summary |
+|------|-------------|---------|
 | _No phases completed yet_ | | |
 
 ## Blockers

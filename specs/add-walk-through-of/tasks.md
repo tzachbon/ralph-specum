@@ -11,12 +11,11 @@ generated: auto
 ## Overview
 
 Total tasks: 14
-POC-first workflow with 5 phases:
+POC-first workflow with 4 phases:
 1. Phase 1: Make It Work (POC) - Add walkthrough to one agent
 2. Phase 2: Refactoring - Apply pattern to all agents
 3. Phase 3: Testing - Validate walkthroughs generated correctly
-4. Phase 4: Quality Gates - Local checks and PR creation
-5. Phase 5: PR Lifecycle - CI monitoring and review
+4. Phase 4: Quality Gates - Local checks, PR creation, CI monitoring, review
 
 ## Completion Criteria (Autonomous Execution Standard)
 
@@ -57,7 +56,7 @@ Focus: Add walkthrough generation to research-analyst as proof of concept.
   - _Requirements: FR-1, FR-2, FR-3, AC-1.1, AC-2.1-2.4_
   - _Design: Walkthrough Generator_
 
-- [ ] 1.3 [VERIFY] Quality checkpoint: POC agent updated
+- [x] 1.3 [VERIFY] Quality checkpoint: POC agent updated
   - **Do**: Verify research-analyst has walkthrough section with correct format
   - **Verify**: Run these commands, ALL must exit 0:
     ```bash
@@ -107,7 +106,7 @@ Apply walkthrough pattern to remaining agents.
   - _Requirements: FR-1, AC-1.4_
   - _Design: Walkthrough Generator_
 
-- [ ] 2.4 [VERIFY] Quality checkpoint: all agents updated
+- [x] 2.4 [VERIFY] Quality checkpoint: all agents updated
   - **Do**: Verify all 4 agents have walkthrough sections
   - **Verify**: Run these commands, ALL must exit 0:
     ```bash
@@ -123,7 +122,7 @@ Apply walkthrough pattern to remaining agents.
 
 Validate walkthrough functionality via file inspection.
 
-- [ ] 3.1 Validate walkthrough format consistency
+- [x] 3.1 Validate walkthrough format consistency
   - **Do**: Check all agents use same walkthrough format
     1. Verify all agents have git diff command
     2. Verify all agents have table format specification
@@ -141,7 +140,7 @@ Validate walkthrough functionality via file inspection.
   - **Commit**: `test(walkthrough): validate format consistency` (if fixes needed)
   - _Requirements: AC-2.1, AC-2.2_
 
-- [ ] 3.2 [VERIFY] Quality checkpoint: testing complete
+- [x] 3.2 [VERIFY] Quality checkpoint: testing complete
   - **Do**: Final validation of all walkthrough implementations
   - **Verify**: All agents pass format validation from 3.1
   - **Done when**: All format checks pass
@@ -149,7 +148,7 @@ Validate walkthrough functionality via file inspection.
 
 ## Phase 4: Quality Gates
 
-- [ ] 4.1 Local quality check
+- [x] 4.1 Local quality check
   - **Do**: Verify all modified files have correct content
     1. Check progress template updated
     2. Check all 4 agents have walkthrough sections
@@ -174,9 +173,9 @@ Validate walkthrough functionality via file inspection.
   - **Done when**: PR created, CI green
   - **If CI fails**: Read `gh pr checks`, fix issues, push fixes
 
-## Phase 5: PR Lifecycle (Continuous Validation)
+### PR Lifecycle (Continuous Validation)
 
-- [ ] 5.1 Create pull request
+- [x] 4.3 Create pull request
   - **Do**:
     1. Verify current branch: `git branch --show-current`
     2. Push: `git push -u origin $(git branch --show-current)`
@@ -185,7 +184,7 @@ Validate walkthrough functionality via file inspection.
   - **Done when**: PR created and URL returned
   - **Commit**: None
 
-- [ ] 5.2 Monitor CI and fix failures
+- [x] 4.4 Monitor CI and fix failures
   - **Do**:
     1. Wait 3 minutes for CI to start
     2. Check status: `gh pr checks`
@@ -195,7 +194,7 @@ Validate walkthrough functionality via file inspection.
   - **Done when**: All CI checks passing
   - **Commit**: `fix: address CI failures` (as needed)
 
-- [ ] 5.3 Address code review comments
+- [x] 4.5 Address code review comments
   - **Do**:
     1. Fetch reviews: `gh pr view --json reviews`
     2. Implement requested changes
@@ -204,7 +203,7 @@ Validate walkthrough functionality via file inspection.
   - **Done when**: All review comments resolved
   - **Commit**: `fix: address review - <summary>` (per comment)
 
-- [ ] 5.4 Final validation
+- [x] 4.6 Final validation
   - **Do**: Verify ALL completion criteria met:
     1. All agents have walkthrough sections
     2. Template updated
@@ -228,5 +227,5 @@ Validate walkthrough functionality via file inspection.
 ## Dependencies
 
 ```
-Phase 1 (POC) -> Phase 2 (Refactor) -> Phase 3 (Testing) -> Phase 4 (Quality) -> Phase 5 (PR Lifecycle)
+Phase 1 (POC) -> Phase 2 (Refactor) -> Phase 3 (Testing) -> Phase 4 (Quality Gates + PR Lifecycle)
 ```

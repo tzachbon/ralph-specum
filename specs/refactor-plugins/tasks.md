@@ -59,7 +59,7 @@ Focus: Fix all missing frontmatter fields (color, version, matcher, name) and ad
 
 ### A2: Skill Metadata
 
-- [ ] 1.4 Add version to ralph-specum skills (6 files)
+- [x] 1.4 Add version to ralph-specum skills (6 files)
   - **Do**:
     1. Add `version: 0.1.0` to frontmatter of each skill
     2. Fix interview-framework description to third-person format with trigger phrases

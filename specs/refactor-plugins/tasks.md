@@ -300,7 +300,7 @@ Focus: Extract procedural logic from commands/agents into reusable skills, then 
   - **Commit**: `feat(ralph-specum): add spec-scanner skill`
   - _Design: New Skills - spec-scanner_
 
-- [ ] 2.8 Create parallel-research skill
+- [x] 2.8 Create parallel-research skill
   - **Do**:
     1. Extract parallel execution pattern from research.md
     2. Document multi-agent spawning, parallel search, results merge algorithm

@@ -132,7 +132,7 @@ Focus: Fix all missing frontmatter fields (color, version, matcher, name) and ad
   - _Requirements: AC-4.1_
   - _Design: ralph-speckit Commands_
 
-- [ ] 1.9 Migrate legacy commands to commands/ directory (8 files)
+- [x] 1.9 Migrate legacy commands to commands/ directory (8 files)
   - **Do**:
     1. For each legacy command in `.claude/commands/`:
        - Copy to `plugins/ralph-speckit/commands/` with new name (strip speckit. prefix)

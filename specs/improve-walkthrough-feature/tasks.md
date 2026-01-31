@@ -174,7 +174,7 @@ Focus: Verify walkthrough quality through usage.
   - **Verify**: `grep version plugins/ralph-specum/.claude-plugin/plugin.json` shows new version
   - **Commit**: `chore(ralph-specum): bump version for walkthrough feature`
 
-- [ ] 4.2 Create PR and verify
+- [x] 4.2 Create PR and verify
   - **Do**:
     1. Push branch: `git push -u origin feat/improve-walkthrough-feature`
     2. Create PR using gh CLI
